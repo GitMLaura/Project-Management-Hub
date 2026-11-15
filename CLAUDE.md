@@ -50,7 +50,23 @@ Portal de gestão de projetos multidisciplinares: hierarquia **projeto → épic
 6. Se faltar informação, pergunte em vez de inventar regras de negócio.
 
 ## Comandos
-Preencher quando o projeto for criado (instalar, rodar, testar, build, gerar seed).
+Gerenciador de pacotes: **npm** (Node 22+).
+
+| O que fazer | Comando |
+|---|---|
+| Instalar dependências | `npm install` |
+| Rodar em desenvolvimento (http://localhost:3000) | `npm run dev` |
+| Testes (uma vez) | `npm test` |
+| Testes em modo observação | `npm run test:watch` |
+| Lint | `npm run lint` |
+| Checagem de tipos | `npm run typecheck` |
+| Build de produção | `npm run build` |
+| Adicionar componente shadcn/ui | `npx shadcn@latest add <componente>` |
+| Gerar seed | _ainda não existe (história H5.1.1)_ |
+
+Variáveis de ambiente: copie `.env.example` para `.env.local` (nunca commitar).
+
+Antes de dar uma história como pronta: `npm test && npm run lint && npm run typecheck && npm run build`.
 
 ## Fora do escopo da v1
 Notificações, comentários em tempo real, integração com Jira/Figma, gravação de chamadas, edição colaborativa de fluxos, `.docx`, similaridade semântica, LLM real na demo pública. Não implemente sem pedido explícito.
