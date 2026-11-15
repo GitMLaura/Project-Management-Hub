@@ -86,3 +86,44 @@ Diário de decisões e construção. Em cada sessão: o que foi feito, o que foi
 
 ### Pendências (parte 2, depende da `service_role`)
 - 4 usuários de demonstração, login real no avatar no lugar do cookie, tabelas e políticas do PRD seção 2, testes de RLS com dados de teste e limpeza.
+
+## 2026-11-15 — Resumo da sessão
+
+### O que foi feito
+- **E0, H0.1.1:** Hub criado com Next.js (App Router, TypeScript estrito), Tailwind, shadcn/ui e Vitest; `.env.example` sem valores; comandos preenchidos no `CLAUDE.md`.
+- **E0, H0.2.1:** troca de perfil de demonstração pelo avatar no topo (Dono, Líder de Design, Líder de Dev, Participante), com perfil guardado em cookie validado no servidor.
+- **Preset do shadcn/ui** `beqFpGnC` aplicado.
+- **E0, H0.2.2, parte 1:** projeto Supabase conectado; migração temporária da tabela `items` com RLS, `GRANT SELECT` explícito e uma política de leitura; teste de integração que lê a linha com a anon key e confirma que a escrita é recusada.
+- PRD e BACKLOG alinhados às decisões da autora (sem botão de restaurar, sem tela "Entrar como").
+- Termo do produto padronizado para "Hub" nos textos da interface e nos documentos.
+
+### Decisões da autora
+| Decisão | Efeito |
+|---|---|
+| Visitantes podem editar a demo, e tudo é gravado de verdade no Supabase; sem botão de restaurar | A segurança precisa vir do banco (RLS), não da interface |
+| Tema do Projeto Aurora: app de delivery de comida | O seed (H5.1.1) segue esse tema, com nomes inventados |
+| README em português, com resumo em inglês no topo | Já aplicado ao README |
+| Sem tela de login: o Hub abre na página inicial com o Dono ativo, e o avatar troca de perfil | Substituiu a tela "Entrar como" no PRD e no BACKLOG |
+| Avatar com iniciais, sem fotos | Nenhuma imagem de pessoa no repositório |
+| npm como gerenciador de pacotes; Vitest para testes | Base técnica da H0.1.1 |
+| Preset de shadcn/ui `beqFpGnC` | Estilo, cores, fonte e ícones do Hub |
+| Tabela `items` temporária, por migração em `supabase/`, com RLS e uma política | Só valida a conexão; a E1 a substitui |
+| Testes de RLS no projeto Supabase hospedado; regras de negócio não dependem do banco | Testes de banco ficam pulados sem as variáveis |
+| `service_role` só na parte 2 da H0.2.2, colada pela autora no `.env.local` | A chave nunca passou pelo chat nem foi para o Git |
+| Migração aplicada pelo SQL Editor, não pelo CLI | A IA não tem acesso de escrita ao banco |
+| `GRANT SELECT` explícito (autora desmarcou "Automatically expose new tables") | A IA conferiu que faltava e incluiu |
+
+### Gerado pela IA
+- Todo o código: estrutura do Hub, configuração de Tailwind, shadcn/ui e Vitest, perfis de demonstração, cabeçalho e seletor de perfil, Server Action, estados de carregando e erro, migração SQL, teste de integração.
+- Os testes automatizados (14 ao todo) e a verificação de lint, tipos e build.
+- Os nomes fictícios dos 4 perfis (a autora pode trocar em `src/lib/demo-profiles.ts`).
+- Os textos da interface em português e esta documentação.
+- Decisões técnicas menores tomadas pela IA: `@types/node` 22, `next typegen` antes do `tsc`, cabeçalho dentro de `<Suspense>`, textos de migração só em ASCII.
+
+### O que a IA não verificou
+- O clique no avatar (Server Action) não foi testado num navegador pela IA. Só a leitura do cookie foi conferida no servidor. O critério correspondente da H0.2.1 continua desmarcado no BACKLOG até a autora conferir.
+
+### Pendências
+- **H0.2.2, parte 2** (depende da `service_role`): 4 usuários reais no Supabase Auth, login real no avatar no lugar do cookie, tabelas e políticas da seção 2 do PRD, testes de RLS com dados de teste e limpeza.
+- Conferir o clique no avatar no navegador.
+- `npm audit` mostra 8 avisos moderados, só em ferramentas de lint; não corrigidos de propósito.
