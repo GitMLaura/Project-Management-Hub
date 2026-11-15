@@ -182,11 +182,11 @@ Notificações, comentários em tempo real, integração com Jira ou Figma, grav
 - [ ] Deploy público funcionando, sem nenhuma chave de IA
 - [ ] README em formato de caso, com `BUILDLOG.md` e a divisão entre decisões da autora e código gerado pela IA
 
-## 11. Decisões em aberto
+## 11. Decisões
 
-1. **Escrita pública na demo:** permitir que visitantes editem os dados nos perfis de demonstração (com botão de restaurar o seed) ou deixar a demo somente leitura? Padrão provisório: escrita permitida com botão de restaurar.
-2. **Tema do Projeto Aurora:** qual produto fictício o projeto desenvolve (a definir ao montar o seed).
-3. **Idioma do README:** português, inglês ou bilíngue.
+1. **Escrita pública na demo (decidido):** os visitantes **podem editar** os dados nos perfis de demonstração, e tudo é gravado de verdade no Supabase, para demonstrar a integração funcionando. **Não haverá botão de restaurar** na v1.
+2. **Tema do Projeto Aurora (decidido):** um **app de delivery de comida** (pedidos, restaurantes, entregas, login e recuperação de acesso). Todos os dados do seed seguem esse tema, com nomes inventados.
+3. **Idioma do README (decidido):** **português**, com um **resumo em inglês** no topo.
 
 ## 12. Próximos documentos
 

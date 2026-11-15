@@ -4,6 +4,8 @@ EAP ágil, saúde do projeto, especificação e reuniões em um só lugar.
 
 Hub de gestão de projetos multidisciplinares que organiza o trabalho em uma Estrutura Analítica do Projeto (EAP/WBS) ágil: épicos, funcionalidades, histórias e tarefas, cada um com responsável e prazo. A partir dessa estrutura, calcula a saúde do projeto, de cada épico e de cada área, sempre explicando o motivo do semáforo, para que Design, Desenvolvimento, Produto e QA enxerguem a mesma situação. Regras de negócio, fluxos e telas ficam reunidos em um só lugar, e as reuniões do time viram resumos por área, com decisões e pendências que podem virar tarefas. Todos os dados são fictícios.
 
+> **In English:** a project management hub for multidisciplinary teams. It structures work as an agile WBS (epics, features, stories, tasks), calculates explainable project health, keeps business rules, flows and screens in one place, and turns meeting transcripts into per-area summaries. Portfolio project with 100% fictional data (a food delivery app), built with Next.js and Supabase.
+
 ## Documentação
 
 - [PRD (requisitos do produto)](docs/PRD.md)
