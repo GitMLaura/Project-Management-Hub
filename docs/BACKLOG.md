@@ -17,13 +17,18 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
   - [ ] `.env.example` sem valores; nenhum segredo no repositório
 
 ### F0.2 Acesso por perfis de demonstração
-- **H0.2.1** Como visitante, quero trocar de perfil (Dono, Líder de Design, Líder de Dev, Participante) clicando no meu avatar, para testar as permissões sem cadastro.
+- **H0.2.1** Como visitante, quero trocar de perfil (Dono, Líder de Design, Líder de Dev, Participante) clicando no meu avatar, para ver como cada papel enxerga o Hub, sem cadastro.
   - [x] O Hub abre direto na página inicial, com o Dono como perfil padrão (sem tela de login)
   - [x] O perfil ativo aparece no topo (avatar com iniciais, nome e papel em texto)
   - [ ] Clicar no avatar abre a lista dos quatro perfis e trocar de perfil não sai do Hub
-- **H0.2.2** Como autora, quero permissões aplicadas no banco (RLS), para que a segurança não dependa só da interface.
-  - [ ] Cada papel só executa as ações previstas na seção 2 do PRD
-  - [ ] Teste confirma que uma ação proibida é recusada pelo banco
+- **H0.2.2** Como autora, quero o banco com RLS ligado e políticas abertas para a demo, para persistir as alterações dos visitantes sem usar `service_role` nem usuários reais.
+  - [x] Conexão com o Supabase funcionando (leitura com a anon key)
+  - [ ] RLS ligado em todas as tabelas, com políticas que permitem ler, criar e alterar
+  - [ ] Exclusão recusada pelo banco (nenhuma política nem `GRANT` de `DELETE`)
+  - [ ] Teste confirma que a exclusão é recusada e que uma alteração persiste (sem deixar sujeira: o teste restaura o valor)
+  - [ ] Nenhuma `service_role` no projeto
+  - [ ] Tabela `items` temporária removida quando o esquema real da E1 entrar
+  - *Nota:* os papéis valem só na interface (PRD, seção 2 e decisão 4).
 
 ---
 
@@ -45,7 +50,7 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
   - [ ] Prazo de filho acima do prazo do pai é bloqueado ou avisado na hora (E2)
   - [ ] Prazo de épico acima do prazo do projeto é bloqueado ou avisado (E3)
 - **H1.2.3** Como Líder de área, quero arquivar em vez de excluir itens com filhos, para não perder trabalho por engano.
-  - [ ] Excluir item com filhos não é permitido (E4)
+  - [ ] Excluir item com filhos não é permitido (E4). Na demo, o banco recusa **qualquer** exclusão: itens só se arquivam
   - [ ] Item arquivado sai das visões ativas, mas pode ser restaurado
 - **H1.2.4** Como Dono do projeto, quero ver alertas de escopo incompleto, para saber onde falta detalhar.
   - [ ] Item sem filhos (que não seja tarefa) mostra "escopo incompleto" (E5)
@@ -55,7 +60,7 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
   - [ ] Progresso = tarefas concluídas ÷ total de tarefas do item (E6)
   - [ ] Filtros por área, responsável e status
 - **H1.3.2** Como participante, quero atualizar o status das tarefas pelas quais respondo, para refletir a realidade.
-  - [ ] Só consigo alterar tarefas das quais sou responsável
+  - [ ] Só consigo alterar tarefas das quais sou responsável (regra aplicada na interface)
   - [ ] Progresso e saúde atualizam após a mudança
 
 ---
@@ -135,7 +140,7 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
   - [ ] A demo pública não chama nenhuma IA
 - **H4.2.2** Como Líder de área, quero aprovar o resumo, para que só conteúdo revisado vire oficial.
   - [ ] Todo resumo nasce como rascunho
-  - [ ] Só líder (ou Dono) aprova
+  - [ ] Só líder (ou Dono) aprova (regra aplicada na interface)
 
 ### F4.3 Pendência vira tarefa
 - **H4.3.1** Como Líder de área, quero transformar uma pendência em tarefa com um clique, para não perder encaminhamentos.

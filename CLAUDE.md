@@ -10,7 +10,7 @@ Portal de gestão de projetos multidisciplinares: hierarquia **projeto → épic
 ## Stack
 - Next.js (App Router) + TypeScript
 - Tailwind CSS + shadcn/ui
-- Supabase (Postgres, Auth, Storage) com RLS
+- Supabase (Postgres e Storage) com RLS ligado; sem Auth na demo
 - Mermaid para fluxos
 - Deploy: Vercel (Hobby). Custo zero é requisito.
 
@@ -19,7 +19,7 @@ Portal de gestão de projetos multidisciplinares: hierarquia **projeto → épic
 2. **Nenhuma chave de LLM em produção.** O app publicado não chama Claude nem Gemini. Resumos de ritos vêm do `seed/`.
 3. **Nenhum dado real** de empresa, cliente, pessoa ou documento. Nomes, projetos e transcrições são inventados.
 4. Variáveis `NEXT_PUBLIC_*` só para valores públicos (URL e anon key do Supabase). A `service_role` nunca vai para o navegador nem para a Vercel.
-5. Permissões são aplicadas no banco (RLS), não só na interface.
+5. **RLS sempre ligado** em toda tabela. Na demo, as políticas são abertas (ler, criar e alterar; **nunca excluir**) e os papéis (Dono, Líder, Participante) valem **só na interface**. Sem usuários reais e sem `service_role`. Em produção, as permissões seriam por papel no banco (ver PRD, seção 2).
 6. Não deixar arquivos grandes ou binários desnecessários no repositório.
 
 ## Domínio (resumo; detalhes no PRD)

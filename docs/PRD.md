@@ -32,7 +32,8 @@ Ver seção 9.
 Regras:
 - Cada item pertence a **uma área** e o líder dessa área responde por ele.
 - Um épico pode reunir funcionalidades de áreas diferentes. O líder de uma área cria funcionalidades, histórias e tarefas da sua área sob qualquer épico do projeto.
-- Toda ação é validada por papel no banco (políticas RLS do Supabase), não só na interface.
+- **Na demo (v1),** os papéis são aplicados **na interface**: ela mostra ou esconde botões e bloqueia ações conforme o perfil ativo. O banco tem **RLS ligado**, com políticas **abertas**: qualquer visitante pode ler, criar e alterar, e **ninguém pode excluir**. Não há usuários reais nem `service_role`.
+- **Em produção (apenas documentado):** cada pessoa teria uma conta no Supabase Auth, e políticas RLS por papel validariam cada ação no banco, como na tabela acima.
 
 ## 3. Modelo de escopo
 
@@ -158,7 +159,7 @@ O **Projeto Aurora** deve ser pequeno, mas completo o bastante para exercitar tu
 
 ## 8. Requisitos não funcionais
 
-- **Segurança:** nenhuma chave de API no repositório; **nenhuma chave de LLM em produção**; permissões aplicadas por RLS; apenas dados fictícios.
+- **Segurança:** nenhuma chave de API no repositório; **nenhuma chave de LLM em produção**; RLS ligado em toda tabela, com políticas abertas só na demo e sem exclusão; nenhuma `service_role` no projeto; apenas dados fictícios.
 - **Custo zero:** Vercel Hobby (uso não comercial) e Supabase Free. O Supabase Free pausa projetos com pouca atividade, então a demo deve ser aberta e conferida antes de compartilhar o link.
 - **Idioma:** interface em português do Brasil; código e identificadores em inglês.
 - **Responsividade:** desktop primeiro, utilizável em tablet.
@@ -187,6 +188,7 @@ Notificações, comentários em tempo real, integração com Jira ou Figma, grav
 1. **Escrita pública na demo (decidido):** os visitantes **podem editar** os dados nos perfis de demonstração, e tudo é gravado de verdade no Supabase, para demonstrar a integração funcionando. **Não haverá botão de restaurar** na v1.
 2. **Tema do Projeto Aurora (decidido):** um **app de delivery de comida** (pedidos, restaurantes, entregas, login e recuperação de acesso). Todos os dados do seed seguem esse tema, com nomes inventados.
 3. **Idioma do README (decidido):** **português**, com um **resumo em inglês** no topo.
+4. **Permissões na demo (decidido):** o Hub é um protótipo de portfólio, sem cadastro de usuários. Os 4 perfis são por cookie e os papéis valem só na interface. O Supabase tem RLS ligado com políticas abertas (ler, criar e alterar; **sem exclusão**), para persistir as alterações e demonstrar a integração. Não se usa `service_role` nem usuários reais. **Risco aceito:** quem chamar a API do Supabase diretamente com a chave pública pode alterar dados, mesmo sendo "Participante". Os dados são fictícios. Só a autora limpa dados indesejados, pelo painel do Supabase.
 
 ## 12. Próximos documentos
 

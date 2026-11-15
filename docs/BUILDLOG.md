@@ -84,8 +84,8 @@ Diário de decisões e construção. Em cada sessão: o que foi feito, o que foi
 ### Problema encontrado
 - Colar a migração pelo `pbcopy` corrompeu os acentos (`conexão` virou `conex√£o`): o terminal leu UTF-8 como MacRoman. Corrigido com um `UPDATE` e com texto sem acento na migração. Ao copiar para a área de transferência, usar `LC_ALL=en_US.UTF-8 pbcopy`.
 
-### Pendências (parte 2, depende da `service_role`)
-- 4 usuários de demonstração, login real no avatar no lugar do cookie, tabelas e políticas do PRD seção 2, testes de RLS com dados de teste e limpeza.
+### Pendências
+- ~~Parte 2 com `service_role` e usuários reais~~: **substituída** pela decisão de 2026-11-15 (entrada "H0.2.2: RLS aberto na demo", abaixo).
 
 ## 2026-11-15 — Resumo da sessão
 
@@ -124,6 +124,34 @@ Diário de decisões e construção. Em cada sessão: o que foi feito, o que foi
 - O clique no avatar (Server Action) não foi testado num navegador pela IA. Só a leitura do cookie foi conferida no servidor. O critério correspondente da H0.2.1 continua desmarcado no BACKLOG até a autora conferir.
 
 ### Pendências
-- **H0.2.2, parte 2** (depende da `service_role`): 4 usuários reais no Supabase Auth, login real no avatar no lugar do cookie, tabelas e políticas da seção 2 do PRD, testes de RLS com dados de teste e limpeza.
+- ~~H0.2.2, parte 2 (`service_role`, usuários reais)~~: substituída pela decisão abaixo (RLS aberto na demo, sem usuários reais).
 - Conferir o clique no avatar no navegador.
 - `npm audit` mostra 8 avisos moderados, só em ferramentas de lint; não corrigidos de propósito.
+
+## 2026-11-15 — H0.2.2: RLS aberto na demo (decisão revista)
+
+### Decisão da autora
+O Hub é um protótipo de portfólio, **sem cadastro de usuários**. O objetivo é persistir as alterações no Supabase e demonstrar a integração. Por isso:
+- **Sem `service_role` e sem usuários reais.** Os 4 perfis continuam por cookie.
+- **Papéis (Dono, Líder, Participante) valem só na interface.**
+- **RLS ligado** em toda tabela, com **políticas abertas**: ler, criar e alterar. **Exclusão nunca** (sem `GRANT` nem política de `DELETE`).
+- Isso substitui a parte 2 antiga da H0.2.2 (usuários reais e políticas por papel).
+
+### Risco aceito
+Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados mesmo sendo "Participante". Os dados são fictícios. Só a autora limpa dados indesejados, pelo painel do Supabase. Em produção, seriam usuários reais e políticas por papel (documentado no PRD, seção 2).
+
+### O que mudou nos documentos
+- **CLAUDE.md:** regra 5 reescrita (RLS sempre ligado, políticas abertas na demo, sem exclusão, papéis só na interface); stack sem Auth.
+- **PRD:** seção 2 (demo vs. produção), seção 8 (segurança) e nova decisão 4 na seção 11.
+- **BACKLOG:** H0.2.2 reescrita; H0.2.1, H1.2.3, H1.3.2 e H4.2.2 ajustadas.
+
+### Migração e teste
+- Nova migração separada, `supabase/migrations/20261115140000_temp_items_open_demo_policies.sql` (a migração temporária já aplicada não foi editada). Só ASCII, por causa do problema do `pbcopy` com acentos.
+- Teste de integração ajustado: confirma que uma alteração persiste (e restaura o valor) e que a exclusão é recusada. Não cria linhas, porque sem exclusão o teste não teria como limpar.
+
+### A fazer depois (lembrete)
+- **A tabela `items` é temporária e deve ser removida** (com as duas migrações dela, por uma migração nova de `drop table`) quando o esquema real da E1 entrar.
+
+### Gerado pela IA vs. decidido pela autora
+- **Autora:** a decisão de não usar `service_role` nem usuários reais, políticas abertas sem exclusão, exigência de migração em arquivo separado e só ASCII.
+- **IA:** textos dos documentos, SQL, ajuste do teste.
