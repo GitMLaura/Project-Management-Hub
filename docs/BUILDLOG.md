@@ -62,3 +62,27 @@ Diário de decisões e construção. Em cada sessão: o que foi feito, o que foi
 
 - Aplicado o preset `beqFpGnC` da autora (`npx shadcn init --preset beqFpGnC`): estilo `base-rhea`, base `zinc`, ícones Hugeicons, fonte Roboto, menus translúcidos. Componentes `button` e `dropdown-menu` reinstalados com o novo estilo.
 - Decisão: autora (preset); IA aplicou e conferiu lint, tipos, testes e build.
+
+## 2026-11-15 — H0.2.2 (parte 1): conexão com o Supabase
+
+### O que foi feito
+- Migração temporária `supabase/migrations/20261115120000_temp_items_connection_check.sql`: tabela `items` mínima, RLS ligado, `GRANT SELECT` para `anon` e `authenticated`, uma política de leitura e uma linha fictícia. Marcada como temporária: a E1 troca pelo esquema real.
+- `@supabase/supabase-js` instalado.
+- Teste de integração `src/lib/supabase/connection.integration.test.ts`: lê a linha com a anon key e confirma que a escrita é recusada. Fica pulado se as variáveis do Supabase não existirem.
+- `vitest.config.mts` carrega só variáveis `NEXT_PUBLIC_*` nos testes; a `service_role` nunca é carregada.
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Testes de RLS no projeto Supabase hospedado; regras de negócio não dependem do banco | Autora |
+| Tabela `items` temporária, via migração, com RLS e uma política | Autora |
+| `service_role` só entra quando criarmos os usuários reais; a autora cola no `.env.local` | Autora |
+| Aplicar a migração pelo SQL Editor | Autora |
+| `GRANT SELECT` explícito, porque "Automatically expose new tables" está desmarcado | Autora (pediu); IA incluiu |
+| Textos das migrações só em ASCII | IA |
+
+### Problema encontrado
+- Colar a migração pelo `pbcopy` corrompeu os acentos (`conexão` virou `conex√£o`): o terminal leu UTF-8 como MacRoman. Corrigido com um `UPDATE` e com texto sem acento na migração. Ao copiar para a área de transferência, usar `LC_ALL=en_US.UTF-8 pbcopy`.
+
+### Pendências (parte 2, depende da `service_role`)
+- 4 usuários de demonstração, login real no avatar no lugar do cookie, tabelas e políticas do PRD seção 2, testes de RLS com dados de teste e limpeza.
