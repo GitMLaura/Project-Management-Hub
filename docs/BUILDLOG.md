@@ -56,7 +56,7 @@ Diário de decisões e construção. Em cada sessão: o que foi feito, o que foi
 
 ### Pendências
 - O cookie é só "faz de conta" de interface: não protege nada. A segurança real vem na H0.2.2 (RLS).
-- Conferir no navegador o clique no avatar (a troca usa Server Action).
+- ~~Conferir no navegador o clique no avatar~~: conferido pela autora em 2026-11-15, funcionou.
 
 ## 2026-11-15 — Preset do shadcn/ui
 
