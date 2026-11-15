@@ -57,3 +57,8 @@ Diário de decisões e construção. Em cada sessão: o que foi feito, o que foi
 ### Pendências
 - O cookie é só "faz de conta" de interface: não protege nada. A segurança real vem na H0.2.2 (RLS).
 - Conferir no navegador o clique no avatar (a troca usa Server Action).
+
+## 2026-11-15 — Preset do shadcn/ui
+
+- Aplicado o preset `beqFpGnC` da autora (`npx shadcn init --preset beqFpGnC`): estilo `base-rhea`, base `zinc`, ícones Hugeicons, fonte Roboto, menus translúcidos. Componentes `button` e `dropdown-menu` reinstalados com o novo estilo.
+- Decisão: autora (preset); IA aplicou e conferiu lint, tipos, testes e build.
