@@ -121,11 +121,11 @@ Diário de decisões e construção. Em cada sessão: o que foi feito, o que foi
 - Decisões técnicas menores tomadas pela IA: `@types/node` 22, `next typegen` antes do `tsc`, cabeçalho dentro de `<Suspense>`, textos de migração só em ASCII.
 
 ### O que a IA não verificou
-- O clique no avatar (Server Action) não foi testado num navegador pela IA. Só a leitura do cookie foi conferida no servidor. O critério correspondente da H0.2.1 continua desmarcado no BACKLOG até a autora conferir.
+- O clique no avatar (Server Action) não foi testado num navegador pela IA. A autora conferiu depois e a troca de perfil funcionou.
 
 ### Pendências
 - ~~H0.2.2, parte 2 (`service_role`, usuários reais)~~: substituída pela decisão abaixo (RLS aberto na demo, sem usuários reais).
-- Conferir o clique no avatar no navegador.
+- ~~Conferir o clique no avatar no navegador~~: conferido pela autora, funcionou.
 - `npm audit` mostra 8 avisos moderados, só em ferramentas de lint; não corrigidos de propósito.
 
 ## 2026-11-15 — H0.2.2: RLS aberto na demo (decisão revista)

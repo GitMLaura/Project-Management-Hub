@@ -20,7 +20,7 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
 - **H0.2.1** Como visitante, quero trocar de perfil (Dono, Líder de Design, Líder de Dev, Participante) clicando no meu avatar, para ver como cada papel enxerga o Hub, sem cadastro.
   - [x] O Hub abre direto na página inicial, com o Dono como perfil padrão (sem tela de login)
   - [x] O perfil ativo aparece no topo (avatar com iniciais, nome e papel em texto)
-  - [ ] Clicar no avatar abre a lista dos quatro perfis e trocar de perfil não sai do Hub
+  - [x] Clicar no avatar abre a lista dos quatro perfis e trocar de perfil não sai do Hub
 - **H0.2.2** Como autora, quero o banco com RLS ligado e políticas abertas para a demo, para persistir as alterações dos visitantes sem usar `service_role` nem usuários reais.
   - [x] Conexão com o Supabase funcionando (leitura com a anon key)
   - [x] RLS ligado em todas as tabelas, com políticas que permitem ler, criar e alterar
