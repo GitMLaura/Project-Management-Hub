@@ -154,7 +154,7 @@ O **Projeto Aurora** deve ser pequeno, mas completo o bastante para exercitar tu
 - Regras de negócio com IDs `RN-###` ligadas às funcionalidades.
 - 5 transcrições de ritos fictícias, com resumos pré-gerados por área.
 
-**Perfis de demonstração:** tela "Entrar como" (Dono, Líder de Design, Líder de Dev, Participante), sem cadastro, para visitantes testarem as permissões.
+**Perfis de demonstração:** o app abre direto na página inicial, já com um perfil ativo (Dono). Clicando no avatar no topo, o visitante troca entre Dono, Líder de Design, Líder de Dev e Participante, sem cadastro e sem tela de login, para testar as permissões.
 
 ## 8. Requisitos não funcionais
 

@@ -28,4 +28,32 @@ Diário de decisões e construção. Em cada sessão: o que foi feito, o que foi
 - **Autora:** escolha da stack, do gerenciador de pacotes e do Vitest, e as decisões de produto do PRD.
 
 ### Pendências
-- Nenhuma para a H0.1.1. Próximo: H0.2.1 (tela "Entrar como"), que pede plano próprio.
+- Nenhuma para a H0.1.1.
+
+## 2026-11-15 — H0.2.1 Troca de perfil de demonstração
+
+### O que foi feito
+- Perfis de demonstração em `src/lib/demo-profiles.ts` (4 perfis, lógica pura com 10 testes).
+- Perfil ativo guardado num cookie (`demo_profile`), lido no servidor; valor ausente ou inválido cai no perfil Dono.
+- Server Action `switchProfile` valida o id no servidor antes de gravar o cookie.
+- Cabeçalho com avatar (iniciais) e nome/papel; clicar abre o menu "Ver o app como" com os 4 perfis.
+- Estados: carregando (esqueleto do cabeçalho e `loading.tsx`), erro (`error.tsx` e mensagem ao falhar a troca) e sucesso.
+- PRD (seção 7) e BACKLOG (H0.2.1) atualizados: não existe tela "Entrar como".
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Sem tela de login: o app abre direto na página inicial e o avatar troca de perfil | Autora |
+| Perfil padrão: Dono do projeto | Autora |
+| Avatar com iniciais, sem fotos | Autora |
+| Cookie agora; login real do Supabase na H0.2.2 | Autora |
+| Nomes fictícios: Helena Duarte (Dono), Rafael Moura (Design), Camila Tavares (Dev), Bruno Siqueira (Participante, QA) | IA propôs; autora pode trocar |
+| O cabeçalho fica dentro de `<Suspense>`, porque este Next exige isso para ler cookies (Cache Components) | IA |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** código, testes, textos da interface, nomes fictícios.
+- **Autora:** o fluxo (sem login, troca pelo avatar), perfil padrão, avatar com iniciais.
+
+### Pendências
+- O cookie é só "faz de conta" de interface: não protege nada. A segurança real vem na H0.2.2 (RLS).
+- Conferir no navegador o clique no avatar (a troca usa Server Action).

@@ -17,10 +17,10 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
   - [ ] `.env.example` sem valores; nenhum segredo no repositório
 
 ### F0.2 Acesso por perfis de demonstração
-- **H0.2.1** Como visitante, quero entrar escolhendo um perfil (Dono, Líder de Design, Líder de Dev, Participante), para testar as permissões sem cadastro.
-  - [ ] Tela "Entrar como" lista os quatro perfis
-  - [ ] O perfil ativo aparece na interface
-  - [ ] Dá para trocar de perfil sem sair do app
+- **H0.2.1** Como visitante, quero trocar de perfil (Dono, Líder de Design, Líder de Dev, Participante) clicando no meu avatar, para testar as permissões sem cadastro.
+  - [x] O app abre direto na página inicial, com o Dono como perfil padrão (sem tela de login)
+  - [x] O perfil ativo aparece no topo (avatar com iniciais, nome e papel em texto)
+  - [ ] Clicar no avatar abre a lista dos quatro perfis e trocar de perfil não sai do app
 - **H0.2.2** Como autora, quero permissões aplicadas no banco (RLS), para que a segurança não dependa só da interface.
   - [ ] Cada papel só executa as ações previstas na seção 2 do PRD
   - [ ] Teste confirma que uma ação proibida é recusada pelo banco
