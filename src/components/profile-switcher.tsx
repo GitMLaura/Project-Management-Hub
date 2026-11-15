@@ -70,7 +70,7 @@ export function ProfileSwitcher({ profiles, activeId }: ProfileSwitcherProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-64">
           <DropdownMenuGroup>
-            <DropdownMenuLabel>Ver o app como</DropdownMenuLabel>
+            <DropdownMenuLabel>Ver o Hub como</DropdownMenuLabel>
             {profiles.map((profile) => (
               <DropdownMenuItem
                 key={profile.id}

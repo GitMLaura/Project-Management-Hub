@@ -24,7 +24,7 @@ Diário de decisões e construção. Em cada sessão: o que foi feito, o que foi
 | Manter o `AGENTS.md` gerado pelo Next.js (orienta agentes de IA a ler a documentação da versão instalada) | IA |
 
 ### Gerado pela IA vs. decidido pela autora
-- **IA:** estrutura inicial do app, configuração do Tailwind, shadcn/ui e Vitest, scripts, `.env.example`, texto da página provisória.
+- **IA:** estrutura inicial do Hub, configuração do Tailwind, shadcn/ui e Vitest, scripts, `.env.example`, texto da página provisória.
 - **Autora:** escolha da stack, do gerenciador de pacotes e do Vitest, e as decisões de produto do PRD.
 
 ### Pendências
@@ -36,14 +36,14 @@ Diário de decisões e construção. Em cada sessão: o que foi feito, o que foi
 - Perfis de demonstração em `src/lib/demo-profiles.ts` (4 perfis, lógica pura com 10 testes).
 - Perfil ativo guardado num cookie (`demo_profile`), lido no servidor; valor ausente ou inválido cai no perfil Dono.
 - Server Action `switchProfile` valida o id no servidor antes de gravar o cookie.
-- Cabeçalho com avatar (iniciais) e nome/papel; clicar abre o menu "Ver o app como" com os 4 perfis.
+- Cabeçalho com avatar (iniciais) e nome/papel; clicar abre o menu "Ver o Hub como" com os 4 perfis.
 - Estados: carregando (esqueleto do cabeçalho e `loading.tsx`), erro (`error.tsx` e mensagem ao falhar a troca) e sucesso.
 - PRD (seção 7) e BACKLOG (H0.2.1) atualizados: não existe tela "Entrar como".
 
 ### Decisões
 | Decisão | Quem decidiu |
 |---|---|
-| Sem tela de login: o app abre direto na página inicial e o avatar troca de perfil | Autora |
+| Sem tela de login: o Hub abre direto na página inicial e o avatar troca de perfil | Autora |
 | Perfil padrão: Dono do projeto | Autora |
 | Avatar com iniciais, sem fotos | Autora |
 | Cookie agora; login real do Supabase na H0.2.2 | Autora |
