@@ -9,9 +9,12 @@ export type DemoProfileId =
   | "dev-lead"
   | "participant";
 
+export type ProfileRole = "owner" | "area-lead" | "participant";
+
 export type DemoProfile = {
   id: DemoProfileId;
   name: string;
+  role: ProfileRole;
   roleLabel: string;
   area: string;
 };
@@ -19,24 +22,28 @@ export type DemoProfile = {
 export const DEMO_PROFILES: readonly DemoProfile[] = [
   {
     id: "owner",
+    role: "owner",
     name: "Helena Duarte",
     roleLabel: "Dono do projeto",
     area: "Produto/Negócio",
   },
   {
     id: "design-lead",
+    role: "area-lead",
     name: "Rafael Moura",
     roleLabel: "Líder de Design",
     area: "Design",
   },
   {
     id: "dev-lead",
+    role: "area-lead",
     name: "Camila Tavares",
     roleLabel: "Líder de Dev",
     area: "Desenvolvimento",
   },
   {
     id: "participant",
+    role: "participant",
     name: "Bruno Siqueira",
     roleLabel: "Participante",
     area: "QA",
@@ -53,6 +60,11 @@ export function isDemoProfileId(value: unknown): value is DemoProfileId {
 export function resolveProfile(cookieValue: string | undefined): DemoProfile {
   const id = isDemoProfileId(cookieValue) ? cookieValue : DEFAULT_PROFILE_ID;
   return DEMO_PROFILES.find((profile) => profile.id === id) ?? DEMO_PROFILES[0];
+}
+
+// Roles apply only in the interface (PRD decision 4): only the owner creates projects.
+export function canCreateProject(profile: DemoProfile): boolean {
+  return profile.role === "owner";
 }
 
 export function getInitials(name: string): string {

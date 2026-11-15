@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  canCreateProject,
   DEFAULT_PROFILE_ID,
   DEMO_PROFILES,
   getInitials,
@@ -59,5 +60,12 @@ describe("getInitials", () => {
 
   it("returns empty for an empty name", () => {
     expect(getInitials("   ")).toBe("");
+  });
+});
+
+describe("canCreateProject", () => {
+  it("allows only the owner", () => {
+    const allowed = DEMO_PROFILES.filter(canCreateProject).map((p) => p.id);
+    expect(allowed).toEqual(["owner"]);
   });
 });

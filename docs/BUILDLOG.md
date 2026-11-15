@@ -155,3 +155,30 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 ### Gerado pela IA vs. decidido pela autora
 - **Autora:** a decisão de não usar `service_role` nem usuários reais, políticas abertas sem exclusão, exigência de migração em arquivo separado e só ASCII.
 - **IA:** textos dos documentos, SQL, ajuste do teste.
+
+## 2026-11-15 — H1.1.1 Cadastro do projeto
+
+### O que foi feito
+- Migração `20261115160000_projects_areas_participants.sql`: tabelas `projects`, `areas` e `participants`, RLS ligado, políticas abertas (ler, criar e alterar), sem exclusão, índices que garantem 1 Dono por projeto e 1 líder por área, e a função `create_project`, que grava tudo numa transação.
+- Regras puras de validação em `src/lib/project-validation.ts` (14 testes): campos obrigatórios, datas, áreas e participantes sem nome repetido, exatamente 1 Dono, no máximo 1 líder por área.
+- Formulário `/projects/new` (só o perfil Dono cria), página `/projects/[id]` e lista de projetos na página inicial, com estados de carregando, vazio, erro e sucesso.
+- Perfis ganharam o campo `role`; `canCreateProject` libera só o Dono (regra na interface, e conferida de novo na Server Action).
+- Teste de integração: tabelas legíveis, `create_project` falha com área inexistente sem gravar nada (rollback) e `DELETE` recusado nas três tabelas.
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Seguir direto, sem propor plano antes (a autora pediu) | Autora |
+| Criar projeto, áreas e participantes numa função única do banco (transação), porque sem exclusão um projeto pela metade não teria como ser limpo | IA |
+| "Remover" áreas e participantes vale no formulário, antes de salvar; depois de salvo, só arquivar (H1.2.3) | IA, por causa da regra "sem exclusão" |
+| Data de início do projeto adicionada (o PRD usa o início do projeto no cálculo de saúde) | IA |
+| Um líder por área é opcional; exatamente um Dono é obrigatório | IA (PRD diz 1 por área e 1 Dono) |
+| Rotas em inglês (`/projects`), textos em português | IA |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** todo o código, SQL, testes e textos.
+- **Autora:** aplicar a migração no SQL Editor; testar o formulário no navegador.
+
+### Pendências
+- Autora: criar um projeto pela tela e conferir adicionar/remover linhas. Sem exclusão no banco, um projeto de teste só sai pelo painel do Supabase.
+- Lembrete: remover a tabela `items` temporária quando o esquema real da H1.2.1 entrar.
