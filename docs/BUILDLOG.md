@@ -180,5 +180,5 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 - **Autora:** aplicar a migração no SQL Editor; testar o formulário no navegador.
 
 ### Pendências
-- Autora: criar um projeto pela tela e conferir adicionar/remover linhas. Sem exclusão no banco, um projeto de teste só sai pelo painel do Supabase.
+- ~~Autora: testar o formulário no navegador~~: conferido, funcionou. Sem exclusão no banco, projeto de teste só sai pelo painel do Supabase.
 - Lembrete: remover a tabela `items` temporária quando o esquema real da H1.2.1 entrar.

@@ -37,8 +37,8 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
 ### F1.1 Cadastro do projeto
 - **H1.1.1** Como Dono do projeto, quero criar um projeto com nome, objetivo, participantes, áreas e prazo, para começar a organizar o trabalho.
   - [x] Campos obrigatórios validados (regras puras em `src/lib/project-validation.ts`, com testes)
-  - [ ] Participantes e áreas podem ser adicionados e removidos (no formulário, antes de salvar; depois de salvo, só arquivar, na H1.2.3)
-  - [ ] Posso definir o líder de cada área (1 por área)
+  - [x] Participantes e áreas podem ser adicionados e removidos (no formulário, antes de salvar; depois de salvo, só arquivar, na H1.2.3)
+  - [x] Posso definir o líder de cada área (1 por área)
 
 ### F1.2 Hierarquia de escopo
 - **H1.2.1** Como Líder de área, quero criar épicos, funcionalidades, histórias e tarefas da minha área, para delimitar o escopo.
