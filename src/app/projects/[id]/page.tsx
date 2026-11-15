@@ -3,15 +3,24 @@ import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScopeTree } from "@/components/scope-tree";
+import { getActiveProfile } from "@/lib/active-profile";
 import { formatDate } from "@/lib/format";
+import { canManageScope } from "@/lib/item-rules";
+import { buildItemTree } from "@/lib/item-tree";
+import { listItems } from "@/lib/supabase/items";
 import { getProject } from "@/lib/supabase/projects";
 
 export default async function ProjectPage(props: PageProps<"/projects/[id]">) {
   const { id } = await props.params;
 
+  const profile = await getActiveProfile();
+
   let project;
+  let items;
   try {
     project = await getProject(id);
+    items = project ? await listItems(id) : [];
   } catch {
     return (
       <main className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-6">
@@ -28,6 +37,15 @@ export default async function ProjectPage(props: PageProps<"/projects/[id]">) {
     );
   }
   if (!project) notFound();
+
+  const areaNames = Object.fromEntries(project.areas.map((area) => [area.id, area.name]));
+  const assigneeNames = Object.fromEntries(
+    project.areas.flatMap((area) =>
+      area.participants.map((participant) => [participant.id, participant.name]),
+    ),
+  );
+  const canManage = canManageScope(profile);
+  const tree = buildItemTree(items);
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-6">
@@ -65,6 +83,37 @@ export default async function ProjectPage(props: PageProps<"/projects/[id]">) {
             </CardContent>
           </Card>
         ))}
+      </section>
+
+      <section className="flex flex-col gap-3" aria-label="Escopo">
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="text-lg font-semibold">Escopo</h2>
+          {canManage && (
+            <Link href={`/projects/${id}/items/new`} className={buttonVariants()}>
+              Adicionar épico
+            </Link>
+          )}
+        </div>
+        {tree.length === 0 ? (
+          <Card>
+            <CardContent className="flex flex-col gap-1 pt-4">
+              <p className="font-medium">Este projeto ainda não tem escopo.</p>
+              <p className="text-sm text-muted-foreground">
+                {canManage
+                  ? "Comece adicionando um épico."
+                  : "O Dono ou um Líder de área pode adicionar o primeiro épico. Troque de perfil pelo avatar."}
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <ScopeTree
+            projectId={id}
+            nodes={tree}
+            areaNames={areaNames}
+            assigneeNames={assigneeNames}
+            canManage={canManage}
+          />
+        )}
       </section>
 
       <div>

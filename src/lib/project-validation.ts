@@ -31,7 +31,7 @@ export type ValidationResult =
   | { ok: false; errors: FieldError[] };
 
 // Lowercase, no accents, collapsed spaces: "Design " and "design" are the same name.
-function normalizeName(value: string): string {
+export function normalizeName(value: string): string {
   return value
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")

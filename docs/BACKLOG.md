@@ -42,7 +42,7 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
 
 ### F1.2 Hierarquia de escopo
 - **H1.2.1** Como Líder de área, quero criar épicos, funcionalidades, histórias e tarefas da minha área, para delimitar o escopo.
-  - [ ] Todo item exige pai, área, responsável e prazo (E1)
+  - [x] Todo item exige pai, área, responsável e prazo (E1) (regra no banco e na validação)
   - [ ] Histórias aceitam o formato "Como… quero… para…" e critérios de aceite
   - [ ] Status disponíveis: a fazer, em andamento, bloqueado, concluído
   - [ ] Item pode ser marcado como crítico

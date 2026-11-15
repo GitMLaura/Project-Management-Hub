@@ -182,3 +182,28 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 ### Pendências
 - ~~Autora: testar o formulário no navegador~~: conferido, funcionou. Sem exclusão no banco, projeto de teste só sai pelo painel do Supabase.
 - Lembrete: remover a tabela `items` temporária quando o esquema real da H1.2.1 entrar.
+
+## 2026-11-15 — H1.2.1 Hierarquia de escopo
+
+### O que foi feito
+- Migração `20261115180000_items_scope_hierarchy.sql`: **removeu a tabela `items` temporária** (como planejado) e criou a `items` real (épico, funcionalidade, história, tarefa) com área, responsável, início, prazo, status, crítico, campos da história e critérios de aceite.
+- Regras de integridade no banco (gatilho e restrições): pai do tipo certo (E1), área e responsável do mesmo projeto, início obrigatório exceto em tarefas, história com os 3 campos. RLS aberto, sem exclusão.
+- Regras puras em `src/lib/item-rules.ts` (validação, hierarquia, permissões de interface) e `src/lib/item-tree.ts` (árvore), com 18 testes.
+- Página do projeto com seção **Escopo** em árvore, formulário `/projects/[id]/items/new` e botões "Adicionar" em cada nível.
+- Teste de integração novo da tabela real (o antigo, da tabela temporária, foi removido).
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Remover a `items` temporária nesta migração, como previsto no BUILDLOG | Autora (decisão anterior) |
+| Dono cria em qualquer área; Líder só na própria área (comparando o nome da área do perfil com as áreas do projeto); Participante só consulta. Regra na interface, conferida de novo na Server Action | IA, a partir do PRD seção 2 |
+| Integridade (pai, área, responsável) no banco, porque o RLS está aberto e não protege por papel | IA |
+| Prazo do filho ≤ prazo do pai **não** entra aqui: fica na H1.2.2 | IA, seguindo o BACKLOG |
+| Sem arquivamento nesta história (H1.2.3) | IA |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** SQL, código, testes, textos. **Autora:** aplicar a migração; testar a criação de itens no navegador.
+
+### Pendências
+- Autora: no projeto "Teste", criar épico, funcionalidade, história (com critérios) e tarefa; testar status, crítico e a troca de perfil (Líder de Design só cria em Design).
+- Observação: os perfis têm áreas fixas ("Design", "Desenvolvimento"). Um Líder só cria se o projeto tiver uma área com o mesmo nome.
