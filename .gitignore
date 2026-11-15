@@ -1,0 +1,20 @@
+# Segredos (nunca enviar ao GitHub)
+.env
+.env.*
+!.env.example
+
+# Dependências e builds
+node_modules/
+.next/
+out/
+dist/
+coverage/
+
+# Sistema e editor
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
