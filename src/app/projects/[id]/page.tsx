@@ -3,14 +3,12 @@ import { notFound } from "next/navigation";
 import { Plus } from "lucide-react";
 import { PageMessage } from "@/components/page-message";
 import { StatusHero, StatusMetrics } from "@/components/status-hero";
-import { DeadlineCalendar, EpicsTable, TaskBoard } from "@/components/status-panels";
-import { buildCalendarMonth, parseMonth } from "@/lib/calendar";
+import { EpicsTable } from "@/components/status-panels";
 import { AttentionList, StatusCard } from "@/components/status-cards";
-import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { getActiveProfile } from "@/lib/active-profile";
 import { buildHealthPanel } from "@/lib/health-panel";
-import { canManageScope, ITEM_STATUSES } from "@/lib/item-rules";
+import { canManageScope } from "@/lib/item-rules";
 import { buildItemTree } from "@/lib/item-tree";
 import { buildStatusView } from "@/lib/status-view";
 import { listItems } from "@/lib/supabase/items";
@@ -18,7 +16,6 @@ import { getProject } from "@/lib/supabase/projects";
 
 export default async function ProjectStatusPage(props: PageProps<"/projects/[id]">) {
   const { id } = await props.params;
-  const rawMonth = (await props.searchParams).mes;
   const profile = await getActiveProfile();
 
   let project;
@@ -60,15 +57,6 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
     projectStart: project.startDate,
     projectDeadline: project.deadline,
     today,
-  });
-  const { year, month: monthNumber } = parseMonth(Array.isArray(rawMonth) ? rawMonth[0] : rawMonth, today);
-  const calendar = buildCalendarMonth({
-    year,
-    month: monthNumber,
-    today,
-    deadlines: ITEM_STATUSES.flatMap((status) =>
-      view.board[status].map((task) => ({ deadline: task.deadline, done: status === "concluido" })),
-    ),
   });
   const epicTitles = Object.fromEntries(tree.map((epic) => [epic.id, epic.title]));
   const activeEpics = tree.filter((epic) => epic.status !== "concluido");
@@ -120,22 +108,29 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
             )}
           </section>
 
-          <section className="flex flex-col gap-4" aria-labelledby="board-title">
-            <h2 id="board-title" className="text-xl font-semibold">
-              Quadro de tarefas
-            </h2>
-            <TaskBoard projectId={id} board={view.board} areaNames={areaNames} assigneeNames={assigneeNames} />
-          </section>
+          {project.areas.length > 0 && (
+            <section className="flex flex-col gap-4" aria-labelledby="areas-title">
+              <h2 id="areas-title" className="text-xl font-semibold">
+                Saúde por área
+              </h2>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {project.areas.map((area) => (
+                  <StatusCard
+                    key={area.id}
+                    name={area.name}
+                    counts={view.areaCounts[area.id]}
+                    contextLabel="Atuando em"
+                    contextValues={view.areaEpics[area.id].map((epicId) => epicTitles[epicId])}
+                    contextTotal={tree.length}
+                    contextAllLabel="Todos os épicos"
+                  />
+                ))}
+              </div>
+            </section>
+          )}
         </div>
 
         <div className="flex flex-col gap-10">
-          <section className="flex flex-col gap-4" aria-labelledby="calendar-title">
-            <h2 id="calendar-title" className="text-xl font-semibold">
-              Calendário de prazos
-            </h2>
-            <DeadlineCalendar projectId={id} month={calendar} />
-          </section>
-
           <section className="flex flex-col gap-4" aria-labelledby="attention-title">
             <h2 id="attention-title" className="text-xl font-semibold">
               Precisa de atenção
@@ -155,51 +150,6 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
           </section>
         </div>
       </div>
-
-      {project.areas.length > 0 && (
-        <section className="flex flex-col gap-4" aria-labelledby="areas-title">
-          <h2 id="areas-title" className="text-xl font-semibold">
-            Saúde por área
-          </h2>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {project.areas.map((area) => (
-              <StatusCard
-                key={area.id}
-                name={area.name}
-                counts={view.areaCounts[area.id]}
-                contextLabel="Atuando em"
-                contextValues={view.areaEpics[area.id].map((epicId) => epicTitles[epicId])}
-                contextTotal={tree.length}
-                contextAllLabel="Todos os épicos"
-              />
-            ))}
-          </div>
-        </section>
-      )}
-
-      <section className="flex flex-col gap-4" aria-labelledby="people-title">
-        <h2 id="people-title" className="text-xl font-semibold">
-          Áreas e participantes
-        </h2>
-        <dl className="grid gap-x-8 gap-y-6 sm:grid-cols-2 xl:grid-cols-4">
-          {project.areas.map((area) => (
-            <div key={area.id} className="flex flex-col gap-2 border-t pt-4">
-              <dt className="font-heading font-semibold">{area.name}</dt>
-              {area.participants.length === 0 ? (
-                <dd className="text-sm text-muted-foreground">Nenhum participante nesta área.</dd>
-              ) : (
-                area.participants.map((participant) => (
-                  <dd key={participant.id} className="flex flex-wrap items-center gap-2 text-sm">
-                    <span>{participant.name}</span>
-                    {participant.isOwner && <Badge>Dono do projeto</Badge>}
-                    {participant.isAreaLeader && <Badge variant="secondary">Líder da área</Badge>}
-                  </dd>
-                ))
-              )}
-            </div>
-          ))}
-        </dl>
-      </section>
     </main>
   );
 }

@@ -616,3 +616,9 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 - Lógica pura nova e testada: `src/lib/calendar.ts` e o agrupamento do quadro em `src/lib/status-view.ts`.
 - Mantidos: cartão de saúde do projeto, saúde por área e áreas e participantes.
 - Decidido pela autora: layout de referência. Gerado pela IA: componentes e código.
+
+## 2026-11-16 — Status sem quadro, calendário e participantes (UI-5)
+
+- A autora pediu: "Saúde por área" no lugar do quadro de tarefas, sem o calendário de prazos e sem "Áreas e participantes" no fim da página.
+- A página Status agora tem: cabeçalho com métricas, cartão de saúde, e duas colunas (épicos em andamento e saúde por área à esquerda; "Precisa de atenção" à direita). O código do quadro e do calendário (`src/lib/calendar.ts`) foi removido em vez de ficar sem uso.
+- Decidido pela autora: o que entra e sai da página. Gerado pela IA: código.

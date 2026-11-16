@@ -73,11 +73,4 @@ describe("buildStatusView", () => {
     expect(view.attention[0].daysOverdue).toBe(15);
     expect(view.attention[1].daysOverdue).toBe(0);
   });
-
-  it("groups tasks by status for the board, soonest deadline first", () => {
-    expect(view.board.concluido.map((task) => task.id)).toEqual(["t1"]);
-    expect(view.board.bloqueado.map((task) => task.id)).toEqual(["t3"]);
-    expect(view.board.a_fazer.map((task) => [task.id, task.late])).toEqual([["t2", true]]);
-    expect(view.board.em_andamento).toEqual([]);
-  });
 });
