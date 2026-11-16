@@ -630,3 +630,10 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 - "Exportar" baixa um CSV (separador ponto e vírgula, com acentos corretos no Excel) com um item por linha, respeitando o período escolhido. Lógica pura testada em `src/lib/period.ts` e `src/lib/status-export.ts`.
 - A página Status deixou de mostrar o selo de saúde do projeto; a saúde por área continua.
 - Decidido pela autora: layout e o que entra e sai. Gerado pela IA: regra do período, CSV e código.
+
+## 2026-11-16 — Menu flutuante e barra do topo com perfil (UI-7)
+
+- Pedido da autora, com um novo print de referência: fundo mais cinza (menos azulado); menu como pílula flutuante, centralizada na altura da tela, só com ícones; item atual numa bolinha vermelha com ícone branco; ao passar o mouse aparece um balão preto com o nome; perfil do usuário no topo.
+- Dentro do projeto, a barra lateral foi trocada por: barra do topo (ícone de casa para voltar a todos os projetos, nome do projeto e o perfil com a troca de perfil à direita) e a pílula de ícones fixa à esquerda. No celular a pílula fica na parte de baixo, na horizontal.
+- Não inventei os controles do print que o Hub não tem (busca, notificações, tema).
+- Decidido pela autora: estrutura e comportamento. Gerado pela IA: código.
