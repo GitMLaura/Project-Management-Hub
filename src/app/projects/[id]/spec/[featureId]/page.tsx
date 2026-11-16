@@ -77,11 +77,21 @@ export default async function FeatureSpecPage(props: PageProps<"/projects/[id]/s
         <section className="flex flex-col gap-3" aria-label="Regras de negócio">
           <div className="flex items-center justify-between gap-4">
             <h2 className="text-lg font-semibold">Regras de negócio</h2>
-            {canEdit && (
-              <Link href={`/projects/${id}/spec/${featureId}/rules/new`} className={buttonVariants()}>
-                Nova regra
-              </Link>
-            )}
+            <div className="flex flex-wrap gap-2">
+              {rules.length > 0 && (
+                <a
+                  href={`/projects/${id}/rules/export?scope=feature&item=${featureId}`}
+                  className={buttonVariants({ variant: "outline" })}
+                >
+                  Baixar .md
+                </a>
+              )}
+              {canEdit && (
+                <Link href={`/projects/${id}/spec/${featureId}/rules/new`} className={buttonVariants()}>
+                  Nova regra
+                </Link>
+              )}
+            </div>
           </div>
           {rules.length === 0 ? (
             <Card>

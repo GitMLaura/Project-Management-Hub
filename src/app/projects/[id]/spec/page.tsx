@@ -47,6 +47,17 @@ export default async function SpecPage(props: PageProps<"/projects/[id]/spec">) 
         </p>
       </div>
 
+      {rules.length > 0 && (
+        <div>
+          <a
+            href={`/projects/${id}/rules/export?scope=project`}
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+          >
+            Baixar regras do projeto (.md)
+          </a>
+        </div>
+      )}
+
       {tree.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col gap-1 pt-4">
@@ -60,7 +71,15 @@ export default async function SpecPage(props: PageProps<"/projects/[id]/spec">) 
         tree.map((epic) => (
           <Card key={epic.id}>
             <CardHeader>
-              <CardTitle>{epic.title}</CardTitle>
+              <CardTitle className="flex flex-wrap items-center justify-between gap-2">
+                <span>{epic.title}</span>
+                <a
+                  href={`/projects/${id}/rules/export?scope=epic&item=${epic.id}`}
+                  className={buttonVariants({ variant: "outline", size: "sm" })}
+                >
+                  Baixar regras do épico (.md)
+                </a>
+              </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
               {epic.children.length === 0 ? (

@@ -351,3 +351,18 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 
 ### Gerado pela IA vs. decidido pela autora
 - **IA:** SQL, código, testes. **Autora:** testar no navegador (criar uma regra, ver o RN-001 e editar).
+
+## 2026-11-16 — H3.1.2 Baixar regras em .md
+
+### O que foi feito
+- `src/lib/rules-export.ts` (função pura, 9 testes): gera o Markdown com cabeçalho (projeto; épico e funcionalidade quando o escopo é menor) e uma seção por funcionalidade, regras em ordem de código.
+- Rota `GET /projects/[id]/rules/export?scope=project|epic|feature&item=<id>` e botões de download no projeto, no épico e na funcionalidade.
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Funcionalidades sem regras ficam fora do arquivo (menos ruído ao colar numa IA) | IA |
+| Cada regra vira `### RN-001 — Título`, para citar "conforme RN-001" | IA |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** código e testes. **Autora:** abrir um arquivo baixado e conferir.

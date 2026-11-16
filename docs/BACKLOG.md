@@ -90,9 +90,9 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
   - [x] Editor com pré-visualização ao lado
   - [x] Cada regra recebe ID estável `RN-###`, único no projeto
 - **H3.1.2** Como participante, quero baixar as regras em `.md`, para colar em uma IA.
-  - [ ] Download por funcionalidade, por épico e do projeto inteiro
-  - [ ] Cabeçalho com projeto, épico e funcionalidade; uma seção por funcionalidade
-  - [ ] Teste automatizado da exportação
+  - [x] Download por funcionalidade, por épico e do projeto inteiro
+  - [x] Cabeçalho com projeto, épico e funcionalidade; uma seção por funcionalidade
+  - [x] Teste automatizado da exportação
 - **H3.1.3** Como participante, quero ver e baixar as regras em PDF, para compartilhar com quem não usa Markdown.
   - [ ] PDF gerado a partir do mesmo Markdown (tela, `.md` e PDF não divergem)
   - [ ] Dá para visualizar e baixar
