@@ -9,19 +9,6 @@ const TONE = {
   green: "border-green-200 bg-green-50 text-green-950 dark:border-green-900 dark:bg-green-950/40 dark:text-green-50",
 } as const;
 
-function Figure({ value, label, urgent }: { value: string; label: string; urgent?: boolean }) {
-  return (
-    <div className="flex flex-col gap-2 rounded-2xl border bg-card p-6 shadow-xs">
-      <p
-        className={`font-heading text-5xl font-semibold tabular-nums ${urgent ? "text-primary" : ""}`}
-      >
-        {value}
-      </p>
-      <p className="text-sm text-muted-foreground">{label}</p>
-    </div>
-  );
-}
-
 // Top of the Status page: the project's health and why, then the four numbers behind it.
 export function StatusHero({
   health,
@@ -43,7 +30,7 @@ export function StatusHero({
       : `${Math.abs(view.daysLeft)} dias além do prazo`;
 
   return (
-    <div className="flex flex-col gap-4">
+    <>
       <section
         aria-labelledby="health-title"
         className={`grid gap-6 rounded-2xl border p-8 md:grid-cols-[1fr_auto] md:gap-12 ${TONE[health.color]}`}
@@ -94,20 +81,62 @@ export function StatusHero({
           <p className="text-sm tabular-nums">{daysText}</p>
         </div>
       </section>
+    </>
+  );
+}
 
-      <div className="grid grid-cols-2 gap-4">
-        <Figure
-          value={String(totals.lateTasks)}
-          label={totals.lateTasks === 1 ? "tarefa atrasada" : "tarefas atrasadas"}
-          urgent={totals.lateTasks > 0}
-        />
-        <Figure
-          value={String(totals.blockedItems)}
-          label={totals.blockedItems === 1 ? "item bloqueado" : "itens bloqueados"}
-        />
-        <Figure value={`${totals.doneTasks}/${totals.totalTasks}`} label="tarefas concluídas" />
-        <Figure value={String(Math.max(view.daysLeft, 0))} label="dias até o prazo final" />
-      </div>
+const PILL = {
+  red: "bg-red-100 text-red-800",
+  yellow: "bg-yellow-100 text-yellow-900",
+  green: "bg-green-100 text-green-800",
+  neutral: "bg-muted text-muted-foreground",
+} as const;
+
+function Metric({
+  label,
+  value,
+  pill,
+  tone,
+}: {
+  label: string;
+  value: string;
+  pill: string;
+  tone: keyof typeof PILL;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="flex items-center gap-2">
+        <span className="font-heading text-5xl leading-none font-semibold tabular-nums">{value}</span>
+        <span className={`rounded-md px-2 py-0.5 text-xs font-medium ${PILL[tone]}`}>{pill}</span>
+      </p>
+    </div>
+  );
+}
+
+// The numbers behind the health color, shown beside the page title.
+export function StatusMetrics({ view }: { view: StatusView }) {
+  const { totals } = view;
+  return (
+    <div className="flex flex-wrap items-end gap-x-8 gap-y-4" role="group" aria-label="Números do projeto">
+      <Metric
+        label="Atrasadas"
+        value={String(totals.lateTasks)}
+        pill={totals.lateTasks > 0 ? "Atenção" : "Em dia"}
+        tone={totals.lateTasks > 0 ? "red" : "green"}
+      />
+      <Metric
+        label="Bloqueados"
+        value={String(totals.blockedItems)}
+        pill={totals.blockedItems > 0 ? "Atenção" : "Nenhum"}
+        tone={totals.blockedItems > 0 ? "yellow" : "green"}
+      />
+      <Metric
+        label="Concluídas"
+        value={`${totals.doneTasks}/${totals.totalTasks}`}
+        pill={`${totals.percent}%`}
+        tone="neutral"
+      />
     </div>
   );
 }
