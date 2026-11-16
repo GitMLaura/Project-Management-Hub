@@ -86,6 +86,24 @@ export default async function FeatureSpecPage(props: PageProps<"/projects/[id]/s
                   Baixar .md
                 </a>
               )}
+              {rules.length > 0 && (
+                <a
+                  href={`/projects/${id}/rules/export?scope=feature&item=${featureId}&format=pdf`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={buttonVariants({ variant: "outline" })}
+                >
+                  Ver PDF
+                </a>
+              )}
+              {rules.length > 0 && (
+                <a
+                  href={`/projects/${id}/rules/export?scope=feature&item=${featureId}&format=pdf&download=1`}
+                  className={buttonVariants({ variant: "outline" })}
+                >
+                  Baixar PDF
+                </a>
+              )}
               {canEdit && (
                 <Link href={`/projects/${id}/spec/${featureId}/rules/new`} className={buttonVariants()}>
                   Nova regra

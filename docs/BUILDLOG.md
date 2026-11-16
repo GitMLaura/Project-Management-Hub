@@ -366,3 +366,18 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 
 ### Gerado pela IA vs. decidido pela autora
 - **IA:** código e testes. **Autora:** abrir um arquivo baixado e conferir.
+
+## 2026-11-16 — H3.1.3 Regras em PDF
+
+### O que foi feito
+- `src/lib/markdown-pdf.ts` (3 testes): converte o **mesmo Markdown** do `.md` em PDF (títulos, parágrafos, listas, código), no servidor, sem custo. Conferi o texto extraído do PDF (acentos e travessão corretos).
+- A rota de exportação aceita `format=pdf`: abre no navegador ("Ver PDF") ou baixa (`download=1`). Botões no projeto e na funcionalidade. Dependências novas: `jspdf` e `marked`.
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| PDF montado a partir do Markdown (e não imprimindo a tela), para garantir que tela, `.md` e PDF nunca divirjam | IA, seguindo o PRD seção 5.1 |
+| Negrito e itálico viram texto simples no PDF; símbolos fora do alfabeto latino viram "?" | IA (limite das fontes padrão de PDF) |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** código e testes. **Autora:** abrir o PDF e conferir se está legível.

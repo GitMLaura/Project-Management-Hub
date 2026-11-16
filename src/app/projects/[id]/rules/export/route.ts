@@ -1,10 +1,11 @@
+import { markdownToPdf } from "@/lib/markdown-pdf";
 import { buildItemTree } from "@/lib/item-tree";
 import { buildRulesMarkdown, exportFileName, type ExportScope } from "@/lib/rules-export";
 import { listItems } from "@/lib/supabase/items";
 import { getProject } from "@/lib/supabase/projects";
 import { listRules } from "@/lib/supabase/rules";
 
-// GET /projects/[id]/rules/export?scope=project|epic|feature&item=<id>&format=md|pdf
+// GET /projects/[id]/rules/export?scope=project|epic|feature&item=<id>&format=md|pdf[&download=1]
 export async function GET(request: Request, ctx: RouteContext<"/projects/[id]/rules/export">) {
   const { id } = await ctx.params;
   const params = new URL(request.url).searchParams;
@@ -45,7 +46,14 @@ export async function GET(request: Request, ctx: RouteContext<"/projects/[id]/ru
     });
 
     if (format === "pdf") {
-      return new Response("PDF ainda não disponível.", { status: 501 });
+      // Same Markdown as the screen and the .md file. "download=1" saves; otherwise it opens in the browser.
+      const disposition = params.get("download") === "1" ? "attachment" : "inline";
+      return new Response(Buffer.from(markdownToPdf(markdown)), {
+        headers: {
+          "Content-Type": "application/pdf",
+          "Content-Disposition": `${disposition}; filename="${exportFileName(label, "pdf")}"`,
+        },
+      });
     }
     return new Response(markdown, {
       headers: {

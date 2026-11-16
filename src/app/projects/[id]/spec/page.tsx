@@ -48,12 +48,26 @@ export default async function SpecPage(props: PageProps<"/projects/[id]/spec">) 
       </div>
 
       {rules.length > 0 && (
-        <div>
+        <div className="flex flex-wrap gap-2">
           <a
             href={`/projects/${id}/rules/export?scope=project`}
             className={buttonVariants({ variant: "outline", size: "sm" })}
           >
             Baixar regras do projeto (.md)
+          </a>
+          <a
+            href={`/projects/${id}/rules/export?scope=project&format=pdf`}
+            target="_blank"
+            rel="noreferrer"
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+          >
+            Ver PDF
+          </a>
+          <a
+            href={`/projects/${id}/rules/export?scope=project&format=pdf&download=1`}
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+          >
+            Baixar PDF
           </a>
         </div>
       )}

@@ -94,8 +94,8 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
   - [x] Cabeçalho com projeto, épico e funcionalidade; uma seção por funcionalidade
   - [x] Teste automatizado da exportação
 - **H3.1.3** Como participante, quero ver e baixar as regras em PDF, para compartilhar com quem não usa Markdown.
-  - [ ] PDF gerado a partir do mesmo Markdown (tela, `.md` e PDF não divergem)
-  - [ ] Dá para visualizar e baixar
+  - [x] PDF gerado a partir do mesmo Markdown (tela, `.md` e PDF não divergem)
+  - [x] Dá para visualizar e baixar
 
 ### F3.2 Fluxos
 - **H3.2.1** Como Líder de área, quero criar fluxos em Mermaid com pré-visualização, para documentar jornadas.
