@@ -11,9 +11,9 @@ const TONE = {
 
 function Figure({ value, label, urgent }: { value: string; label: string; urgent?: boolean }) {
   return (
-    <div className="flex flex-col gap-1 border-t pt-4">
+    <div className="flex flex-col gap-2 rounded-2xl border bg-card p-6 shadow-xs">
       <p
-        className={`font-heading text-4xl font-semibold tabular-nums ${urgent ? "text-primary" : ""}`}
+        className={`font-heading text-5xl font-semibold tabular-nums ${urgent ? "text-primary" : ""}`}
       >
         {value}
       </p>
@@ -43,10 +43,10 @@ export function StatusHero({
       : `${Math.abs(view.daysLeft)} dias além do prazo`;
 
   return (
-    <div className="grid gap-x-10 gap-y-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+    <div className="flex flex-col gap-4">
       <section
         aria-labelledby="health-title"
-        className={`grid gap-6 rounded-2xl border p-6 md:grid-cols-[1fr_auto] md:gap-8 ${TONE[health.color]}`}
+        className={`grid gap-6 rounded-2xl border p-8 md:grid-cols-[1fr_auto] md:gap-12 ${TONE[health.color]}`}
       >
         <div className="flex flex-col gap-5">
           <div className="flex flex-wrap items-center gap-3">
@@ -55,7 +55,7 @@ export function StatusHero({
             </h2>
             <HealthBadge color={health.color} label={health.label} />
           </div>
-          <p className="font-heading text-2xl leading-snug font-semibold text-balance sm:text-3xl">
+          <p className="max-w-3xl font-heading text-3xl leading-snug font-semibold text-balance sm:text-4xl">
             {headline}
           </p>
           <div className="flex flex-col gap-2">
@@ -88,14 +88,14 @@ export function StatusHero({
             </p>
           </div>
         </div>
-        <div className="flex flex-col justify-center gap-1 md:min-w-44 md:border-l md:border-current/15 md:pl-8">
+        <div className="flex flex-col justify-center gap-1 md:min-w-56 md:border-l md:border-current/15 md:pl-12">
           <p className="text-sm font-medium">Prazo final</p>
-          <p className="font-heading text-3xl font-semibold">{formatLongDate(deadline)}</p>
+          <p className="font-heading text-4xl font-semibold">{formatLongDate(deadline)}</p>
           <p className="text-sm tabular-nums">{daysText}</p>
         </div>
       </section>
 
-      <div className="grid grid-cols-2 gap-x-8 gap-y-6 self-center">
+      <div className="grid grid-cols-2 gap-4">
         <Figure
           value={String(totals.lateTasks)}
           label={totals.lateTasks === 1 ? "tarefa atrasada" : "tarefas atrasadas"}
