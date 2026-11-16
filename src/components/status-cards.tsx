@@ -102,19 +102,21 @@ export function AttentionList({
   items,
   areaNames,
   assigneeNames,
+  fill = false,
 }: {
+  fill?: boolean; // stretch to the height of the column and share it between the rows
   projectId: string;
   items: AttentionItem[];
   areaNames: Record<string, string>;
   assigneeNames: Record<string, string>;
 }) {
   return (
-    <ul className="divide-y rounded-2xl border bg-card">
+    <ul className={`divide-y rounded-2xl border bg-card ${fill ? "flex flex-1 flex-col" : ""}`}>
       {items.map((item) => (
-        <li key={item.id}>
+        <li key={item.id} className={fill ? "flex flex-1" : undefined}>
           <Link
             href={`/projects/${projectId}/scope`}
-            className="flex items-start justify-between gap-3 p-4 outline-none hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+            className={`flex items-start justify-between gap-3 p-4 outline-none hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset ${fill ? "flex-1" : ""}`}
           >
             <span className="flex min-w-0 flex-col gap-0.5">
               <span className="font-medium">{item.title}</span>

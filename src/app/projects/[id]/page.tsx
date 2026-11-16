@@ -1,14 +1,14 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Plus } from "lucide-react";
+import { Download } from "lucide-react";
 import { PageMessage } from "@/components/page-message";
-import { StatusHero, StatusMetrics } from "@/components/status-hero";
+import { PeriodFilter } from "@/components/period-filter";
+import { StatusMetrics } from "@/components/status-hero";
 import { EpicsTable } from "@/components/status-panels";
 import { AttentionList, StatusCard } from "@/components/status-cards";
 import { buttonVariants } from "@/components/ui/button";
 import { getActiveProfile } from "@/lib/active-profile";
-import { buildHealthPanel } from "@/lib/health-panel";
 import { canManageScope } from "@/lib/item-rules";
+import { filterTasksByRange, parsePeriod, periodDescription, periodRange } from "@/lib/period";
 import { buildItemTree } from "@/lib/item-tree";
 import { buildStatusView } from "@/lib/status-view";
 import { listItems } from "@/lib/supabase/items";
@@ -16,6 +16,8 @@ import { getProject } from "@/lib/supabase/projects";
 
 export default async function ProjectStatusPage(props: PageProps<"/projects/[id]">) {
   const { id } = await props.params;
+  const rawPeriod = (await props.searchParams).periodo;
+  const period = parsePeriod(Array.isArray(rawPeriod) ? rawPeriod[0] : rawPeriod);
   const profile = await getActiveProfile();
 
   let project;
@@ -36,21 +38,16 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
   if (!project) notFound();
 
   const today = new Date().toISOString().slice(0, 10);
-  const tree = buildItemTree(items.filter((item) => !item.archivedAt));
+  const tree = filterTasksByRange(
+    buildItemTree(items.filter((item) => !item.archivedAt)),
+    periodRange(period, today),
+  );
   const areaNames = Object.fromEntries(project.areas.map((area) => [area.id, area.name]));
   const assigneeNames = Object.fromEntries(
     project.areas.flatMap((area) =>
       area.participants.map((participant) => [participant.id, participant.name]),
     ),
   );
-  const panel = buildHealthPanel({
-    projectName: project.name,
-    projectStart: project.startDate,
-    projectDeadline: project.deadline,
-    areas: project.areas.map((area) => ({ id: area.id, name: area.name })),
-    tree,
-    today,
-  });
   const view = buildStatusView({
     tree,
     areaIds: project.areas.map((area) => area.id),
@@ -63,25 +60,32 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 p-6 md:p-10">
-      <header className="flex flex-wrap items-end justify-between gap-x-10 gap-y-6">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-4xl font-semibold">
-            {project.name} <span aria-hidden="true">🔥</span>
-          </h1>
-          <p className="text-muted-foreground">Acompanhe o progresso do seu projeto hoje</p>
+      <header className="flex flex-col gap-6">
+        <div className="flex flex-wrap items-start justify-between gap-x-10 gap-y-4">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-4xl font-semibold">
+              {project.name} <span aria-hidden="true">🔥</span>
+            </h1>
+            <p className="text-muted-foreground">Acompanhe o progresso do seu projeto hoje</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <PeriodFilter projectId={id} current={period} />
+            <a
+              href={`/projects/${id}/status/export${period === "all" ? "" : `?periodo=${period}`}`}
+              className={buttonVariants({ size: "lg" })}
+            >
+              <Download aria-hidden="true" />
+              Exportar
+            </a>
+          </div>
         </div>
-        <StatusMetrics view={view} />
-        {canManageScope(profile) && (
-          <Link href={`/projects/${id}/items/new`} className={buttonVariants({ size: "lg" })}>
-            <Plus aria-hidden="true" />
-            Novo item
-          </Link>
+        <StatusMetrics totals={view.totals} />
+        {period !== "all" && (
+          <p className="text-sm text-muted-foreground">Mostrando {periodDescription(period)}.</p>
         )}
       </header>
 
-      <StatusHero health={panel.project.health} view={view} deadline={project.deadline} />
-
-      <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <div className="flex flex-col gap-10">
           <section className="flex flex-col gap-4" aria-labelledby="epics-title">
             <h2 id="epics-title" className="text-xl font-semibold">
@@ -131,7 +135,7 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
         </div>
 
         <div className="flex flex-col gap-10">
-          <section className="flex flex-col gap-4" aria-labelledby="attention-title">
+          <section className="flex flex-1 flex-col gap-4" aria-labelledby="attention-title">
             <h2 id="attention-title" className="text-xl font-semibold">
               Precisa de atenção
             </h2>
@@ -141,6 +145,7 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
               </p>
             ) : (
               <AttentionList
+                fill
                 projectId={id}
                 items={view.attention}
                 areaNames={areaNames}

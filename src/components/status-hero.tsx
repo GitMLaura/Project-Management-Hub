@@ -1,90 +1,3 @@
-import { HealthBadge } from "@/components/health-badge";
-import { formatLongDate } from "@/lib/format";
-import type { HealthEntry } from "@/lib/health-panel";
-import type { StatusView } from "@/lib/status-view";
-
-const TONE = {
-  red: "border-red-200 bg-red-50 text-red-950 dark:border-red-900 dark:bg-red-950/40 dark:text-red-50",
-  yellow: "border-yellow-200 bg-yellow-50 text-yellow-950 dark:border-yellow-900 dark:bg-yellow-950/40 dark:text-yellow-50",
-  green: "border-green-200 bg-green-50 text-green-950 dark:border-green-900 dark:bg-green-950/40 dark:text-green-50",
-} as const;
-
-// Top of the Status page: the project's health and why, then the four numbers behind it.
-export function StatusHero({
-  health,
-  view,
-  deadline,
-}: {
-  health: HealthEntry["health"];
-  view: StatusView;
-  deadline: string;
-}) {
-  const { totals } = view;
-  const headline =
-    health.reasons.length > 0
-      ? health.reasons.map((reason) => reason.text).join(" · ")
-      : "Sem atrasos, bloqueios ou desvio relevante";
-  const daysText =
-    view.daysLeft >= 0
-      ? `faltam ${view.daysLeft} dias`
-      : `${Math.abs(view.daysLeft)} dias além do prazo`;
-
-  return (
-    <>
-      <section
-        aria-labelledby="health-title"
-        className={`grid gap-6 rounded-2xl border p-8 md:grid-cols-[1fr_auto] md:gap-12 ${TONE[health.color]}`}
-      >
-        <div className="flex flex-col gap-5">
-          <div className="flex flex-wrap items-center gap-3">
-            <h2 id="health-title" className="text-base font-semibold">
-              Saúde do projeto
-            </h2>
-            <HealthBadge color={health.color} label={health.label} />
-          </div>
-          <p className="max-w-3xl font-heading text-3xl leading-snug font-semibold text-balance sm:text-4xl">
-            {headline}
-          </p>
-          <div className="flex flex-col gap-2">
-            <div className="relative pt-1">
-              <div
-                role="progressbar"
-                aria-valuenow={totals.percent}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-label="Progresso do projeto"
-                className="h-2 overflow-hidden rounded-full bg-black/10"
-              >
-                <div
-                  className="bar-fill h-full rounded-full bg-foreground"
-                  style={{ width: `${totals.percent}%` }}
-                />
-              </div>
-              <span
-                aria-hidden="true"
-                className="absolute top-0 h-4 w-0.5 rounded-full bg-primary"
-                style={{ left: `${view.expectedPercent}%` }}
-              />
-            </div>
-            <p className="font-medium tabular-nums">
-              {totals.percent}% das tarefas concluídas ({totals.doneTasks} de {totals.totalTasks})
-            </p>
-            <p className="text-sm opacity-80">
-              A marca vermelha é o esperado para hoje: {view.expectedPercent}%. Medido em tarefas
-              concluídas ÷ total de tarefas.
-            </p>
-          </div>
-        </div>
-        <div className="flex flex-col justify-center gap-1 md:min-w-56 md:border-l md:border-current/15 md:pl-12">
-          <p className="text-sm font-medium">Prazo final</p>
-          <p className="font-heading text-4xl font-semibold">{formatLongDate(deadline)}</p>
-          <p className="text-sm tabular-nums">{daysText}</p>
-        </div>
-      </section>
-    </>
-  );
-}
-
 const PILL = {
   red: "bg-red-100 text-red-800",
   yellow: "bg-yellow-100 text-yellow-900",
@@ -114,11 +27,12 @@ function Metric({
   );
 }
 
-// The numbers behind the health color, shown beside the page title.
-export function StatusMetrics({ view }: { view: StatusView }) {
-  const { totals } = view;
+type Totals = { lateTasks: number; blockedItems: number; doneTasks: number; totalTasks: number; percent: number };
+
+// The numbers of the Status page, one line under the title.
+export function StatusMetrics({ totals }: { totals: Totals }) {
   return (
-    <div className="flex flex-wrap items-end gap-x-8 gap-y-4" role="group" aria-label="Números do projeto">
+    <div className="flex flex-wrap items-end gap-x-10 gap-y-4" role="group" aria-label="Números do projeto">
       <Metric
         label="Atrasadas"
         value={String(totals.lateTasks)}

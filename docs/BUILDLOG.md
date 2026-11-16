@@ -622,3 +622,11 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 - A autora pediu: "Saúde por área" no lugar do quadro de tarefas, sem o calendário de prazos e sem "Áreas e participantes" no fim da página.
 - A página Status agora tem: cabeçalho com métricas, cartão de saúde, e duas colunas (épicos em andamento e saúde por área à esquerda; "Precisa de atenção" à direita). O código do quadro e do calendário (`src/lib/calendar.ts`) foi removido em vez de ficar sem uso.
 - Decidido pela autora: o que entra e sai da página. Gerado pela IA: código.
+
+## 2026-11-16 — Status com filtro de período e exportação (UI-6)
+
+- Pedido da autora: tirar o bloco grande de saúde do projeto; deixar "Atrasadas, Bloqueados e Concluídas" na segunda linha; pôr na primeira linha os filtros Dia, Semana e Mês; trocar "Novo item" por "Exportar"; esticar "Precisa de atenção" até o fim da lista de saúde por área.
+- Como o filtro funciona (interpretação da IA, a autora pode mudar): ele guarda só as tarefas cujo prazo cai hoje, na semana (segunda a domingo) ou no mês corrente, e todos os números da página (métricas, épicos, áreas, atenção) passam a considerar só essas tarefas. Clicar no período ativo volta para "todas". O período fica na URL (`?periodo=`).
+- "Exportar" baixa um CSV (separador ponto e vírgula, com acentos corretos no Excel) com um item por linha, respeitando o período escolhido. Lógica pura testada em `src/lib/period.ts` e `src/lib/status-export.ts`.
+- A página Status deixou de mostrar o selo de saúde do projeto; a saúde por área continua.
+- Decidido pela autora: layout e o que entra e sai. Gerado pela IA: regra do período, CSV e código.
