@@ -57,7 +57,7 @@ export default async function NewItemPage(props: PageProps<"/projects/[id]/items
     );
   }
   if (!project) notFound();
-  if (parentParam && !parent) notFound();
+  if (parentParam && (!parent || parent.archivedAt)) notFound();
 
   const type = parent ? childTypeOf(parent.type) : "epic";
   if (!type) {

@@ -17,6 +17,7 @@ export type ItemRecord = {
   storyAction: string | null;
   storyBenefit: string | null;
   acceptanceCriteria: string[];
+  archivedAt: string | null;
 };
 
 export type ItemNode = ItemRecord & { children: ItemNode[] };
@@ -35,4 +36,9 @@ export function buildItemTree(items: readonly ItemRecord[]): ItemNode[] {
     else roots.push(node);
   }
   return roots;
+}
+
+// How many items sit below this one (used to warn before archiving).
+export function countDescendants(node: ItemNode): number {
+  return node.children.reduce((total, child) => total + 1 + countDescendants(child), 0);
 }

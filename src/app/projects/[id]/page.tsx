@@ -45,7 +45,8 @@ export default async function ProjectPage(props: PageProps<"/projects/[id]">) {
     ),
   );
   const canManage = canManageScope(profile);
-  const tree = buildItemTree(items);
+  const tree = buildItemTree(items.filter((item) => !item.archivedAt));
+  const archivedTree = buildItemTree(items.filter((item) => item.archivedAt));
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-6">
@@ -112,9 +113,29 @@ export default async function ProjectPage(props: PageProps<"/projects/[id]">) {
             areaNames={areaNames}
             assigneeNames={assigneeNames}
             canManage={canManage}
+            profile={profile}
           />
         )}
       </section>
+
+      {archivedTree.length > 0 && (
+        <section className="flex flex-col gap-3" aria-label="Itens arquivados">
+          <h2 className="text-lg font-semibold">Arquivados</h2>
+          <p className="text-sm text-muted-foreground">
+            Itens arquivados saem do escopo ativo, mas não são apagados. Restaurar um item traz
+            de volta o que foi arquivado junto com ele.
+          </p>
+          <ScopeTree
+            projectId={id}
+            nodes={archivedTree}
+            areaNames={areaNames}
+            assigneeNames={assigneeNames}
+            canManage={canManage}
+            profile={profile}
+            mode="archived"
+          />
+        </section>
+      )}
 
       <div>
         <Link href="/" className={buttonVariants({ variant: "outline" })}>

@@ -50,8 +50,8 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
   - [x] Prazo de filho acima do prazo do pai é bloqueado ou avisado na hora (E2)
   - [x] Prazo de épico acima do prazo do projeto é bloqueado ou avisado (E3)
 - **H1.2.3** Como Líder de área, quero arquivar em vez de excluir itens com filhos, para não perder trabalho por engano.
-  - [ ] Excluir item com filhos não é permitido (E4). Na demo, o banco recusa **qualquer** exclusão: itens só se arquivam
-  - [ ] Item arquivado sai das visões ativas, mas pode ser restaurado
+  - [x] Excluir item com filhos não é permitido (E4). Na demo, o banco recusa **qualquer** exclusão: itens só se arquivam
+  - [x] Item arquivado sai das visões ativas, mas pode ser restaurado
 - **H1.2.4** Como Dono do projeto, quero ver alertas de escopo incompleto, para saber onde falta detalhar.
   - [ ] Item sem filhos (que não seja tarefa) mostra "escopo incompleto" (E5)
 

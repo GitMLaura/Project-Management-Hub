@@ -229,3 +229,25 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 ### Pendências
 - Autora: testar no navegador (prazo de épico acima do projeto; prazo de filho acima do pai) e os 2 critérios restantes da H1.2.1.
 
+## 2026-11-16 — H1.2.3 Arquivar e restaurar itens
+
+### O que foi feito
+- Migração `20261116100000_items_archive.sql` (aplicada com `supabase db push`): coluna `archived_at`, funções `archive_item` e `restore_item`, e o gatilho passou a recusar item novo ou restaurado sob um pai arquivado.
+- Botão **Arquivar** em cada item (com aviso quando há itens dentro) e seção **Arquivados** com botão **Restaurar**. Itens arquivados saem da árvore ativa.
+- Permissão como na criação: Dono em qualquer área; Líder só na própria área; Participante só consulta (interface e Server Action).
+- Testes: `countDescendants` e integração (arquivar item inexistente é recusado). Lógica de cascata conferida no banco real numa transação desfeita no fim, sem deixar dados.
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Arquivar um item arquiva também tudo que está dentro dele | IA (evita filhos "soltos" na árvore ativa); **a autora pode mudar** |
+| Restaurar traz de volta só o que foi arquivado junto com ele; um filho arquivado antes continua arquivado | IA |
+| Só o topo de um ramo arquivado tem botão Restaurar; filho sob pai arquivado não pode ser restaurado sozinho | IA |
+| Sem exclusão no banco, como já decidido (PRD, decisão 4) | Autora (decisão anterior) |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** SQL, código, testes. **Autora:** aplicar/aprovar mudanças no banco e testar no navegador.
+
+### Pendências
+- Autora: testar no navegador (arquivar um épico com filhos, ver em Arquivados, restaurar; trocar de perfil e ver os botões mudarem).
+

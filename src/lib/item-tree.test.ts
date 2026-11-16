@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildItemTree, type ItemRecord } from "@/lib/item-tree";
+import { buildItemTree, countDescendants, type ItemRecord } from "@/lib/item-tree";
 
 function item(id: string, parentId: string | null, type: ItemRecord["type"]): ItemRecord {
   return {
@@ -18,6 +18,7 @@ function item(id: string, parentId: string | null, type: ItemRecord["type"]): It
     storyAction: null,
     storyBenefit: null,
     acceptanceCriteria: [],
+    archivedAt: null,
   };
 }
 
@@ -43,5 +44,19 @@ describe("buildItemTree", () => {
 
   it("returns an empty tree for no items", () => {
     expect(buildItemTree([])).toEqual([]);
+  });
+});
+
+describe("countDescendants", () => {
+  it("counts every item below a node, at any depth", () => {
+    const [epic] = buildItemTree([
+      item("e1", null, "epic"),
+      item("f1", "e1", "feature"),
+      item("s1", "f1", "story"),
+      item("t1", "s1", "task"),
+      item("t2", "s1", "task"),
+    ]);
+    expect(countDescendants(epic)).toBe(4);
+    expect(countDescendants(epic.children[0].children[0].children[0])).toBe(0);
   });
 });

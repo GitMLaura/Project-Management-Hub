@@ -75,6 +75,13 @@ describe.skipIf(!url || !anonKey)("Supabase items schema", () => {
     expect(error?.message).toContain("after the project deadline");
   });
 
+  it("refuses to archive or restore an item that does not exist", async () => {
+    const archive = await supabase.rpc("archive_item", { p_id: NOBODY });
+    expect(archive.error).not.toBeNull();
+    const restore = await supabase.rpc("restore_item", { p_id: NOBODY });
+    expect(restore.error).not.toBeNull();
+  });
+
   it("refuses delete", async () => {
     const { error } = await supabase.from("items").delete().eq("id", NOBODY);
     expect(error).not.toBeNull();

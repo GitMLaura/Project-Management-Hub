@@ -1,13 +1,16 @@
 import Link from "next/link";
+import { ArchiveButton } from "@/components/archive-button";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
+import type { DemoProfile } from "@/lib/demo-profiles";
 import { formatDate } from "@/lib/format";
 import {
   ITEM_STATUS_LABELS,
   ITEM_TYPE_LABELS,
+  canCreateItemInArea,
   childTypeOf,
 } from "@/lib/item-rules";
-import type { ItemNode } from "@/lib/item-tree";
+import { countDescendants, type ItemNode } from "@/lib/item-tree";
 
 type ScopeTreeProps = {
   projectId: string;
@@ -15,14 +18,30 @@ type ScopeTreeProps = {
   areaNames: Record<string, string>;
   assigneeNames: Record<string, string>;
   canManage: boolean;
+  profile: DemoProfile;
+  // "archived" shows the restore button instead of add/archive.
+  mode?: "active" | "archived";
+  // Only the top of an archived branch can be restored (its children come back with it).
+  topLevel?: boolean;
 };
 
-export function ScopeTree({ projectId, nodes, areaNames, assigneeNames, canManage }: ScopeTreeProps) {
+export function ScopeTree({
+  projectId,
+  nodes,
+  areaNames,
+  assigneeNames,
+  canManage,
+  profile,
+  mode = "active",
+  topLevel = true,
+}: ScopeTreeProps) {
   if (nodes.length === 0) return null;
   return (
     <ul className="flex flex-col gap-3 border-l pl-4">
       {nodes.map((node) => {
         const childType = childTypeOf(node.type);
+        const canChange =
+          canManage && canCreateItemInArea(profile, areaNames[node.areaId] ?? "");
         return (
           <li key={node.id} className="flex flex-col gap-2">
             <div className="flex flex-col gap-1 rounded-2xl border p-3">
@@ -50,15 +69,35 @@ export function ScopeTree({ projectId, nodes, areaNames, assigneeNames, canManag
                   ))}
                 </ul>
               )}
-              {canManage && childType && (
-                <div>
-                  <Link
-                    href={`/projects/${projectId}/items/new?parent=${node.id}`}
-                    className={buttonVariants({ variant: "outline", size: "sm" })}
-                  >
-                    Adicionar {ITEM_TYPE_LABELS[childType].toLowerCase()}
-                  </Link>
+              {mode === "active" && (canManage || canChange) && (
+                <div className="flex flex-wrap items-start gap-2">
+                  {canManage && childType && (
+                    <Link
+                      href={`/projects/${projectId}/items/new?parent=${node.id}`}
+                      className={buttonVariants({ variant: "outline", size: "sm" })}
+                    >
+                      Adicionar {ITEM_TYPE_LABELS[childType].toLowerCase()}
+                    </Link>
+                  )}
+                  {canChange && (
+                    <ArchiveButton
+                      projectId={projectId}
+                      itemId={node.id}
+                      itemTitle={node.title}
+                      mode="archive"
+                      descendants={countDescendants(node)}
+                    />
+                  )}
                 </div>
+              )}
+              {mode === "archived" && topLevel && canChange && (
+                <ArchiveButton
+                  projectId={projectId}
+                  itemId={node.id}
+                  itemTitle={node.title}
+                  mode="restore"
+                  descendants={0}
+                />
               )}
             </div>
             <ScopeTree
@@ -67,6 +106,9 @@ export function ScopeTree({ projectId, nodes, areaNames, assigneeNames, canManag
               areaNames={areaNames}
               assigneeNames={assigneeNames}
               canManage={canManage}
+              profile={profile}
+              mode={mode}
+              topLevel={false}
             />
           </li>
         );

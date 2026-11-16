@@ -18,10 +18,11 @@ type ItemRow = {
   story_action: string | null;
   story_benefit: string | null;
   acceptance_criteria: string[];
+  archived_at: string | null;
 };
 
 const COLUMNS =
-  "id, parent_id, type, title, description, area_id, assignee_id, start_date, deadline, status, is_critical, story_persona, story_action, story_benefit, acceptance_criteria";
+  "id, parent_id, type, title, description, area_id, assignee_id, start_date, deadline, status, is_critical, story_persona, story_action, story_benefit, acceptance_criteria, archived_at";
 
 function toRecord(row: ItemRow): ItemRecord {
   return {
@@ -40,6 +41,7 @@ function toRecord(row: ItemRow): ItemRecord {
     storyAction: row.story_action,
     storyBenefit: row.story_benefit,
     acceptanceCriteria: row.acceptance_criteria ?? [],
+    archivedAt: row.archived_at,
   };
 }
 
