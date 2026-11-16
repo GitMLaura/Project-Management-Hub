@@ -32,3 +32,60 @@ export function screenImageUrl(storagePath: string): string {
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
   return `${base}/storage/v1/object/public/screens/${storagePath}`;
 }
+
+export const DEFAULT_SIMILARITY_THRESHOLD = 10;
+export const MAX_SIMILARITY_THRESHOLD = 32;
+
+export type ScreenGroup = {
+  screens: ScreenRecord[];
+  // "exact" = at least two files are identical (same SHA-256) and nothing else differs;
+  // "similar" = the group also has pictures that only look alike (perceptual hash).
+  kind: "exact" | "similar";
+};
+
+// Groups screens that are copies (same SHA-256) or look alike (hamming distance <= threshold).
+// A chain A~B~C ends up in one group. Screens with no match are left out.
+export function groupScreens(
+  screens: ScreenRecord[],
+  threshold: number = DEFAULT_SIMILARITY_THRESHOLD,
+): ScreenGroup[] {
+  const parent = screens.map((_, index) => index);
+  const find = (index: number): number => {
+    while (parent[index] !== index) {
+      parent[index] = parent[parent[index]];
+      index = parent[index];
+    }
+    return index;
+  };
+
+  for (let a = 0; a < screens.length; a += 1) {
+    for (let b = a + 1; b < screens.length; b += 1) {
+      const same =
+        screens[a].sha256 === screens[b].sha256 ||
+        hammingDistance(screens[a].phash, screens[b].phash) <= threshold;
+      if (same) parent[find(b)] = find(a);
+    }
+  }
+
+  const buckets = new Map<number, ScreenRecord[]>();
+  screens.forEach((screen, index) => {
+    const root = find(index);
+    buckets.set(root, [...(buckets.get(root) ?? []), screen]);
+  });
+
+  return [...buckets.values()]
+    .filter((members) => members.length > 1)
+    .map((members) => ({
+      screens: members,
+      kind: new Set(members.map((screen) => screen.sha256)).size === 1 ? "exact" : "similar",
+    }));
+}
+
+// Reads the "?limite=" value; falls back to the default when missing or out of range.
+export function parseThreshold(raw: string | undefined): number {
+  const value = Number(raw);
+  if (raw === undefined || raw.trim() === "" || !Number.isInteger(value)) {
+    return DEFAULT_SIMILARITY_THRESHOLD;
+  }
+  return value >= 0 && value <= MAX_SIMILARITY_THRESHOLD ? value : DEFAULT_SIMILARITY_THRESHOLD;
+}

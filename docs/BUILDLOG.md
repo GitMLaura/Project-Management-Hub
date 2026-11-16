@@ -451,3 +451,18 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 
 ### Gerado pela IA vs. decidido pela autora
 - **IA:** SQL, código, testes. **Autora:** testar o envio de uma imagem real no navegador.
+
+## 2026-11-16 — H3.3.2 Telas duplicadas
+
+### O que foi feito
+- `groupScreens` em `src/lib/screens.ts` (com testes): junta telas com o mesmo SHA-256 (cópia exata) ou com distância de hash perceptual até o limiar (semelhantes). Cadeia A~B~C vira um grupo só. `parseThreshold` lê `?limite=`.
+- Página `/projects/[id]/spec/screens`: grupos juntos, campo para ajustar o limiar (padrão 10, de 0 a 32) e botão "Manter só esta como referência" (Server Action `setReferenceScreen`, marca `is_reference`; nada é excluído). Link a partir da página da especificação.
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Limiar padrão 10 de 64 bits | IA |
+| Botão de referência só para Dono e Líder na interface; a Server Action confere a permissão de cada funcionalidade do grupo | IA |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** código e testes. **Autora:** conferir no navegador.

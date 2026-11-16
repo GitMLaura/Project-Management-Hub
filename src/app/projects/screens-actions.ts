@@ -65,3 +65,44 @@ export async function uploadScreen(formData: FormData): Promise<ScreenActionResu
   revalidatePath(`/projects/${projectId}/spec`, "layout");
   return { ok: true };
 }
+
+// Keeps only one screen of a group as the reference. Nothing is deleted (demo has no delete).
+export async function setReferenceScreen(
+  projectId: string,
+  screenId: string,
+  groupIds: string[],
+): Promise<ScreenActionResult> {
+  if (!groupIds.includes(screenId)) return { ok: false, error: "Tela fora do grupo." };
+
+  const supabase = createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("screens")
+    .select("id, feature_id")
+    .eq("project_id", projectId)
+    .in("id", groupIds);
+  if (error || !data || data.length !== groupIds.length) {
+    return { ok: false, error: "Não foi possível carregar as telas do grupo." };
+  }
+
+  const features = [...new Set(data.map((row) => row.feature_id as string))];
+  for (const featureId of features) {
+    const denied = await checkFeaturePermission(projectId, featureId);
+    if (denied) return { ok: false, error: denied };
+  }
+
+  const cleared = await supabase
+    .from("screens")
+    .update({ is_reference: false })
+    .eq("project_id", projectId)
+    .in("id", groupIds);
+  if (cleared.error) return { ok: false, error: "Não foi possível atualizar a referência." };
+  const marked = await supabase
+    .from("screens")
+    .update({ is_reference: true })
+    .eq("project_id", projectId)
+    .eq("id", screenId);
+  if (marked.error) return { ok: false, error: "Não foi possível atualizar a referência." };
+
+  revalidatePath(`/projects/${projectId}/spec`, "layout");
+  return { ok: true };
+}
