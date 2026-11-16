@@ -283,3 +283,21 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 
 ### Gerado pela IA vs. decidido pela autora
 - **IA:** código e testes. **Autora:** testar no navegador.
+
+## 2026-11-16 — H1.3.2 Atualizar status de tarefas
+
+### O que foi feito
+- Regra pura `canUpdateTaskStatus` (4 testes), Server Action `updateTaskStatus` e seletor de status na tarefa.
+- O progresso atualiza na hora (a página é recarregada após salvar). O critério "saúde atualiza" fica aberto até a H2.2.1, quando a saúde aparecerá na tela.
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Dono altera qualquer tarefa; Líder as da própria área e as suas; Participante só as suas (comparando o nome do perfil com o do responsável) | IA, a partir do PRD seção 2 |
+| Tarefa arquivada não muda de status | IA |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** código e testes. **Autora:** testar no navegador (perfil "Participante" só altera tarefas do Bruno Siqueira).
+
+### Pendência
+- Os perfis só casam com participantes de mesmo nome; o seed (H5.1.1) usa os mesmos nomes dos perfis.

@@ -9,7 +9,7 @@ import { getActiveProfile } from "@/lib/active-profile";
 import { formatDate } from "@/lib/format";
 import { canManageScope } from "@/lib/item-rules";
 import { buildItemTree, countIncompleteScope } from "@/lib/item-tree";
-import { buildProgressMap, filterTree, hasActiveFilters, parseScopeFilters } from "@/lib/scope-view";
+import { buildProgressMap, filterTree, parseScopeFilters } from "@/lib/scope-view";
 import { listItems } from "@/lib/supabase/items";
 import { getProject } from "@/lib/supabase/projects";
 

@@ -4,6 +4,7 @@ import {
   canCreateItemInArea,
   deadlineLimitError,
   canManageScope,
+  canUpdateTaskStatus,
   childTypeOf,
   findLeaderAreaId,
   isItemInput,
@@ -194,5 +195,28 @@ describe("deadline limits (E2 and E3)", () => {
   it("ignores the limit when no limit or no valid deadline is given", () => {
     expect(deadlineLimitError("task", "2027-01-01", {})).toBeNull();
     expect(deadlineLimitError("task", "", { parentDeadline: "2026-06-30" })).toBeNull();
+  });
+});
+
+describe("canUpdateTaskStatus", () => {
+  const designTask = { areaName: "Design", assigneeName: "Ana Lima" };
+
+  it("lets the owner update any task", () => {
+    expect(canUpdateTaskStatus(profile("owner"), designTask)).toBe(true);
+  });
+
+  it("lets an area leader update tasks of their area only", () => {
+    expect(canUpdateTaskStatus(profile("design-lead"), designTask)).toBe(true);
+    expect(canUpdateTaskStatus(profile("dev-lead"), designTask)).toBe(false);
+  });
+
+  it("lets anyone update a task they are responsible for", () => {
+    const own = { areaName: "Design", assigneeName: "bruno  siqueira" };
+    expect(canUpdateTaskStatus(profile("participant"), own)).toBe(true);
+    expect(canUpdateTaskStatus(profile("dev-lead"), { areaName: "Design", assigneeName: "Camila Tavares" })).toBe(true);
+  });
+
+  it("blocks a participant on someone else's task", () => {
+    expect(canUpdateTaskStatus(profile("participant"), designTask)).toBe(false);
   });
 });

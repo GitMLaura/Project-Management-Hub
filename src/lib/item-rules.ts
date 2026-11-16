@@ -235,3 +235,14 @@ export function findLeaderAreaId(
   );
   return area?.id ?? null;
 }
+
+// Who may change a task's status (roles apply only in the interface, PRD decision 4):
+// the owner any task; an area leader the tasks of their area; anyone their own tasks.
+export function canUpdateTaskStatus(
+  profile: DemoProfile,
+  task: { areaName: string; assigneeName: string },
+): boolean {
+  if (profile.role === "owner") return true;
+  if (profile.role === "area-lead" && canCreateItemInArea(profile, task.areaName)) return true;
+  return normalizeName(profile.name) === normalizeName(task.assigneeName);
+}

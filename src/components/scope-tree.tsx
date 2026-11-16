@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArchiveButton } from "@/components/archive-button";
+import { TaskStatusSelect } from "@/components/task-status-select";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import type { DemoProfile } from "@/lib/demo-profiles";
@@ -8,6 +9,7 @@ import {
   ITEM_STATUS_LABELS,
   ITEM_TYPE_LABELS,
   canCreateItemInArea,
+  canUpdateTaskStatus,
   childTypeOf,
 } from "@/lib/item-rules";
 import { countDescendants, isScopeIncomplete, type ItemNode } from "@/lib/item-tree";
@@ -67,6 +69,13 @@ export function ScopeTree({
     <ul className="flex flex-col gap-3 border-l pl-4">
       {nodes.map((node) => {
         const childType = childTypeOf(node.type);
+        const canEditStatus =
+          mode === "active" &&
+          node.type === "task" &&
+          canUpdateTaskStatus(profile, {
+            areaName: areaNames[node.areaId] ?? "",
+            assigneeName: assigneeNames[node.assigneeId] ?? "",
+          });
         const canChange =
           canManage && canCreateItemInArea(profile, areaNames[node.areaId] ?? "");
         return (
@@ -75,7 +84,16 @@ export function ScopeTree({
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="outline">{ITEM_TYPE_LABELS[node.type]}</Badge>
                 <span className="font-medium">{node.title}</span>
-                <Badge variant="secondary">{ITEM_STATUS_LABELS[node.status]}</Badge>
+                {canEditStatus ? (
+                  <TaskStatusSelect
+                    projectId={projectId}
+                    itemId={node.id}
+                    itemTitle={node.title}
+                    status={node.status}
+                  />
+                ) : (
+                  <Badge variant="secondary">{ITEM_STATUS_LABELS[node.status]}</Badge>
+                )}
                 {node.isCritical && <Badge variant="destructive">Crítico</Badge>}
                 {mode === "active" && isScopeIncomplete(node) && (
                   <Badge variant="outline">Escopo incompleto: falta detalhar</Badge>

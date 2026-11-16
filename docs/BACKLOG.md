@@ -60,7 +60,7 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
   - [ ] Progresso = tarefas concluídas ÷ total de tarefas do item (E6)
   - [ ] Filtros por área, responsável e status
 - **H1.3.2** Como participante, quero atualizar o status das tarefas pelas quais respondo, para refletir a realidade.
-  - [ ] Só consigo alterar tarefas das quais sou responsável (regra aplicada na interface)
+  - [x] Só consigo alterar tarefas das quais sou responsável (regra aplicada na interface)
   - [ ] Progresso e saúde atualizam após a mudança
 
 ---
