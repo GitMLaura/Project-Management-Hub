@@ -514,3 +514,20 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 
 ### Gerado pela IA vs. decidido pela autora
 - **IA:** código. **Autora:** conferir no navegador depois do seed.
+
+## 2026-11-16 — H4.3.1 Pendência vira tarefa
+
+### O que foi feito
+- Em cada pendência do resumo, botão "Criar tarefa" (só para o líder da área do resumo e o Dono). O formulário pede a história pai (lista "Funcionalidade > História"), o responsável (já escolhido quando o nome sugerido bate com um participante) e o prazo (começa igual ao prazo da história).
+- Server Action `createTaskFromPending` reaproveita `createItem`, então valem E1 (pai obrigatório), E2 (prazo ≤ pai), permissões e validações de sempre. A pendência guarda o `task_id`; depois de criada, mostra "Já virou tarefa" e não dá para criar de novo.
+- A tarefa nasce na área do resumo, como "A fazer", não crítica, com o texto da pendência no título. Como é item normal, aparece na árvore e entra na saúde sozinha.
+- `src/lib/pending-task.ts` (6 testes): escolher responsável pelo nome, listar histórias possíveis, montar a tarefa.
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| O PRD diz "escolhendo a funcionalidade pai", mas o pai de uma tarefa é uma **história** (E1). A lista mostra a funcionalidade junto, mas se escolhe a história. Funcionalidade sem história precisa de uma história antes | IA (a autora pode querer outro caminho, ex.: criar a história sozinho) |
+| Prazo padrão = prazo da história pai | IA |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** código e testes. **Autora:** conferir no navegador depois do seed.

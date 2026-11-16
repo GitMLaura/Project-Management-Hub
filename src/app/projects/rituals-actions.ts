@@ -3,6 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { getActiveProfile } from "@/lib/active-profile";
 import { canCreateItemInArea, canManageScope } from "@/lib/item-rules";
+import { createItem } from "@/app/projects/items-actions";
+import { buildTaskInput } from "@/lib/pending-task";
+import { getItem } from "@/lib/supabase/items";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parseTranscript, validateRitualImport, type RitualKind } from "@/lib/transcripts";
 
@@ -112,5 +115,61 @@ export async function approveSummary(projectId: string, summaryId: string): Prom
   if (error) return { ok: false, error: "Não foi possível aprovar o resumo. Tente novamente." };
 
   revalidatePath(`/projects/${projectId}/rituals`, "layout");
+  return { ok: true };
+}
+
+export type CreateTaskFromPendingResult = { ok: true } | { ok: false; error: string };
+
+// One pending becomes one task. Scope rules E1-E3 are checked again by createItem.
+export async function createTaskFromPending(
+  projectId: string,
+  pendingId: string,
+  storyId: string,
+  assigneeId: string,
+  deadline: string,
+): Promise<CreateTaskFromPendingResult> {
+  const supabase = createSupabaseServerClient();
+  const { data: pending } = await supabase
+    .from("ritual_pendings")
+    .select("id, description, task_id, ritual_summaries!inner(area_id, rituals!inner(project_id))")
+    .eq("id", pendingId)
+    .maybeSingle();
+  const summary = Array.isArray(pending?.ritual_summaries) ? pending.ritual_summaries[0] : pending?.ritual_summaries;
+  const ritual = Array.isArray(summary?.rituals) ? summary.rituals[0] : summary?.rituals;
+  if (!pending || !summary || !ritual || ritual.project_id !== projectId) {
+    return { ok: false, error: "Pendência não encontrada neste projeto." };
+  }
+  if (pending.task_id) return { ok: false, error: "Esta pendência já virou tarefa." };
+
+  const story = await getItem(projectId, storyId).catch(() => null);
+  if (!story || story.type !== "story" || story.archivedAt) {
+    return { ok: false, error: "Escolha uma história ativa deste projeto como pai da tarefa." };
+  }
+
+  const created = await createItem(
+    buildTaskInput({
+      projectId,
+      areaId: summary.area_id as string,
+      storyId,
+      assigneeId,
+      deadline,
+      description: pending.description as string,
+    }),
+  );
+  if (!created.ok) {
+    const detail = created.fieldErrors?.map((fieldError) => fieldError.message).join(" ");
+    return { ok: false, error: detail ? `${created.error} ${detail}` : created.error };
+  }
+
+  const linked = await supabase
+    .from("ritual_pendings")
+    .update({ task_id: created.id })
+    .eq("id", pendingId)
+    .is("task_id", null);
+  if (linked.error) {
+    return { ok: false, error: "A tarefa foi criada, mas não foi possível ligá-la à pendência." };
+  }
+
+  revalidatePath(`/projects/${projectId}`, "layout");
   return { ok: true };
 }

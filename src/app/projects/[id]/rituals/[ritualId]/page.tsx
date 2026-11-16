@@ -6,6 +6,8 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getActiveProfile } from "@/lib/active-profile";
 import { formatDate } from "@/lib/format";
+import { listStoryOptions, type StoryOption } from "@/lib/pending-task";
+import { listItems } from "@/lib/supabase/items";
 import { getProject } from "@/lib/supabase/projects";
 import { getRitual, listRitualSummaries, type RitualAreaSummary, type RitualDetail } from "@/lib/supabase/rituals";
 import { ritualKindLabel, searchTranscript } from "@/lib/transcripts";
@@ -18,11 +20,15 @@ export default async function RitualPage(props: PageProps<"/projects/[id]/ritual
   let project;
   let ritual: RitualDetail | null = null;
   let summaries: RitualAreaSummary[] = [];
+  let stories: StoryOption[] = [];
   const profile = await getActiveProfile();
   try {
     project = await getProject(id);
     if (project) ritual = await getRitual(id, ritualId);
-    if (ritual) summaries = await listRitualSummaries(ritualId);
+    if (ritual) {
+      summaries = await listRitualSummaries(ritualId);
+      stories = listStoryOptions(await listItems(id));
+    }
   } catch {
     return (
       <PageMessage
@@ -56,6 +62,8 @@ export default async function RitualPage(props: PageProps<"/projects/[id]/ritual
         areas={project.areas.map((area) => ({ id: area.id, name: area.name }))}
         summaries={summaries}
         profile={profile}
+        stories={stories}
+        people={[...names].map(([personId, name]) => ({ id: personId, name }))}
       />
 
       <section className="flex flex-col gap-3" aria-label="Transcrição">

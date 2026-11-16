@@ -1,8 +1,11 @@
+import Link from "next/link";
 import { ApproveSummaryButton } from "@/components/approve-summary-button";
+import { PendingTaskForm } from "@/components/pending-task-form";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DemoProfile } from "@/lib/demo-profiles";
 import { canCreateItemInArea } from "@/lib/item-rules";
+import { matchAssignee, type PersonOption, type StoryOption } from "@/lib/pending-task";
 import type { RitualAreaSummary } from "@/lib/supabase/rituals";
 
 type Area = { id: string; name: string };
@@ -29,11 +32,15 @@ export function RitualSummaries({
   areas,
   summaries,
   profile,
+  stories,
+  people,
 }: {
   projectId: string;
   areas: Area[];
   summaries: RitualAreaSummary[];
   profile: DemoProfile;
+  stories: StoryOption[];
+  people: PersonOption[];
 }) {
   const byArea = new Map(summaries.map((summary) => [summary.areaId, summary]));
 
@@ -55,6 +62,7 @@ export function RitualSummaries({
             </Card>
           );
         }
+        const canCreateTasks = canCreateItemInArea(profile, area.name);
         const canApprove = summary.status === "draft" && canCreateItemInArea(profile, area.name);
         return (
           <Card key={area.id}>
@@ -81,11 +89,29 @@ export function RitualSummaries({
                 ) : (
                   <ul className="list-disc pl-5 text-sm">
                     {summary.pendings.map((pending) => (
-                      <li key={pending.id}>
-                        {pending.description}
-                        {pending.suggestedAssignee && (
-                          <span className="text-muted-foreground"> (sugerido: {pending.suggestedAssignee})</span>
-                        )}
+                      <li key={pending.id} className="flex flex-col gap-2">
+                        <span>
+                          {pending.description}
+                          {pending.suggestedAssignee && (
+                            <span className="text-muted-foreground"> (sugerido: {pending.suggestedAssignee})</span>
+                          )}
+                        </span>
+                        {pending.taskId ? (
+                          <span className="text-muted-foreground">
+                            Já virou tarefa:{" "}
+                            <Link href={`/projects/${projectId}`} className="underline underline-offset-2">
+                              ver no escopo do projeto
+                            </Link>
+                          </span>
+                        ) : canCreateTasks ? (
+                          <PendingTaskForm
+                            projectId={projectId}
+                            pendingId={pending.id}
+                            stories={stories}
+                            people={people}
+                            defaultAssigneeId={matchAssignee(pending.suggestedAssignee, people)}
+                          />
+                        ) : null}
                       </li>
                     ))}
                   </ul>

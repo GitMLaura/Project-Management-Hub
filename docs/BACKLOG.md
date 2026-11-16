@@ -144,9 +144,9 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
 
 ### F4.3 Pendência vira tarefa
 - **H4.3.1** Como Líder de área, quero transformar uma pendência em tarefa com um clique, para não perder encaminhamentos.
-  - [ ] Escolho a funcionalidade pai
-  - [ ] Regras de escopo (E1 a E6) são respeitadas
-  - [ ] A tarefa criada aparece na árvore e na saúde
+  - [x] Escolho a funcionalidade pai
+  - [x] Regras de escopo (E1 a E6) são respeitadas
+  - [x] A tarefa criada aparece na árvore e na saúde
 
 ---
 
