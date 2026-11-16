@@ -1,0 +1,16 @@
+Retro do ciclo Conta e acesso
+
+Helena Duarte: Vamos fazer a retro do primeiro ciclo. O que funcionou bem?
+Rafael Moura: Design e Dev conversaram cedo, antes de fechar a tela. Isso evitou retrabalho.
+Camila Tavares: Concordo. A daily curta ajudou a destravar impedimento no mesmo dia.
+Paula Ribeiro: Em QA, receber a tela pronta junto com os critérios de aceite facilitou muito os testes.
+Helena Duarte: E o que não funcionou?
+Diego Faria: As regras de senha chegaram tarde. Eu comecei o código sem elas e tive que refazer.
+Igor Nascimento: Foi falha minha. Eu levava as regras só depois do design. Quero levar antes.
+Larissa Prado: Também tivemos mudança de tela no meio do ciclo, sem aviso para o QA.
+Bruno Siqueira: Isso gerou teste jogado fora. Prefiro um aviso rápido quando uma tela mudar.
+Helena Duarte: Então o que vamos mudar no próximo ciclo?
+Igor Nascimento: Eu entrego as regras de negócio antes do design começar.
+Rafael Moura: E avisamos o QA no canal sempre que uma tela mudar depois de pronta.
+Camila Tavares: Também quero estimar o risco de integração externa já na planning, por causa do pagamento.
+Helena Duarte: Combinado. Encerramos a retro. Obrigada.

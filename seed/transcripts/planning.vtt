@@ -1,0 +1,57 @@
+WEBVTT
+
+1
+00:00:03.000 --> 00:00:09.000
+<v Helena Duarte>Bom dia, pessoal. Hoje a gente planeja o ciclo de Pedido e entrega, que vai até o fim do projeto.
+
+2
+00:00:10.000 --> 00:00:18.000
+<v Helena Duarte>A meta é o cliente conseguir montar o carrinho, pagar e acompanhar o pedido no mapa.
+
+3
+00:00:20.000 --> 00:00:29.000
+<v Rafael Moura>Do lado do Design, eu proponho começar pelo cardápio e pelo carrinho. São as telas que destravam o resto.
+
+4
+00:00:31.000 --> 00:00:40.000
+<v Larissa Prado>Eu consigo entregar cardápio e carrinho em duas semanas. Pagamento e endereço ficam para depois.
+
+5
+00:00:42.000 --> 00:00:52.000
+<v Camila Tavares>Em Desenvolvimento, o pagamento é o ponto de maior risco. Cartão e Pix dependem de um serviço externo que a gente ainda não testou.
+
+6
+00:00:54.000 --> 00:01:02.000
+<v Diego Faria>Eu sugiro começar a integração do cartão já na semana que vem, mesmo com o design em andamento.
+
+7
+00:01:04.000 --> 00:01:12.000
+<v Helena Duarte>Combinado. Cartão é crítico para o lançamento, então vou marcar como item crítico.
+
+8
+00:01:14.000 --> 00:01:23.000
+<v Igor Nascimento>Falta decidir o pedido mínimo. Eu levanto o valor com o time de negócio e trago na semana que vem.
+
+9
+00:01:25.000 --> 00:01:34.000
+<v Paula Ribeiro>Em QA, eu preciso de ambiente de pagamento de teste pelo menos uma semana antes de testar.
+
+10
+00:01:36.000 --> 00:01:44.000
+<v Camila Tavares>Eu peço o ambiente de teste ainda hoje. Se atrasar, o pagamento corre risco de prazo.
+
+11
+00:01:46.000 --> 00:01:55.000
+<v Bruno Siqueira>Posso já escrever os casos de teste do cardápio e do carrinho enquanto as telas ficam prontas.
+
+12
+00:01:57.000 --> 00:02:05.000
+<v Helena Duarte>Ótimo. Então as decisões: começamos por cardápio e carrinho, e o cartão entra já nesta semana.
+
+13
+00:02:07.000 --> 00:02:14.000
+<v Rafael Moura>Fechado. Eu também vou rever o fluxo de endereço com a Larissa antes de desenhar.
+
+14
+00:02:16.000 --> 00:02:22.000
+<v Helena Duarte>Perfeito. Obrigada, pessoal. Nos vemos na daily.

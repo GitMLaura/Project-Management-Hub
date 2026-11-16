@@ -1,0 +1,14 @@
+Daily de pagamentos - 5 minutos
+
+Camila Tavares: Bom dia. Ontem terminei a estrutura do Pix. Hoje continuo o Pix e ajudo o Diego com o cartão.
+Diego Faria: Eu estou com o cartão. O serviço recusa o cartão de teste e ainda não sei por quê.
+Camila Tavares: Provavelmente é a configuração do ambiente. Eu olho com você depois da daily.
+Larissa Prado: Eu continuo a tela de seleção de endereço. Falta o estado de erro quando o CEP não existe.
+Paula Ribeiro: Em QA, estou preparando os casos de teste de pagamento. Preciso do cartão funcionando para validar.
+Bruno Siqueira: Eu testei o cardápio ontem e achei um erro: prato esgotado ainda aparece como disponível em uma categoria.
+Camila Tavares: Abre o erro com a categoria e eu corrijo hoje.
+Bruno Siqueira: Abro agora. Também preciso de uma data para testar o endereço.
+Larissa Prado: Entrego o design do endereço amanhã, então o Bruno pode testar na quinta.
+Diego Faria: Um impedimento: se o cartão não passar hoje, o prazo dele estoura de novo.
+Camila Tavares: Vou avisar a Helena sobre o risco hoje mesmo.
+Paula Ribeiro: Combinado. Fechamos por aqui.

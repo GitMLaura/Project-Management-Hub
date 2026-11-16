@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => ({
   },
   test: {
     environment: "node",
-    include: ["src/**/*.test.ts"],
+    include: ["src/**/*.test.ts", "seed/**/*.test.ts"],
     // Only public variables are loaded into tests. The service_role key is never loaded here.
     env: loadEnv(mode, process.cwd(), "NEXT_PUBLIC_"),
   },

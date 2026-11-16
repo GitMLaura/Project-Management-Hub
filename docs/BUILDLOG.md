@@ -531,3 +531,25 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 
 ### Gerado pela IA vs. decidido pela autora
 - **IA:** código e testes. **Autora:** conferir no navegador depois do seed.
+
+## 2026-11-16 — H5.1.1 Seed do Projeto Aurora
+
+### O que foi feito
+- `seed/aurora.ts`: dados do Projeto Aurora (app de delivery) com datas **relativas ao dia em que o seed roda**: 1 projeto, 4 áreas, 8 participantes (incluindo os 4 nomes dos perfis), 3 épicos, 7 funcionalidades, 12 histórias, 39 tarefas, 12 regras `RN-###`, 3 fluxos, 8 telas.
+- `seed/transcripts/` (5 transcrições `.txt` e `.vtt` inventadas) e `seed/rituals.ts` (resumos escritos à mão, uns aprovados e outros rascunho, com pendências).
+- `seed/screens.ts`: as telas são **desenhadas por código** (PNG pequeno), então não há imagens no repositório. Duas telas são idênticas (Login e a cópia na recuperação) e uma é quase idêntica (Pagamento e a versão com botão novo).
+- `scripts/seed.ts` (`npm run seed`): usa só a chave anon, confere os dados antes de escrever, recusa rodar se o projeto já existe e tem `--dry-run`. Rodei uma vez no Supabase hospedado.
+- `seed/aurora.test.ts` (7 testes): confere consistência, tamanhos pedidos no PRD, **as três cores de saúde** (épicos: verde, vermelho, amarelo; áreas: Produto e QA verdes, Design amarelo, Desenvolvimento vermelho), trechos repetidos nos fluxos e os grupos de telas.
+- Fluxos repetem de propósito "Validar credenciais → Entrar na conta" (login, recuperação e checkout) e "Informar e-mail → Informar senha → Validar credenciais → Entrar na conta" (login e checkout).
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Datas relativas ao dia do seed: a saúde muda com o tempo (se rodar o seed de novo daqui a meses, num banco limpo, as cores voltam a ser estas) | IA |
+| Atrasos concentrados em Desenvolvimento (cartão, Pix e confirmação de pagamento), com o cartão marcado como crítico | IA |
+| Bruno Siqueira (perfil Participante) é de QA e responde por tarefas, para a troca de status funcionar | IA |
+| Nenhum resumo vira tarefa no seed: a autora pode demonstrar o botão "Criar tarefa" ao vivo | IA |
+| Como não há exclusão, o seed nunca roda duas vezes; para recomeçar, só limpando pelo painel do Supabase | IA |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** todos os textos e dados fictícios, código e testes. **Autora:** revisar o tom dos textos e o tema (decidido no PRD).

@@ -154,14 +154,14 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
 
 ### F5.1 Dados de exemplo
 - **H5.1.1** Como visitante, quero um projeto de exemplo completo, para explorar o Hub sem montar nada.
-  - [ ] 1 projeto, 4 áreas, cerca de 8 participantes fictícios
-  - [ ] 2 a 3 épicos, 6 a 8 funcionalidades, cerca de 12 histórias, 30 a 40 tarefas
-  - [ ] Saúde nas três cores, incluindo atrasos em uma área específica
-  - [ ] 2 a 3 fluxos com trechos repetidos de propósito
-  - [ ] Cerca de 8 telas, com ao menos duas idênticas e uma quase idêntica
-  - [ ] Regras `RN-###` ligadas às funcionalidades
-  - [ ] 5 transcrições com resumos pré-gerados
-  - [ ] Nenhum dado real
+  - [x] 1 projeto, 4 áreas, cerca de 8 participantes fictícios
+  - [x] 2 a 3 épicos, 6 a 8 funcionalidades, cerca de 12 histórias, 30 a 40 tarefas
+  - [x] Saúde nas três cores, incluindo atrasos em uma área específica
+  - [x] 2 a 3 fluxos com trechos repetidos de propósito
+  - [x] Cerca de 8 telas, com ao menos duas idênticas e uma quase idêntica
+  - [x] Regras `RN-###` ligadas às funcionalidades
+  - [x] 5 transcrições com resumos pré-gerados
+  - [x] Nenhum dado real
 
 ### F5.2 Publicação
 - **H5.2.1** Como autora, quero a demo publicada, para compartilhar o link no portfólio.

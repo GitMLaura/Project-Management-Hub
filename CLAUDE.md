@@ -63,7 +63,7 @@ Gerenciador de pacotes: **npm** (Node 22+).
 | Build de produção | `npm run build` |
 | Adicionar componente shadcn/ui | `npx shadcn@latest add <componente>` |
 | Aplicar migrações no Supabase hospedado | `set -a; . ./.env.local; set +a; npx supabase db push --remote --yes` (precisa de `npx supabase login` e `SUPABASE_DB_PASSWORD` no `.env.local`) |
-| Gerar seed | _ainda não existe (história H5.1.1)_ |
+| Carregar o Projeto Aurora (seed) | `npm run seed` (testar antes com `npm run seed -- --dry-run`; recusa rodar duas vezes) |
 
 Variáveis de ambiente: copie `.env.example` para `.env.local` (nunca commitar).
 

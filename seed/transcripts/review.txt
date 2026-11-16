@@ -1,0 +1,14 @@
+Review do ciclo Conta e acesso
+
+Helena Duarte: Obrigada por virem. Vamos mostrar o que ficou pronto no ciclo de Conta e acesso: login e recuperação de acesso.
+Camila Tavares: Eu mostro o login. O cliente entra com e-mail e senha e a sessão dura 30 dias.
+Helena Duarte: Dá para ver o bloqueio depois de cinco tentativas erradas?
+Diego Faria: Dá. Na quinta tentativa o Hub mostra quanto tempo falta para tentar de novo.
+Rafael Moura: Do lado do design, ficou bom. Só acho que a mensagem de bloqueio pode ficar mais curta.
+Larissa Prado: Concordo. Eu ajusto o texto e mando para revisão.
+Camila Tavares: Agora a recuperação de acesso. O e-mail chega em menos de um minuto e o link vale 30 minutos.
+Paula Ribeiro: Testamos o link vencido e o link usado duas vezes. Os dois mostram a mensagem certa.
+Bruno Siqueira: Encontrei um detalhe: a tela de nova senha não mostra as regras da senha antes de digitar.
+Rafael Moura: Boa. Vamos mostrar as regras logo abaixo do campo.
+Helena Duarte: Decisão: aprovado o ciclo, com o ajuste do texto de bloqueio e das regras de senha.
+Helena Duarte: Próximo passo é começar Pedido e entrega. Obrigada a todos.
