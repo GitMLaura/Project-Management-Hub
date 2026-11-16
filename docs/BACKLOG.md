@@ -69,10 +69,10 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
 
 ### F2.1 Cálculo de saúde
 - **H2.1.1** Como Dono do projeto, quero um semáforo de saúde calculado por regra explícita, para não depender de opinião.
-  - [ ] Função pura em `src/lib/health.ts` com limiares em constantes no topo
-  - [ ] Regras exatamente como na seção 4 do PRD
-  - [ ] A cor final é a mais grave entre as condições atendidas
-  - [ ] Testes automatizados cobrem verde, amarelo e vermelho e os casos de borda
+  - [x] Função pura em `src/lib/health.ts` com limiares em constantes no topo
+  - [x] Regras exatamente como na seção 4 do PRD
+  - [x] A cor final é a mais grave entre as condições atendidas
+  - [x] Testes automatizados cobrem verde, amarelo e vermelho e os casos de borda
 
 ### F2.2 Painel de saúde
 - **H2.2.1** Como participante, quero ver a saúde do projeto, de cada épico e de cada área, para saber onde agir.

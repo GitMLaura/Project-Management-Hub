@@ -301,3 +301,20 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 
 ### Pendência
 - Os perfis só casam com participantes de mesmo nome; o seed (H5.1.1) usa os mesmos nomes dos perfis.
+
+## 2026-11-16 — H2.1.1 Cálculo de saúde
+
+### O que foi feito
+- `src/lib/health.ts`: função pura `calculateHealth` com os limiares em constantes no topo (3 tarefas atrasadas = vermelho, 1 a 2 = amarelo, desvio de 25 e 10 p.p., 7 dias sem responsável). Devolve cor, rótulo, motivos em texto e os itens por trás de cada motivo.
+- 19 testes: verde, amarelo, vermelho, bordas (desvio exatamente 10 p.p., tarefa que vence hoje, item sem responsável em 7 e 8 dias, período de 1 dia) e a regra de "a mais grave vence".
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Sem tarefas no conjunto, o desvio não é calculado (não há o que medir). Escopo vazio fica verde | IA (o PRD não cobre esse caso) |
+| Só os motivos da cor final são mostrados (se vermelho, só os vermelhos) | IA |
+| "Sem responsável com prazo em até 7 dias" inclui prazos já vencidos; o banco hoje exige responsável, mas a função cobre o caso | IA |
+| Item concluído nunca conta como atrasado, crítico problemático ou sem responsável | IA |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** código e testes. **Autora:** limiares vêm do PRD (decisão dela).
