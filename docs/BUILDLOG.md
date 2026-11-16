@@ -644,3 +644,11 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 - O nome e o objetivo do projeto de demonstração foram alterados no banco hospedado (a demo publicada passa a mostrar "Projeto Hits") e em `seed/aurora.ts` e `scripts/seed.ts`, para que um seed futuro crie o mesmo nome. Os textos de documentação (PRD, README) ainda dizem "Projeto Aurora", que é o nome do conjunto de dados de exemplo.
 - Cartões sem sombra no componente de cartão e nos cartões da página Status. A coluna "Precisa de atenção" ficou à esquerda (mais estreita) e épicos e saúde por área à direita.
 - Decidido pela autora: nome e layout. Gerado pela IA: código.
+
+## 2026-11-16 — Escopo como lista de gerenciador de tarefas (UI-9)
+
+- Pedido da autora: padronizar os filtros do Escopo como o filtro de mês e dar ao Escopo uma estrutura mais legível, inspirada em páginas de gerenciamento de tarefas.
+- Filtros de Área, Responsável e Status viraram pílulas com ícone e lista (mesmo estilo do filtro de período), guardadas na URL; "Limpar filtros" aparece quando há algum ativo.
+- O Escopo virou uma lista: um bloco branco por épico, e dentro dele as linhas de funcionalidades, histórias e tarefas com colunas alinhadas (item, área, responsável, prazo, progresso, status e ações). Cada linha com itens dentro pode ser recolhida. Para histórias, o texto e os critérios de aceite ficam num "Ver história e critérios". Status de tarefa continua editável por quem tem permissão; arquivar e restaurar viraram botões de ícone; o "+" adiciona o item filho. No celular as colunas empilham.
+- Nenhuma regra de permissão mudou.
+- Decidido pela autora: o pedido e a referência. Gerado pela IA: estrutura e código.

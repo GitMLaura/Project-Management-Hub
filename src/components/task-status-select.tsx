@@ -26,25 +26,21 @@ export function TaskStatusSelect({ projectId, itemId, itemTitle, status }: TaskS
 
   return (
     <div className="flex flex-col gap-1">
-      <label className="flex items-center gap-2 text-sm">
-        Status
-        <select
-          aria-label={`Status da tarefa ${itemTitle}`}
-          value={status}
-          disabled={pending}
-          onChange={(event) => handleChange(event.target.value)}
-          className="h-8 rounded-md border bg-background px-2 text-sm"
-        >
-          {ITEM_STATUSES.map((option) => (
-            <option key={option} value={option}>
-              {ITEM_STATUS_LABELS[option]}
-            </option>
-          ))}
-        </select>
-        {pending && <span className="text-muted-foreground">Salvando...</span>}
-      </label>
+      <select
+        aria-label={`Status da tarefa ${itemTitle}`}
+        value={status}
+        disabled={pending}
+        onChange={(event) => handleChange(event.target.value)}
+        className="h-8 w-full cursor-pointer rounded-full bg-muted px-3 text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
+      >
+        {ITEM_STATUSES.map((option) => (
+          <option key={option} value={option}>
+            {ITEM_STATUS_LABELS[option]}
+          </option>
+        ))}
+      </select>
       {error && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-xs text-destructive">
           {error}
         </p>
       )}

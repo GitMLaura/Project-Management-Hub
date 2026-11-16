@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { archiveItem, restoreItem } from "@/app/projects/archive-actions";
-import { Button } from "@/components/ui/button";
+import { Archive, RotateCcw } from "lucide-react";
 
 type ArchiveButtonProps = {
   projectId: string;
@@ -31,21 +31,22 @@ export function ArchiveButton({ projectId, itemId, itemTitle, mode, descendants 
     });
   }
 
+  const label = mode === "archive" ? "Arquivar" : "Restaurar";
+  const Icon = mode === "archive" ? Archive : RotateCcw;
   return (
     <div className="flex flex-col gap-1">
-      <div>
-        <Button type="button" variant="outline" size="sm" disabled={pending} onClick={handleClick}>
-          {pending
-            ? mode === "archive"
-              ? "Arquivando..."
-              : "Restaurando..."
-            : mode === "archive"
-              ? "Arquivar"
-              : "Restaurar"}
-        </Button>
-      </div>
+      <button
+        type="button"
+        disabled={pending}
+        onClick={handleClick}
+        aria-label={`${label} ${itemTitle}`}
+        title={pending ? `${label}...` : label}
+        className="flex size-8 items-center justify-center rounded-full text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+      >
+        <Icon className="size-4" aria-hidden="true" />
+      </button>
       {error && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-xs text-destructive">
           {error}
         </p>
       )}

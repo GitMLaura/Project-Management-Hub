@@ -71,7 +71,7 @@ export default async function ScopePage(props: PageProps<"/projects/[id]/scope">
         )}
       </header>
 
-      <section className="flex flex-col gap-3" aria-label="Escopo">
+      <section className="flex flex-col gap-5" aria-label="Escopo">
         {countIncompleteScope(tree) > 0 && (
           <p className="text-sm text-muted-foreground">
             {countIncompleteScope(tree)} item(ns) com escopo incompleto: ainda sem nada dentro.
@@ -119,8 +119,8 @@ export default async function ScopePage(props: PageProps<"/projects/[id]/scope">
       </section>
 
       {archivedTree.length > 0 && (
-        <section className="flex flex-col gap-3" aria-label="Itens arquivados">
-          <h2 className="text-lg font-semibold">Arquivados</h2>
+        <section className="flex flex-col gap-4" aria-label="Itens arquivados">
+          <h2 className="text-xl font-semibold">Arquivados</h2>
           <p className="text-sm text-muted-foreground">
             Itens arquivados saem do escopo ativo, mas não são apagados. Restaurar um item traz
             de volta o que foi arquivado junto com ele.
