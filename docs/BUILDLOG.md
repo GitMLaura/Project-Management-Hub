@@ -588,3 +588,13 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 - Os números da visão rápida saem de uma função pura nova, `src/lib/home-snapshot.ts`, com testes.
 - Fora desta história, para as próximas: menu lateral como no print, gráfico de atividade e cabeçalho com busca.
 - Decidido pela autora: seguir o print como referência. Gerado pela IA: layout, cores e código.
+
+## 2026-11-16 — Layout do projeto baseado no layout_structure.html (UI-2)
+
+- A autora adicionou `layout_structure.html` (protótipo navegável, não vai para o Git) e pediu que ele seja a base das páginas do Hub. Escolhas dela: vermelho como cor de destaque, botões preenchidos e texto clicável; no menu lateral só o item selecionado fica colorido; "Encontros" no lugar de "Ritos"; manter o Projeto Aurora; só o visual, sem as funções novas do protótipo.
+- Dentro de um projeto agora há menu lateral com Status, Escopo, Especificação e Encontros. A home e o formulário de novo projeto continuam com a barra do topo (grupo de rotas `(home)`).
+- Status (`/projects/[id]`): cartão de saúde com motivo, barra de progresso com marca do esperado, prazo final, quatro números, saúde por área, épicos em andamento, lista "Precisa de atenção" e áreas e participantes. Os números vêm da função pura `src/lib/status-view.ts`, com testes.
+- Escopo agora é uma página própria (`/projects/[id]/scope`). Especificação abre em Telas e tem abas Telas, Fluxos e Regras de negócio (as regras ficam em `/spec/rules`). Telas mostra avisos de repetidas e uma galeria. Encontros ganhou o novo cabeçalho e cartões.
+- Fontes novas: Bricolage Grotesque nos títulos, Instrument Sans no texto e JetBrains Mono nos números.
+- Ficou para depois: tabela do Escopo como no protótipo, aba Board de tarefas, ações "Manter só uma" e "Revisar", aba Histórico e resumos por área abertos na lista de Encontros.
+- Decidido pela autora: referência visual, cor e nomes. Gerado pela IA: código e ajustes de layout.

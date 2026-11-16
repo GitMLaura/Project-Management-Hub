@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Upload } from "lucide-react";
+import { PageHeader } from "@/components/page-header";
 import { PageMessage } from "@/components/page-message";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -32,53 +34,54 @@ export default async function RitualsPage(props: PageProps<"/projects/[id]/ritua
   if (!project) notFound();
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <p className="text-sm text-muted-foreground">{project.name}</p>
-          <h1 className="text-2xl font-semibold">Ritos</h1>
-        </div>
-        {canManageScope(profile) ? (
-          <Link href={`/projects/${id}/rituals/new`} className={buttonVariants()}>
-            Importar transcrição
-          </Link>
-        ) : (
-          <Button disabled>Importar transcrição</Button>
-        )}
-      </div>
+    <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-6 md:p-10">
+      <PageHeader
+        title="Encontros"
+        description="Resumo de cada encontro por área, com decisões, riscos e pendências. A transcrição completa fica no histórico."
+        action={
+          canManageScope(profile) ? (
+            <Link href={`/projects/${id}/rituals/new`} className={buttonVariants({ size: "lg" })}>
+              <Upload aria-hidden="true" />
+              Importar transcrição
+            </Link>
+          ) : (
+            <Button size="lg" disabled>
+              <Upload aria-hidden="true" />
+              Importar transcrição
+            </Button>
+          )
+        }
+      />
       {!canManageScope(profile) && (
         <p className="text-sm text-muted-foreground">
-          Só líderes de área e o Dono importam ritos. Troque de perfil pelo avatar.
+          Só líderes de área e o Dono importam encontros. Troque de perfil pelo avatar.
         </p>
       )}
 
       {rituals.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col gap-1 pt-4">
-            <p className="font-medium">Ainda não há ritos neste projeto.</p>
+            <p className="font-medium">Ainda não há encontros neste projeto.</p>
             <p className="text-sm text-muted-foreground">Importe a transcrição de uma reunião (.txt ou .vtt).</p>
           </CardContent>
         </Card>
       ) : (
-        <ul className="flex flex-col gap-2">
+        <ul className="flex flex-col gap-3">
           {rituals.map((ritual) => (
-            <li key={ritual.id} className="flex flex-col rounded-2xl border p-3">
-              <Link href={`/projects/${id}/rituals/${ritual.id}`} className="font-medium underline underline-offset-2">
-                {ritual.title}
+            <li key={ritual.id}>
+              <Link
+                href={`/projects/${id}/rituals/${ritual.id}`}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border bg-card p-5 shadow-xs hover:bg-muted/50"
+              >
+                <span className="font-heading text-lg font-semibold">{ritual.title}</span>
+                <span className="text-sm text-muted-foreground">
+                  {ritualKindLabel(ritual.kind)} · {formatDate(ritual.heldOn)}
+                </span>
               </Link>
-              <span className="text-sm text-muted-foreground">
-                {ritualKindLabel(ritual.kind)} · {formatDate(ritual.heldOn)}
-              </span>
             </li>
           ))}
         </ul>
       )}
-
-      <div>
-        <Link href={`/projects/${id}`} className={buttonVariants({ variant: "outline" })}>
-          Voltar para o projeto
-        </Link>
-      </div>
     </main>
   );
 }

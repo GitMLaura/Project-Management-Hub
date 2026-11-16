@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { PageHeader } from "@/components/page-header";
 import { PageMessage } from "@/components/page-message";
-import { buttonVariants } from "@/components/ui/button";
+import { SpecTabs } from "@/components/spec-tabs";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -37,11 +38,12 @@ export default async function FlowsOverviewPage(props: PageProps<"/projects/[id]
   const matches = query ? searchFlows(sources, query) : [];
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-6">
-      <div className="flex flex-col gap-1">
-        <p className="text-sm text-muted-foreground">{project.name}</p>
-        <h1 className="text-2xl font-semibold">Fluxos do projeto</h1>
-      </div>
+    <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-6 md:p-10">
+      <PageHeader
+        title="Especificação"
+        description="Telas, fluxos e regras de negócio do produto, em um só lugar."
+      />
+      <SpecTabs projectId={id} current="flows" />
 
       <section className="flex flex-col gap-3" aria-label="Buscar passo">
         <h2 className="text-lg font-semibold">Buscar um passo ou trecho</h2>
@@ -147,11 +149,6 @@ export default async function FlowsOverviewPage(props: PageProps<"/projects/[id]
         )}
       </section>
 
-      <div>
-        <Link href={`/projects/${id}/spec`} className={buttonVariants({ variant: "outline" })}>
-          Voltar para a especificação
-        </Link>
-      </div>
     </main>
   );
 }

@@ -29,7 +29,7 @@ export function ReferenceScreenButton({
 
   return (
     <div className="flex flex-col gap-1">
-      <Button type="button" variant="outline" size="sm" onClick={handleClick} disabled={pending}>
+      <Button type="button" variant="outline" size="sm" onClick={handleClick} disabled={pending} className="h-auto whitespace-normal py-1.5">
         {pending ? "Salvando..." : "Manter só esta como referência"}
       </Button>
       {error && (
