@@ -112,8 +112,8 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
 
 ### F3.3 Telas
 - **H3.3.1** Como Líder de área, quero enviar imagens de telas (PNG ou JPG), para registrá-las na especificação.
-  - [ ] Upload com validação de tipo e tamanho
-  - [ ] Tela vinculada a uma funcionalidade
+  - [x] Upload com validação de tipo e tamanho
+  - [x] Tela vinculada a uma funcionalidade
 - **H3.3.2** Como Líder de área, quero detectar telas duplicadas ou muito parecidas, para manter apenas uma referência.
   - [ ] SHA-256 identifica cópias exatas
   - [ ] Hash perceptual identifica semelhantes, com limiar ajustável

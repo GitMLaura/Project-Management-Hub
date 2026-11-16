@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { MarkdownView } from "@/components/markdown-view";
 import { PageMessage } from "@/components/page-message";
+import { ScreenUploadForm } from "@/components/screen-upload-form";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +13,8 @@ import { formatRuleCode } from "@/lib/rules";
 import type { FlowRecord } from "@/lib/flows";
 import { listFlows } from "@/lib/supabase/flows";
 import { listRules } from "@/lib/supabase/rules";
+import { screenImageUrl, type ScreenRecord } from "@/lib/screens";
+import { listScreens } from "@/lib/supabase/screens";
 import { loadFeatureContext, type FeatureContext } from "@/lib/supabase/spec-context";
 
 const TABS = [
@@ -34,10 +38,12 @@ export default async function FeatureSpecPage(props: PageProps<"/projects/[id]/s
   let context: FeatureContext | null;
   let rules;
   let flows: FlowRecord[] = [];
+  let screens: ScreenRecord[] = [];
   try {
     context = await loadFeatureContext(id, featureId);
     rules = context ? (await listRules(id)).filter((rule) => rule.featureId === featureId) : [];
     flows = context ? (await listFlows(id)).filter((flow) => flow.featureId === featureId) : [];
+    screens = context ? (await listScreens(id)).filter((screen) => screen.featureId === featureId) : [];
   } catch {
     return (
       <PageMessage
@@ -192,7 +198,41 @@ export default async function FeatureSpecPage(props: PageProps<"/projects/[id]/s
         </section>
       )}
       {tab === "telas" && (
-        <p className="text-sm text-muted-foreground">Telas desta funcionalidade aparecem aqui.</p>
+        <section className="flex flex-col gap-3" aria-label="Telas">
+          <h2 className="text-lg font-semibold">Telas</h2>
+          {canEdit && <ScreenUploadForm projectId={id} featureId={featureId} />}
+          {screens.length === 0 ? (
+            <Card>
+              <CardContent className="flex flex-col gap-1 pt-4">
+                <p className="font-medium">Esta funcionalidade ainda não tem telas.</p>
+                <p className="text-sm text-muted-foreground">
+                  {canEdit
+                    ? "Envie a primeira tela (PNG ou JPG) acima."
+                    : `O líder da área ${areaName} (ou o Dono) pode enviar telas. Troque de perfil pelo avatar.`}
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <ul className="grid gap-3 sm:grid-cols-2">
+              {screens.map((screen) => (
+                <li key={screen.id} className="flex flex-col gap-2 rounded-2xl border p-3">
+                  <Image
+                    src={screenImageUrl(screen.storagePath)}
+                    alt={`Tela ${screen.name}`}
+                    width={screen.width}
+                    height={screen.height}
+                    unoptimized
+                    className="max-h-56 w-full rounded-md border object-contain"
+                  />
+                  <p className="font-medium">{screen.name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {screen.width} × {screen.height} px · {Math.round(screen.sizeBytes / 1024)} KB
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       )}
 
       <div>

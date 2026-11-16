@@ -432,3 +432,22 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 
 ### Gerado pela IA vs. decidido pela autora
 - **IA:** código e testes. **Autora:** conferir no navegador.
+
+## 2026-11-16 — H3.3.1 Upload de telas
+
+### O que foi feito
+- Migração `20261116160000_screens_storage.sql` (aplicada com a CLI): bucket público `screens` (só PNG e JPG, até 4 MB) com política aberta de envio e leitura. Conferi com a chave anon: texto é recusado, PNG sobe e **não dá para apagar**.
+- `src/lib/image-analysis.ts` (11 testes): descobre o tipo pelos bytes (não pelo nome), valida tamanho, lê a imagem, calcula SHA-256 e o hash perceptual (dHash de 64 bits). Já deixa pronto o que a H3.3.2 precisa. Dependências novas: `pngjs`, `jpeg-js` (JavaScript puro, sem binários).
+- Server Action `uploadScreen` e formulário na aba Telas da funcionalidade, com miniaturas.
+- `next.config.ts`: limite de envio das Server Actions subiu de 1 MB para 5 MB.
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Limite de 4 MB por imagem e 25 milhões de pixels (evita travar o servidor ao decodificar) | IA |
+| Hash perceptual por diferença (dHash): simples, sem dependência nativa | IA |
+| Sem exclusão no banco, uma imagem enviada fica no Storage mesmo se o registro falhar (só a autora limpa pelo painel). Existe 1 arquivo de teste de 2 pixels em `screens/_probe/pixel.png` | IA |
+| O Vercel Hobby limita o corpo da requisição a ~4,5 MB, por isso o teto de 4 MB | IA |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** SQL, código, testes. **Autora:** testar o envio de uma imagem real no navegador.

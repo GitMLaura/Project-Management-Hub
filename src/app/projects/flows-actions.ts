@@ -1,32 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getActiveProfile } from "@/lib/active-profile";
 import { isFlowInput, validateFlowInput } from "@/lib/flows";
-import { canCreateItemInArea } from "@/lib/item-rules";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { checkFeaturePermission } from "@/lib/supabase/spec-permission";
 
 export type FlowActionResult = { ok: true; id?: string } | { ok: false; error: string };
-
-// Roles apply only in the interface (PRD decision 4), but we still check here.
-async function checkFeaturePermission(projectId: string, featureId: string): Promise<string | null> {
-  const profile = await getActiveProfile();
-  const supabase = createSupabaseServerClient();
-  const { data: feature } = await supabase
-    .from("items")
-    .select("type, areas(name)")
-    .eq("id", featureId)
-    .eq("project_id", projectId)
-    .maybeSingle();
-  const area = Array.isArray(feature?.areas) ? feature.areas[0] : feature?.areas;
-  if (!feature || feature.type !== "feature" || !area) {
-    return "Funcionalidade não encontrada neste projeto.";
-  }
-  if (!canCreateItemInArea(profile, area.name)) {
-    return `Como ${profile.roleLabel}, você só edita a especificação da sua área (${profile.area}).`;
-  }
-  return null;
-}
 
 export async function saveFlow(raw: unknown): Promise<FlowActionResult> {
   if (!isFlowInput(raw)) {
