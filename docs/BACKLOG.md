@@ -99,9 +99,9 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
 
 ### F3.2 Fluxos
 - **H3.2.1** Como Líder de área, quero criar fluxos em Mermaid com pré-visualização, para documentar jornadas.
-  - [ ] Editor de texto com pré-visualização ao lado
-  - [ ] Erro de sintaxe é mostrado de forma compreensível
-  - [ ] Passos podem ser vinculados a telas
+  - [x] Editor de texto com pré-visualização ao lado
+  - [x] Erro de sintaxe é mostrado de forma compreensível
+  - [x] Passos podem ser vinculados a telas
 - **H3.2.2** Como Líder de área, quero ver trechos idênticos entre fluxos, para reaproveitar em vez de duplicar.
   - [ ] Rótulos normalizados (minúsculas, sem acentos, sem pontuação, espaços colapsados)
   - [ ] Detecta sequências de 2 ou mais passos consecutivos iguais em fluxos diferentes

@@ -381,3 +381,25 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 
 ### Gerado pela IA vs. decidido pela autora
 - **IA:** código e testes. **Autora:** abrir o PDF e conferir se está legível.
+
+## 2026-11-16 — H3.2.1 Fluxos em Mermaid
+
+### O que foi feito
+- Migração `20261116140000_flows_and_screens.sql` (aplicada com a CLI): tabelas `flows`, `screens` (já completa, o upload vem na H3.3.1) e `flow_step_screens` (passo ↔ tela), com RLS aberto, sem exclusão e gatilhos de integridade (tudo do mesmo projeto).
+- `src/lib/flows.ts` (função pura): leitura do `flowchart` (passos, setas, textos entre colchetes e aspas, vários formatos de seta), normalização de rótulos, caminhos de 2+ passos, trechos repetidos e busca. 29 testes. A mesma base serve às histórias H3.2.2 e H3.2.3.
+- Editor com pré-visualização ao lado (Mermaid desenhado no navegador); erros explicados em português ("O Mermaid não entendeu o diagrama na linha 3...") e avisos de linhas que não consegui ler.
+- Lista de fluxos na aba Fluxos; cada passo pode ser vinculado a uma tela já enviada. Dependência nova: `mermaid`.
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Só erro estrutural (sem `flowchart`, colchete aberto) bloqueia o salvamento; linha que a leitura própria não entende vira aviso, porque o Mermaid pode desenhá-la | IA |
+| Salvar também é bloqueado se o Mermaid não consegue desenhar o diagrama | IA |
+| A seta com texto no formato `-- texto -->` não é lida pela análise própria (só `-->|texto|`); o desenho continua funcionando | IA (limite assumido) |
+| O vínculo passo-tela usa o id do passo no texto do Mermaid | IA |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** SQL, código, testes. **Autora:** testar o editor no navegador (digite um fluxo, veja o desenho e provoque um erro de sintaxe).
+
+### Pendência
+- Eu não consegui abrir o navegador nesta sessão: o desenho do Mermaid foi verificado só por compilação e testes da lógica. Vale conferir na tela.

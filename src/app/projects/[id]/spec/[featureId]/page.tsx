@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getActiveProfile } from "@/lib/active-profile";
 import { canCreateItemInArea } from "@/lib/item-rules";
 import { formatRuleCode } from "@/lib/rules";
+import type { FlowRecord } from "@/lib/flows";
+import { listFlows } from "@/lib/supabase/flows";
 import { listRules } from "@/lib/supabase/rules";
 import { loadFeatureContext, type FeatureContext } from "@/lib/supabase/spec-context";
 
@@ -31,9 +33,11 @@ export default async function FeatureSpecPage(props: PageProps<"/projects/[id]/s
 
   let context: FeatureContext | null;
   let rules;
+  let flows: FlowRecord[] = [];
   try {
     context = await loadFeatureContext(id, featureId);
     rules = context ? (await listRules(id)).filter((rule) => rule.featureId === featureId) : [];
+    flows = context ? (await listFlows(id)).filter((flow) => flow.featureId === featureId) : [];
   } catch {
     return (
       <PageMessage
@@ -151,7 +155,41 @@ export default async function FeatureSpecPage(props: PageProps<"/projects/[id]/s
       )}
 
       {tab === "fluxos" && (
-        <p className="text-sm text-muted-foreground">Fluxos desta funcionalidade aparecem aqui.</p>
+        <section className="flex flex-col gap-3" aria-label="Fluxos">
+          <div className="flex items-center justify-between gap-4">
+            <h2 className="text-lg font-semibold">Fluxos</h2>
+            {canEdit && (
+              <Link href={`/projects/${id}/spec/${featureId}/flows/new`} className={buttonVariants()}>
+                Novo fluxo
+              </Link>
+            )}
+          </div>
+          {flows.length === 0 ? (
+            <Card>
+              <CardContent className="flex flex-col gap-1 pt-4">
+                <p className="font-medium">Esta funcionalidade ainda não tem fluxos.</p>
+                <p className="text-sm text-muted-foreground">
+                  {canEdit
+                    ? "Crie o primeiro fluxo em Mermaid."
+                    : `O líder da área ${areaName} (ou o Dono) pode criar fluxos. Troque de perfil pelo avatar.`}
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {flows.map((flow) => (
+                <li key={flow.id}>
+                  <Link
+                    href={`/projects/${id}/spec/${featureId}/flows/${flow.id}`}
+                    className="font-medium underline underline-offset-2"
+                  >
+                    {flow.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       )}
       {tab === "telas" && (
         <p className="text-sm text-muted-foreground">Telas desta funcionalidade aparecem aqui.</p>
