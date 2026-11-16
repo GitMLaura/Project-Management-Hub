@@ -82,14 +82,34 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
         <StatusMetrics totals={view.totals} />
       </header>
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+        <div className="flex flex-col gap-10">
+          <section className="flex flex-1 flex-col gap-4" aria-labelledby="attention-title">
+            <h2 id="attention-title" className="text-xl font-semibold">
+              Precisa de atenção
+            </h2>
+            {view.attention.length === 0 ? (
+              <p className="rounded-2xl bg-card p-5 text-sm text-muted-foreground">
+                Nada atrasado ou bloqueado agora.
+              </p>
+            ) : (
+              <AttentionList
+                fill
+                projectId={id}
+                items={view.attention}
+                areaNames={areaNames}
+                assigneeNames={assigneeNames}
+              />
+            )}
+          </section>
+        </div>
         <div className="flex flex-col gap-10">
           <section className="flex flex-col gap-4" aria-labelledby="epics-title">
             <h2 id="epics-title" className="text-xl font-semibold">
               Épicos em andamento
             </h2>
             {activeEpics.length === 0 ? (
-              <p className="rounded-2xl bg-card p-5 text-sm text-muted-foreground shadow-xs">
+              <p className="rounded-2xl bg-card p-5 text-sm text-muted-foreground">
                 Este projeto ainda não tem épicos.{" "}
                 {canManageScope(profile)
                   ? "Comece adicionando um item."
@@ -131,26 +151,6 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
           )}
         </div>
 
-        <div className="flex flex-col gap-10">
-          <section className="flex flex-1 flex-col gap-4" aria-labelledby="attention-title">
-            <h2 id="attention-title" className="text-xl font-semibold">
-              Precisa de atenção
-            </h2>
-            {view.attention.length === 0 ? (
-              <p className="rounded-2xl bg-card p-5 text-sm text-muted-foreground shadow-xs">
-                Nada atrasado ou bloqueado agora.
-              </p>
-            ) : (
-              <AttentionList
-                fill
-                projectId={id}
-                items={view.attention}
-                areaNames={areaNames}
-                assigneeNames={assigneeNames}
-              />
-            )}
-          </section>
-        </div>
       </div>
     </main>
   );

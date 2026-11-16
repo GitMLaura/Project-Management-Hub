@@ -27,7 +27,7 @@ export type EpicRow = {
 // Table of epics: situation, progress, deadline and a clear way into the epic's items.
 export function EpicsTable({ projectId, epics }: { projectId: string; epics: EpicRow[] }) {
   return (
-    <div className="overflow-hidden rounded-2xl bg-card shadow-xs">
+    <div className="overflow-hidden rounded-2xl bg-card">
       <div className="hidden grid-cols-[minmax(0,1.6fr)_6.5rem_minmax(0,1.2fr)_3.5rem_6rem] gap-4 border-b px-5 py-3 text-xs text-muted-foreground md:grid">
         <span>Épico</span>
         <span>Situação</span>

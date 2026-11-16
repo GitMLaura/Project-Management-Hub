@@ -51,7 +51,7 @@ export function StatusCard({
   const everything = contextTotal > 0 && contextValues.length === contextTotal;
   const tag = badge(counts);
   return (
-    <article className="flex flex-col gap-3 overflow-hidden rounded-2xl bg-card p-5 shadow-xs">
+    <article className="flex flex-col gap-3 overflow-hidden rounded-2xl bg-card p-5">
       <div className="flex items-start justify-between gap-2">
         <h3 className="font-heading text-base font-semibold">{name}</h3>
         <span className={`shrink-0 rounded-full border px-2 py-0.5 text-xs font-medium ${tag.className}`}>
@@ -111,7 +111,7 @@ export function AttentionList({
   assigneeNames: Record<string, string>;
 }) {
   return (
-    <ul className={`divide-y overflow-hidden rounded-2xl bg-card shadow-xs ${fill ? "flex flex-1 flex-col" : ""}`}>
+    <ul className={`divide-y overflow-hidden rounded-2xl bg-card ${fill ? "flex flex-1 flex-col" : ""}`}>
       {items.map((item) => (
         <li key={item.id} className={fill ? "flex flex-1" : undefined}>
           <Link

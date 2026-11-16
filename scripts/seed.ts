@@ -1,4 +1,4 @@
-// Loads the fictional "Projeto Aurora" into Supabase (story H5.1.1).
+// Loads the fictional "Projeto Hits" into Supabase (story H5.1.1).
 // Run: npm run seed          (writes to the database in .env.local)
 //      npm run seed -- --dry-run   (checks everything, writes nothing)
 // Uses only the PUBLIC anon key, like the Hub itself. There is no service_role here.
@@ -299,7 +299,7 @@ async function main() {
       }
     }
     console.log(`Ritos: ${RITUALS.length}.`);
-    console.log("Pronto. Abra o Hub e confira o Projeto Aurora.");
+    console.log("Pronto. Abra o Hub e confira o Projeto Hits.");
   } catch (caught) {
     console.error(
       `\nErro no meio do seed. O projeto ${projectId} ficou criado pela metade (a demo não permite excluir).`,

@@ -637,3 +637,10 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 - Dentro do projeto, a barra lateral foi trocada por: barra do topo (ícone de casa para voltar a todos os projetos, nome do projeto e o perfil com a troca de perfil à direita) e a pílula de ícones fixa à esquerda. No celular a pílula fica na parte de baixo, na horizontal.
 - Não inventei os controles do print que o Hub não tem (busca, notificações, tema).
 - Decidido pela autora: estrutura e comportamento. Gerado pela IA: código.
+
+## 2026-11-16 — Projeto renomeado para "Projeto Hits" e colunas invertidas (UI-8)
+
+- A autora pediu: trocar o nome para "Projeto Hits", tirar contorno e sombra dos cartões e pôr "Precisa de atenção" na coluna da esquerda, com as outras seções na direita.
+- O nome e o objetivo do projeto de demonstração foram alterados no banco hospedado (a demo publicada passa a mostrar "Projeto Hits") e em `seed/aurora.ts` e `scripts/seed.ts`, para que um seed futuro crie o mesmo nome. Os textos de documentação (PRD, README) ainda dizem "Projeto Aurora", que é o nome do conjunto de dados de exemplo.
+- Cartões sem sombra no componente de cartão e nos cartões da página Status. A coluna "Precisa de atenção" ficou à esquerda (mais estreita) e épicos e saúde por área à direita.
+- Decidido pela autora: nome e layout. Gerado pela IA: código.

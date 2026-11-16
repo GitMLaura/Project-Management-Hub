@@ -19,7 +19,7 @@ export function PeriodFilter({ projectId, current }: { projectId: string; curren
     <DropdownMenu>
       <DropdownMenuTrigger
         aria-label={`Período: ${PERIOD_LABELS[current]}. Trocar período`}
-        className="flex h-11 items-center gap-2 rounded-full bg-card px-4 text-sm font-medium shadow-xs outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
+        className="flex h-11 items-center gap-2 rounded-full bg-card px-4 text-sm font-medium outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
       >
         <Calendar className="size-4 text-muted-foreground" aria-hidden="true" />
         {PERIOD_LABELS[current]}

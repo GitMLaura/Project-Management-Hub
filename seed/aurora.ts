@@ -54,9 +54,9 @@ export type SeedEpic = {
 };
 
 export const PROJECT = {
-  name: "Projeto Aurora",
+  name: "Projeto Hits",
   objective:
-    "Lançar o Aurora, um app de delivery de comida: o cliente escolhe o restaurante, monta o pedido, paga e acompanha a entrega.",
+    "Lançar o Hits, um app de delivery de comida: o cliente escolhe o restaurante, monta o pedido, paga e acompanha a entrega.",
   start: -60,
   due: 60,
 };
