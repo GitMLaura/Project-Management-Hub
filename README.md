@@ -2,7 +2,7 @@
 
 > **In English:** a portfolio case study of a project management Hub for multidisciplinary teams (Design, Development, Product, QA). Work is organized as an agile WBS (epic → feature → story → task), project health is calculated by a pure, tested function that always explains its reason, and business rules, Mermaid flows and screens live in one place with duplicate detection (flow segments, exact and perceptual image hashes). Meeting transcripts (`.txt`, `.vtt`) get per-area summaries that start as drafts and need a leader's approval; pendings become tasks. **All data is fictional** (a food delivery app called "Projeto Aurora"), the published Hub **calls no AI** (summaries are pre-generated in `seed/`), and it runs at zero cost on Next.js, Supabase and Vercel. Built by a Product Designer with Claude Code; the split between her decisions and AI-generated code is documented in [`docs/BUILDLOG.md`](docs/BUILDLOG.md).
 
-Demo publicada: _em breve (ver [Status](#status))_.
+Demo publicada: https://project-management-hub-five.vercel.app
 
 ## O problema
 
@@ -52,4 +52,4 @@ Next.js (App Router) e TypeScript, Tailwind CSS e shadcn/ui, Supabase (Postgres 
 
 ## Status
 
-Funcionalidades prontas e testadas por testes automatizados. Faltam a publicação na Vercel e a conferência visual no navegador pela autora. Veja os critérios de pronto na seção 10 do PRD.
+Funcionalidades prontas e testadas por testes automatizados. A demo está publicada na Vercel. Falta a conferência visual no navegador pela autora. Veja os critérios de pronto na seção 10 do PRD.

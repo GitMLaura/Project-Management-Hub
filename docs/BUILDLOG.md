@@ -563,3 +563,20 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 
 ### Gerado pela IA vs. decidido pela autora
 - **IA:** texto do README. **Autora:** revisar o tom e confirmar o que quer destacar no portfólio. O link da demo entra depois da H5.2.1.
+
+## 2026-11-16 — H5.2.1 Demo publicada na Vercel
+
+### O que foi feito
+- A autora publicou o Hub na Vercel (plano Hobby): https://project-management-hub-five.vercel.app
+- Só as duas variáveis públicas foram configuradas (`NEXT_PUBLIC_SUPABASE_URL` e a publishable key). Nenhuma `service_role`/secret key e nenhuma chave de IA na Vercel.
+- Conferido por requisição: home, projeto, especificação, fluxos, telas e ritos do Projeto Aurora respondem 200 com os dados do seed.
+- Link da demo colocado no README.
+
+### Decisões
+| Decisão | Quem |
+|---|---|
+| Fazer o deploy antes de melhorar a UI, para ver problemas reais em produção | Autora |
+| O Supabase Free pausa por inatividade: se a demo falhar, reativar o projeto no painel | IA (aviso) |
+
+### Gerado pela IA vs. decidido pela autora
+- **Autora:** login na Vercel, variáveis e deploy. **IA:** conferência das páginas e atualização dos docs.
