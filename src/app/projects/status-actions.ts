@@ -40,6 +40,6 @@ export async function updateTaskStatus(
     return { ok: false, error: "Não foi possível salvar o status. Tente novamente." };
   }
 
-  revalidatePath(`/projects/${projectId}`);
+  revalidatePath(`/projects/${projectId}`, "layout");
   return { ok: true };
 }

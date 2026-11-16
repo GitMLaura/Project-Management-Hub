@@ -99,7 +99,7 @@ export function RitualSummaries({
                         {pending.taskId ? (
                           <span className="text-muted-foreground">
                             Já virou tarefa:{" "}
-                            <Link href={`/projects/${projectId}`} className="underline underline-offset-2">
+                            <Link href={`/projects/${projectId}/scope`} className="underline underline-offset-2">
                               ver no escopo do projeto
                             </Link>
                           </span>

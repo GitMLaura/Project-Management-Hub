@@ -18,7 +18,7 @@ function Message({ projectId, title, text }: { projectId: string; title: string;
       <h1 className="text-2xl font-semibold">{title}</h1>
       <p>{text}</p>
       <div>
-        <Link href={`/projects/${projectId}`} className={buttonVariants({ variant: "outline" })}>
+        <Link href={`/projects/${projectId}/scope`} className={buttonVariants({ variant: "outline" })}>
           Voltar para o projeto
         </Link>
       </div>

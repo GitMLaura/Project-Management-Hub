@@ -130,7 +130,7 @@ export function ItemForm({
       try {
         const result = await createItem(input);
         if (result.ok) {
-          router.push(`/projects/${projectId}`);
+          router.push(`/projects/${projectId}/scope`);
           return;
         }
         setFormError(result.error);

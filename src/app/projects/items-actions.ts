@@ -97,6 +97,6 @@ export async function createItem(raw: unknown): Promise<CreateItemResult> {
     };
   }
 
-  revalidatePath(`/projects/${input.projectId}`);
+  revalidatePath(`/projects/${input.projectId}`, "layout");
   return { ok: true, id: data.id };
 }

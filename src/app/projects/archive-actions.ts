@@ -52,7 +52,7 @@ async function changeArchive(
     };
   }
 
-  revalidatePath(`/projects/${projectId}`);
+  revalidatePath(`/projects/${projectId}`, "layout");
   return { ok: true };
 }
 

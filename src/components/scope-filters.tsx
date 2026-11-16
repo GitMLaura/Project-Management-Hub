@@ -57,7 +57,7 @@ export function ScopeFilters({ projectId, areas, people, current }: ScopeFilters
       </Button>
       {active && (
         <Link
-          href={`/projects/${projectId}`}
+          href={`/projects/${projectId}/scope`}
           className={buttonVariants({ variant: "ghost", size: "sm" })}
         >
           Limpar filtros
