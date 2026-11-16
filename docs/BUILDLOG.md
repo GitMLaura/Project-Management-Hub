@@ -580,3 +580,11 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 
 ### Gerado pela IA vs. decidido pela autora
 - **Autora:** login na Vercel, variáveis e deploy. **IA:** conferência das páginas e atualização dos docs.
+
+## 2026-11-16 — Home com identidade visual nova (UI-1)
+
+- A autora enviou um print de referência (painel com faixa de boas-vindas em degradê, cartões de visão rápida e lista de execuções) e pediu que a tela inicial se aproximasse dele.
+- Feito: cor principal trocada para roxo e fundo levemente lavanda nos tokens de `globals.css`; faixa de boas-vindas com degradê e estrela; quatro cartões de "Visão rápida" (projetos, progresso, tarefas atrasadas, saúde); lista de projetos com barra de progresso, selo de saúde e prazo, com os que precisam de atenção primeiro.
+- Os números da visão rápida saem de uma função pura nova, `src/lib/home-snapshot.ts`, com testes.
+- Fora desta história, para as próximas: menu lateral como no print, gráfico de atividade e cabeçalho com busca.
+- Decidido pela autora: seguir o print como referência. Gerado pela IA: layout, cores e código.
