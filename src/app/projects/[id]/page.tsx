@@ -3,12 +3,14 @@ import { notFound } from "next/navigation";
 import { Plus } from "lucide-react";
 import { PageMessage } from "@/components/page-message";
 import { StatusHero, StatusMetrics } from "@/components/status-hero";
+import { DeadlineCalendar, EpicsTable, TaskBoard } from "@/components/status-panels";
+import { buildCalendarMonth, parseMonth } from "@/lib/calendar";
 import { AttentionList, StatusCard } from "@/components/status-cards";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { getActiveProfile } from "@/lib/active-profile";
 import { buildHealthPanel } from "@/lib/health-panel";
-import { canManageScope } from "@/lib/item-rules";
+import { canManageScope, ITEM_STATUSES } from "@/lib/item-rules";
 import { buildItemTree } from "@/lib/item-tree";
 import { buildStatusView } from "@/lib/status-view";
 import { listItems } from "@/lib/supabase/items";
@@ -16,6 +18,7 @@ import { getProject } from "@/lib/supabase/projects";
 
 export default async function ProjectStatusPage(props: PageProps<"/projects/[id]">) {
   const { id } = await props.params;
+  const rawMonth = (await props.searchParams).mes;
   const profile = await getActiveProfile();
 
   let project;
@@ -58,6 +61,15 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
     projectDeadline: project.deadline,
     today,
   });
+  const { year, month: monthNumber } = parseMonth(Array.isArray(rawMonth) ? rawMonth[0] : rawMonth, today);
+  const calendar = buildCalendarMonth({
+    year,
+    month: monthNumber,
+    today,
+    deadlines: ITEM_STATUSES.flatMap((status) =>
+      view.board[status].map((task) => ({ deadline: task.deadline, done: status === "concluido" })),
+    ),
+  });
   const epicTitles = Object.fromEntries(tree.map((epic) => [epic.id, epic.title]));
   const activeEpics = tree.filter((epic) => epic.status !== "concluido");
 
@@ -81,6 +93,69 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
 
       <StatusHero health={panel.project.health} view={view} deadline={project.deadline} />
 
+      <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <div className="flex flex-col gap-10">
+          <section className="flex flex-col gap-4" aria-labelledby="epics-title">
+            <h2 id="epics-title" className="text-xl font-semibold">
+              Épicos em andamento
+            </h2>
+            {activeEpics.length === 0 ? (
+              <p className="rounded-2xl border bg-card p-5 text-sm text-muted-foreground">
+                Este projeto ainda não tem épicos.{" "}
+                {canManageScope(profile)
+                  ? "Comece adicionando um item."
+                  : "O Dono ou um Líder de área pode adicionar o primeiro."}
+              </p>
+            ) : (
+              <EpicsTable
+                projectId={id}
+                epics={activeEpics.map((epic) => ({
+                  id: epic.id,
+                  title: epic.title,
+                  deadline: epic.deadline,
+                  featureCount: epic.children.length,
+                  counts: view.epicCounts[epic.id],
+                }))}
+              />
+            )}
+          </section>
+
+          <section className="flex flex-col gap-4" aria-labelledby="board-title">
+            <h2 id="board-title" className="text-xl font-semibold">
+              Quadro de tarefas
+            </h2>
+            <TaskBoard projectId={id} board={view.board} areaNames={areaNames} assigneeNames={assigneeNames} />
+          </section>
+        </div>
+
+        <div className="flex flex-col gap-10">
+          <section className="flex flex-col gap-4" aria-labelledby="calendar-title">
+            <h2 id="calendar-title" className="text-xl font-semibold">
+              Calendário de prazos
+            </h2>
+            <DeadlineCalendar projectId={id} month={calendar} />
+          </section>
+
+          <section className="flex flex-col gap-4" aria-labelledby="attention-title">
+            <h2 id="attention-title" className="text-xl font-semibold">
+              Precisa de atenção
+            </h2>
+            {view.attention.length === 0 ? (
+              <p className="rounded-2xl border bg-card p-5 text-sm text-muted-foreground">
+                Nada atrasado ou bloqueado agora.
+              </p>
+            ) : (
+              <AttentionList
+                projectId={id}
+                items={view.attention}
+                areaNames={areaNames}
+                assigneeNames={assigneeNames}
+              />
+            )}
+          </section>
+        </div>
+      </div>
+
       {project.areas.length > 0 && (
         <section className="flex flex-col gap-4" aria-labelledby="areas-title">
           <h2 id="areas-title" className="text-xl font-semibold">
@@ -101,58 +176,6 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
           </div>
         </section>
       )}
-
-      <div className="grid items-start gap-10 lg:grid-cols-2">
-        <section className="flex flex-col gap-4" aria-labelledby="epics-title">
-          <h2 id="epics-title" className="text-xl font-semibold">
-            Épicos em andamento
-          </h2>
-          {activeEpics.length === 0 ? (
-            <p className="rounded-2xl border bg-card p-5 text-sm text-muted-foreground">
-              Este projeto ainda não tem épicos.{" "}
-              {canManageScope(profile)
-                ? "Comece adicionando um item."
-                : "O Dono ou um Líder de área pode adicionar o primeiro."}
-            </p>
-          ) : (
-            <div className="flex flex-col gap-4">
-              {activeEpics.map((epic) => (
-                <StatusCard
-                  key={epic.id}
-                  name={epic.title}
-                  counts={view.epicCounts[epic.id]}
-                  contextLabel="Áreas"
-                  contextValues={view.epicAreas[epic.id].map((areaId) => areaNames[areaId] ?? "Sem área")}
-                  contextTotal={project.areas.length}
-                  contextAllLabel="Todas"
-                  action={{
-                    href: `/projects/${id}/scope#item-${epic.id}`,
-                    label: `Ver itens do épico (${epic.children.length} ${epic.children.length === 1 ? "funcionalidade" : "funcionalidades"})`,
-                  }}
-                />
-              ))}
-            </div>
-          )}
-        </section>
-
-        <section className="flex flex-col gap-4" aria-labelledby="attention-title">
-          <h2 id="attention-title" className="text-xl font-semibold">
-            Precisa de atenção
-          </h2>
-          {view.attention.length === 0 ? (
-            <p className="rounded-2xl border bg-card p-5 text-sm text-muted-foreground">
-              Nada atrasado ou bloqueado agora.
-            </p>
-          ) : (
-            <AttentionList
-              projectId={id}
-              items={view.attention}
-              areaNames={areaNames}
-              assigneeNames={assigneeNames}
-            />
-          )}
-        </section>
-      </div>
 
       <section className="flex flex-col gap-4" aria-labelledby="people-title">
         <h2 id="people-title" className="text-xl font-semibold">

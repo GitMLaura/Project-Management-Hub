@@ -608,3 +608,11 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 - Menu do projeto rola na horizontal no celular.
 - Os testes de integração com o Supabase estouraram o tempo nesta sessão por lentidão da rede (1 a 17 s por chamada); os demais passam.
 - Decidido pela autora: layout de referência. Gerado pela IA: refinos e código.
+
+## 2026-11-16 — Status com tabela de épicos, quadro de tarefas e calendário (UI-4)
+
+- A autora enviou um segundo layout de referência (painel com tabela de projetos, quadro de tarefas e calendário na coluna da direita) e pediu que a página Status o seguisse.
+- Coluna principal: tabela de épicos (situação, progresso, prazo e o link "Ver itens" que leva ao épico no Escopo) e quadro de tarefas com quatro colunas por status, três tarefas cada e "Ver mais N no escopo". Coluna lateral: calendário de prazos do mês (pontos em dia, vermelho para atrasado, hoje preenchido, setas para outros meses pela URL `?mes=AAAA-MM`) e "Precisa de atenção".
+- Lógica pura nova e testada: `src/lib/calendar.ts` e o agrupamento do quadro em `src/lib/status-view.ts`.
+- Mantidos: cartão de saúde do projeto, saúde por área e áreas e participantes.
+- Decidido pela autora: layout de referência. Gerado pela IA: componentes e código.
