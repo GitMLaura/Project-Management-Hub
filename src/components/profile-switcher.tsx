@@ -20,7 +20,7 @@ import {
 // Full class names (not built dynamically) so Tailwind can find them.
 const AVATAR_COLORS: Record<DemoProfileId, string> = {
   owner: "bg-emerald-600 text-white",
-  "design-lead": "bg-violet-600 text-white",
+  "design-lead": "bg-slate-600 text-white",
   "dev-lead": "bg-sky-700 text-white",
   participant: "bg-amber-600 text-white",
 };
@@ -28,9 +28,11 @@ const AVATAR_COLORS: Record<DemoProfileId, string> = {
 type ProfileSwitcherProps = {
   profiles: readonly DemoProfile[];
   activeId: DemoProfileId;
+  variant?: "header" | "sidebar";
 };
 
-export function ProfileSwitcher({ profiles, activeId }: ProfileSwitcherProps) {
+export function ProfileSwitcher({ profiles, activeId, variant = "header" }: ProfileSwitcherProps) {
+  const sidebar = variant === "sidebar";
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const active = profiles.find((profile) => profile.id === activeId) ?? profiles[0];
@@ -49,14 +51,14 @@ export function ProfileSwitcher({ profiles, activeId }: ProfileSwitcherProps) {
   }
 
   return (
-    <div className="flex flex-col items-end gap-1">
+    <div className={sidebar ? "flex flex-col gap-1" : "flex flex-col items-end gap-1"}>
       <DropdownMenu>
         <DropdownMenuTrigger
           disabled={isPending}
           aria-label={`Trocar perfil. Perfil ativo: ${active.name}, ${active.roleLabel}`}
-          className="flex items-center gap-3 rounded-full py-1 pr-1 pl-3 outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
+          className={`flex items-center gap-3 outline-none ${sidebar ? "w-full flex-row-reverse justify-end rounded-md p-1" : "rounded-full py-1 pr-1 pl-3"}  hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60`}
         >
-          <span className="hidden text-right leading-tight sm:block">
+          <span className={sidebar ? "text-left leading-tight" : "hidden text-right leading-tight sm:block"}>
             <span className="block text-sm font-medium">{active.name}</span>
             <span className="block text-xs text-muted-foreground">
               {isPending ? "Trocando perfil…" : active.roleLabel}
@@ -68,7 +70,7 @@ export function ProfileSwitcher({ profiles, activeId }: ProfileSwitcherProps) {
             </AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="min-w-64">
+        <DropdownMenuContent align={sidebar ? "start" : "end"} className="min-w-64">
           <DropdownMenuGroup>
             <DropdownMenuLabel>Ver o Hub como</DropdownMenuLabel>
             {profiles.map((profile) => (

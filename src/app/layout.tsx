@@ -1,39 +1,24 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Roboto } from "next/font/google";
-import { Suspense } from "react";
-import { AppHeader, AppHeaderSkeleton } from "@/components/app-header";
+import { Bricolage_Grotesque, Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const roboto = Roboto({subsets:['latin'],variable:'--font-sans'});
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const display = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-display" });
+const instrument = Instrument_Sans({ subsets: ["latin"], variable: "--font-instrument" });
+const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains" });
 
 export const metadata: Metadata = {
   title: "Aurora Project Hub",
-  description: "Gestão de projetos multidisciplinares: escopo, saúde, especificação e ritos.",
+  description: "Gestão de projetos multidisciplinares: escopo, saúde, especificação e encontros.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="pt-BR"
-      className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", roboto.variable)}
+      className={cn("h-full", "antialiased", display.variable, instrument.variable, mono.variable, "font-sans")}
     >
-      <body className="min-h-full flex flex-col">
-        <Suspense fallback={<AppHeaderSkeleton />}>
-          <AppHeader />
-        </Suspense>
-        {children}
-      </body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }
