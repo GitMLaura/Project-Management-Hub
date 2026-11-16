@@ -419,3 +419,16 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 
 ### Gerado pela IA vs. decidido pela autora
 - **IA:** código e testes. **Autora:** conferir no navegador com 2 fluxos que compartilham passos.
+
+## 2026-11-16 — H3.2.3 Busca de passos nos fluxos
+
+### O que foi feito
+- Campo de busca em `/projects/[id]/spec/flows`: lista os fluxos onde o passo aparece, com o texto do passo e link. A função `searchFlows` (já testada em `flows.test.ts`) ignora maiúsculas, acentos e pontuação, aceita parte do texto e também uma sequência separada por `>` ("informar e-mail > validar senha").
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Busca por parte do texto (não só texto exato); a ordem dos passos importa nas sequências | IA |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** código e testes. **Autora:** conferir no navegador.

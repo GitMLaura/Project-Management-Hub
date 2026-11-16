@@ -108,7 +108,7 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
   - [x] Mostra o trecho, onde aparece e atalho para cada fluxo
   - [x] Testes automatizados da normalização e da detecção
 - **H3.2.3** Como participante, quero buscar um passo ou trecho, para saber em quais fluxos ele ocorre.
-  - [ ] Busca por texto lista os fluxos onde o passo aparece
+  - [x] Busca por texto lista os fluxos onde o passo aparece
 
 ### F3.3 Telas
 - **H3.3.1** Como Líder de área, quero enviar imagens de telas (PNG ou JPG), para registrá-las na especificação.
