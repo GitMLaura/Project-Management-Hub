@@ -172,16 +172,16 @@ Notificações, comentários em tempo real, integração com Jira ou Figma, grav
 
 ## 10. Critérios de pronto da v1
 
-- [ ] Criar um projeto com nome, objetivo, participantes, áreas e prazo
-- [ ] Criar épicos, funcionalidades, histórias e tarefas com responsável, prazo e status, respeitando E1 a E6
-- [ ] Painel de saúde por projeto, épico e área, com motivo
-- [ ] Regras de negócio em Markdown com visualização, download `.md` e PDF (visualizar e baixar)
-- [ ] Fluxos em Mermaid com detecção de trechos idênticos e busca
-- [ ] Telas com detecção de duplicadas e vínculo com fluxos
-- [ ] Ritos: importar transcrição, ver resumo por área (pré-gerado) e criar tarefa a partir de pendência
-- [ ] Projeto Aurora carregado a partir do `seed/`
+- [x] Criar um projeto com nome, objetivo, participantes, áreas e prazo
+- [x] Criar épicos, funcionalidades, histórias e tarefas com responsável, prazo e status, respeitando E1 a E6
+- [x] Painel de saúde por projeto, épico e área, com motivo
+- [x] Regras de negócio em Markdown com visualização, download `.md` e PDF (visualizar e baixar)
+- [x] Fluxos em Mermaid com detecção de trechos idênticos e busca
+- [x] Telas com detecção de duplicadas e vínculo com fluxos
+- [x] Ritos: importar transcrição, ver resumo por área (pré-gerado) e criar tarefa a partir de pendência
+- [x] Projeto Aurora carregado a partir do `seed/`
 - [ ] Deploy público funcionando, sem nenhuma chave de IA
-- [ ] README em formato de caso, com `BUILDLOG.md` e a divisão entre decisões da autora e código gerado pela IA
+- [x] README em formato de caso, com `BUILDLOG.md` e a divisão entre decisões da autora e código gerado pela IA
 
 ## 11. Decisões
 

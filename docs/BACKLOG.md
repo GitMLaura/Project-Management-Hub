@@ -168,9 +168,9 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
   - [ ] Deploy público na Vercel, sem nenhuma chave de IA
   - [ ] Demo conferida (Supabase Free pode pausar por inatividade) antes de divulgar
 - **H5.2.2** Como autora, quero um README em formato de caso, para mostrar o raciocínio por trás do produto.
-  - [ ] Problema, decisões e resultado explicados
-  - [ ] `BUILDLOG.md` com a divisão entre decisões da autora e código gerado pela IA
-  - [ ] README em português, com resumo em inglês no topo (PRD, seção 11)
+  - [x] Problema, decisões e resultado explicados
+  - [x] `BUILDLOG.md` com a divisão entre decisões da autora e código gerado pela IA
+  - [x] README em português, com resumo em inglês no topo (PRD, seção 11)
 
 ---
 

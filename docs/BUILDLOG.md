@@ -553,3 +553,13 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 
 ### Gerado pela IA vs. decidido pela autora
 - **IA:** todos os textos e dados fictícios, código e testes. **Autora:** revisar o tom dos textos e o tema (decidido no PRD).
+
+## 2026-11-16 — H5.2.2 README em formato de caso
+
+### O que foi feito
+- `README.md` reescrito: resumo em inglês no topo, problema, o que o Hub faz, tabela de decisões, resultado, como rodar e stack. Aponta para o PRD, o BACKLOG e este BUILDLOG.
+- Critérios de pronto da seção 10 do PRD marcados, menos o deploy público (falta a H5.2.1, que depende da conta da Vercel da autora).
+- O README diz com franqueza que a conferência visual no navegador ainda é da autora.
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** texto do README. **Autora:** revisar o tom e confirmar o que quer destacar no portfólio. O link da demo entra depois da H5.2.1.
