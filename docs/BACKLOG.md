@@ -128,9 +128,9 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
 
 ### F4.1 Importação e visualização
 - **H4.1.1** Como Líder de área, quero importar a transcrição de uma reunião, para registrá-la no projeto.
-  - [ ] Aceita `.txt` e `.vtt`
-  - [ ] Informa tipo (daily, weekly, planning, review, retro), data e participantes
-  - [ ] Transcrição completa com busca de texto
+  - [x] Aceita `.txt` e `.vtt`
+  - [x] Informa tipo (daily, weekly, planning, review, retro), data e participantes
+  - [x] Transcrição completa com busca de texto
 
 ### F4.2 Resumo por área
 - **H4.2.1** Como participante, quero ver o resumo da reunião por área, para ler só o que me interessa.

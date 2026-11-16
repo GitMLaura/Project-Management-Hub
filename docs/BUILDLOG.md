@@ -480,3 +480,21 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 
 ### Gerado pela IA vs. decidido pela autora
 - **IA:** código e testes. **Autora:** conferir no navegador.
+
+## 2026-11-16 — H4.1.1 Importar transcrição
+
+### O que foi feito
+- Migração `20261116180000_rituals.sql` (aplicada com a CLI): tabelas `rituals`, `ritual_participants`, `ritual_summaries`, `ritual_pendings` (as duas últimas já prontas para H4.2 e H4.3), RLS ligado, políticas abertas e sem exclusão. Conferi com SQL que desfaz tudo: insert com a anon key funciona, tipo inválido é recusado, exclusão é bloqueada.
+- `src/lib/transcripts.ts` (9 testes): `parseTranscript` lê `.txt` e `.vtt` (tira cabeçalho, notas, ids e tags; vira linhas `[mm:ss] Fulano: texto`), `searchTranscript` (ignora maiúsculas, acentos e pontuação), validação do formulário.
+- Páginas `/projects/[id]/rituals` (lista), `/new` (importar) e `/[ritualId]` (transcrição completa com busca `?q=` e linhas destacadas). Link "Ritos" na página do projeto. Só Líder e Dono importam (interface e Server Action).
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Guardar o texto já normalizado (não o arquivo original): sem binários no repositório nem no Storage | IA |
+| Limite de 1 MB de texto por transcrição | IA |
+| Busca marca as linhas que combinam e mostra a transcrição inteira | IA |
+| Criei as 4 tabelas de ritos de uma vez, para não editar migração já aplicada | IA |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** SQL, código, testes. **Autora:** importar um `.vtt` real no navegador.

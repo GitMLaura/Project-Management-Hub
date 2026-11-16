@@ -78,9 +78,12 @@ export default async function ProjectPage(props: PageProps<"/projects/[id]">) {
         <p className="text-sm text-muted-foreground">
           {formatDate(project.startDate)} a {formatDate(project.deadline)}
         </p>
-        <div>
+        <div className="flex flex-wrap gap-2">
           <Link href={`/projects/${id}/spec`} className={buttonVariants({ variant: "outline", size: "sm" })}>
             Ver especificação
+          </Link>
+          <Link href={`/projects/${id}/rituals`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+            Ritos
           </Link>
         </div>
       </div>
