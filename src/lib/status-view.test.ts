@@ -65,10 +65,12 @@ describe("buildStatusView", () => {
     expect(view.epicAreas.e1).toEqual(["a1", "a2"]);
   });
 
-  it("lists late and blocked items for attention", () => {
+  it("lists late and blocked items for attention, most overdue first", () => {
     expect(view.attention.map((item) => [item.id, item.reason])).toEqual([
       ["t2", "late"],
       ["t3", "blocked"],
     ]);
+    expect(view.attention[0].daysOverdue).toBe(15);
+    expect(view.attention[1].daysOverdue).toBe(0);
   });
 });

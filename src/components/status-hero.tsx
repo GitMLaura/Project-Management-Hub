@@ -1,3 +1,4 @@
+import { HealthBadge } from "@/components/health-badge";
 import { formatLongDate } from "@/lib/format";
 import type { HealthEntry } from "@/lib/health-panel";
 import type { StatusView } from "@/lib/status-view";
@@ -8,16 +9,20 @@ const TONE = {
   green: "border-green-200 bg-green-50 text-green-950 dark:border-green-900 dark:bg-green-950/40 dark:text-green-50",
 } as const;
 
-function Tile({ value, label, tone }: { value: string; label: string; tone?: string }) {
+function Figure({ value, label, urgent }: { value: string; label: string; urgent?: boolean }) {
   return (
-    <div className="flex flex-col gap-1 rounded-2xl border bg-card p-5">
-      <p className={`font-heading text-4xl font-semibold ${tone ?? ""}`}>{value}</p>
+    <div className="flex flex-col gap-1 border-t pt-4">
+      <p
+        className={`font-heading text-4xl font-semibold tabular-nums ${urgent ? "text-primary" : ""}`}
+      >
+        {value}
+      </p>
       <p className="text-sm text-muted-foreground">{label}</p>
     </div>
   );
 }
 
-// The big card at the top of the Status page: color, reasons, progress and deadline.
+// Top of the Status page: the project's health and why, then the four numbers behind it.
 export function StatusHero({
   health,
   view,
@@ -38,20 +43,23 @@ export function StatusHero({
       : `${Math.abs(view.daysLeft)} dias além do prazo`;
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
+    <div className="grid gap-x-10 gap-y-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
       <section
-        aria-label="Saúde do projeto"
-        className={`grid gap-6 rounded-2xl border p-6 md:grid-cols-[1fr_auto] ${TONE[health.color]}`}
+        aria-labelledby="health-title"
+        className={`grid gap-6 rounded-2xl border p-6 md:grid-cols-[1fr_auto] md:gap-8 ${TONE[health.color]}`}
       >
-        <div className="flex flex-col gap-4">
-          <p className="text-xs font-semibold tracking-wide uppercase">
-            Saúde do projeto · {health.label}
-          </p>
-          <h2 className="font-heading text-2xl font-semibold leading-snug sm:text-3xl">
+        <div className="flex flex-col gap-5">
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 id="health-title" className="text-base font-semibold">
+              Saúde do projeto
+            </h2>
+            <HealthBadge color={health.color} label={health.label} />
+          </div>
+          <p className="font-heading text-2xl leading-snug font-semibold text-balance sm:text-3xl">
             {headline}
-          </h2>
+          </p>
           <div className="flex flex-col gap-2">
-            <div className="relative">
+            <div className="relative pt-1">
               <div
                 role="progressbar"
                 aria-valuenow={totals.percent}
@@ -60,39 +68,45 @@ export function StatusHero({
                 aria-label="Progresso do projeto"
                 className="h-2 overflow-hidden rounded-full bg-black/10"
               >
-                <div className="h-full bg-foreground" style={{ width: `${totals.percent}%` }} />
+                <div
+                  className="bar-fill h-full rounded-full bg-foreground"
+                  style={{ width: `${totals.percent}%` }}
+                />
               </div>
               <span
                 aria-hidden="true"
-                className="absolute -top-1 h-4 w-0.5 bg-primary"
+                className="absolute top-0 h-4 w-0.5 rounded-full bg-primary"
                 style={{ left: `${view.expectedPercent}%` }}
               />
             </div>
-            <p className="font-medium">
-              {totals.percent}% das tarefas do projeto concluídas ({totals.doneTasks} de{" "}
-              {totals.totalTasks})
+            <p className="font-medium tabular-nums">
+              {totals.percent}% das tarefas concluídas ({totals.doneTasks} de {totals.totalTasks})
             </p>
             <p className="text-sm opacity-80">
-              Esperado para hoje: {view.expectedPercent}% · medido em tarefas concluídas ÷ total de
-              tarefas
+              A marca vermelha é o esperado para hoje: {view.expectedPercent}%. Medido em tarefas
+              concluídas ÷ total de tarefas.
             </p>
           </div>
         </div>
-        <div className="flex flex-col justify-center gap-1 rounded-xl bg-white/60 p-5 md:min-w-48 dark:bg-white/10">
-          <p className="text-xs font-semibold tracking-wide uppercase">Prazo final</p>
+        <div className="flex flex-col justify-center gap-1 md:min-w-44 md:border-l md:border-current/15 md:pl-8">
+          <p className="text-sm font-medium">Prazo final</p>
           <p className="font-heading text-3xl font-semibold">{formatLongDate(deadline)}</p>
-          <p className="text-sm font-medium">{daysText}</p>
+          <p className="text-sm tabular-nums">{daysText}</p>
         </div>
       </section>
-      <div className="grid grid-cols-2 gap-4">
-        <Tile
+
+      <div className="grid grid-cols-2 gap-x-8 gap-y-6 self-center">
+        <Figure
           value={String(totals.lateTasks)}
-          label="tarefas atrasadas"
-          tone={totals.lateTasks > 0 ? "text-primary" : undefined}
+          label={totals.lateTasks === 1 ? "tarefa atrasada" : "tarefas atrasadas"}
+          urgent={totals.lateTasks > 0}
         />
-        <Tile value={String(totals.blockedItems)} label="itens bloqueados" />
-        <Tile value={`${totals.doneTasks}/${totals.totalTasks}`} label="tarefas concluídas" />
-        <Tile value={String(Math.max(view.daysLeft, 0))} label="dias até o prazo final" />
+        <Figure
+          value={String(totals.blockedItems)}
+          label={totals.blockedItems === 1 ? "item bloqueado" : "itens bloqueados"}
+        />
+        <Figure value={`${totals.doneTasks}/${totals.totalTasks}`} label="tarefas concluídas" />
+        <Figure value={String(Math.max(view.daysLeft, 0))} label="dias até o prazo final" />
       </div>
     </div>
   );

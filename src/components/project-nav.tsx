@@ -18,7 +18,7 @@ export function ProjectNav({ projectId }: { projectId: string }) {
   const base = `/projects/${projectId}`;
 
   return (
-    <nav aria-label="Seções do projeto" className="flex gap-1 md:flex-col">
+    <nav aria-label="Seções do projeto" className="flex gap-1 overflow-x-auto md:flex-col md:overflow-visible">
       {ITEMS.map(({ segment, label, Icon }) => {
         const href = `${base}${segment}`;
         const active = segment === "" ? pathname === base : pathname.startsWith(href);
@@ -28,7 +28,7 @@ export function ProjectNav({ projectId }: { projectId: string }) {
             href={href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "flex items-center gap-3 rounded-md px-2 py-2 text-sm font-medium text-foreground hover:bg-muted",
+              "flex shrink-0 items-center gap-3 rounded-md px-2 py-2 text-sm font-medium text-foreground hover:bg-muted",
               active && "text-primary",
             )}
           >

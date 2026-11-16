@@ -1,5 +1,4 @@
 import Link from "next/link";
-import type { HealthEntry } from "@/lib/health-panel";
 import { formatDate } from "@/lib/format";
 import type { AttentionItem, StatusCounts } from "@/lib/status-view";
 
@@ -36,14 +35,17 @@ export function StatusCard({
   counts,
   contextLabel,
   contextValues,
-  health,
+  contextTotal,
+  contextAllLabel,
 }: {
   name: string;
   counts: StatusCounts;
   contextLabel: string; // "Atuando em" or "Áreas"
   contextValues: string[];
-  health: HealthEntry["health"];
+  contextTotal: number; // when contextValues covers all of them, one word replaces the list
+  contextAllLabel: string; // "Todos os épicos" or "Todas"
 }) {
+  const everything = contextTotal > 0 && contextValues.length === contextTotal;
   const tag = badge(counts);
   return (
     <article className="flex flex-col gap-3 rounded-2xl border bg-card p-5 shadow-xs">
@@ -63,17 +65,18 @@ export function StatusCard({
           aria-label={`Progresso de ${name}`}
           className="h-2 overflow-hidden rounded-full bg-muted"
         >
-          <div className="h-full bg-foreground" style={{ width: `${counts.percent}%` }} />
+          <div className="bar-fill h-full rounded-full bg-foreground" style={{ width: `${counts.percent}%` }} />
         </div>
-        <p className="mt-2 font-mono text-xs text-muted-foreground">
+        <p className="mt-2 font-mono text-xs text-muted-foreground tabular-nums">
           {counts.doneTasks} de {counts.totalTasks} tarefas · {counts.percent}%
         </p>
       </div>
-      <p className="sr-only">Saúde: {health.label}</p>
       <div className="flex flex-wrap gap-x-3 gap-y-1 border-t pt-3 text-xs">
         <span className="text-muted-foreground">{contextLabel}</span>
         {contextValues.length === 0 ? (
           <span>Nenhum ainda</span>
+        ) : everything ? (
+          <span>{contextAllLabel}</span>
         ) : (
           contextValues.map((value) => <span key={value}>{value}</span>)
         )}
@@ -99,7 +102,7 @@ export function AttentionList({
         <li key={item.id}>
           <Link
             href={`/projects/${projectId}/scope`}
-            className="flex flex-wrap items-center justify-between gap-2 p-4 hover:bg-muted/50"
+            className="flex flex-wrap items-center justify-between gap-2 p-4 outline-none hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
           >
             <span className="flex flex-col">
               <span className="font-medium">{item.title}</span>
@@ -108,7 +111,11 @@ export function AttentionList({
               </span>
             </span>
             <span className="flex items-center gap-3 text-sm">
-              <span className="text-muted-foreground">Prazo {formatDate(item.deadline)}</span>
+              <span className="text-muted-foreground tabular-nums">
+                {item.daysOverdue > 0
+                  ? `Venceu há ${item.daysOverdue} ${item.daysOverdue === 1 ? "dia" : "dias"} (${formatDate(item.deadline)})`
+                  : `Prazo ${formatDate(item.deadline)}`}
+              </span>
               <span
                 className={`rounded-full border px-2 py-0.5 text-xs font-medium ${
                   item.reason === "late"

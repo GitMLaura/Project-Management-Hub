@@ -59,8 +59,6 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
     today,
   });
   const epicTitles = Object.fromEntries(tree.map((epic) => [epic.id, epic.title]));
-  const areaHealth = Object.fromEntries(panel.areas.map((entry) => [entry.id, entry.health]));
-  const epicHealth = Object.fromEntries(panel.epics.map((entry) => [entry.id, entry.health]));
   const activeEpics = tree.filter((epic) => epic.status !== "concluido");
 
   return (
@@ -91,9 +89,10 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
                 key={area.id}
                 name={area.name}
                 counts={view.areaCounts[area.id]}
-                health={areaHealth[area.id]}
                 contextLabel="Atuando em"
                 contextValues={view.areaEpics[area.id].map((epicId) => epicTitles[epicId])}
+                contextTotal={tree.length}
+                contextAllLabel="Todos os épicos"
               />
             ))}
           </div>
@@ -118,9 +117,10 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
                 key={epic.id}
                 name={epic.title}
                 counts={view.epicCounts[epic.id]}
-                health={epicHealth[epic.id]}
                 contextLabel="Áreas"
                 contextValues={view.epicAreas[epic.id].map((areaId) => areaNames[areaId] ?? "Sem área")}
+                contextTotal={project.areas.length}
+                contextAllLabel="Todas"
               />
             ))}
           </div>
@@ -145,26 +145,24 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
         <h2 id="people-title" className="text-xl font-semibold">
           Áreas e participantes
         </h2>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <dl className="grid gap-x-8 gap-y-6 sm:grid-cols-2 xl:grid-cols-4">
           {project.areas.map((area) => (
-            <article key={area.id} className="flex flex-col gap-2 rounded-2xl border bg-card p-5">
-              <h3 className="font-heading text-base font-semibold">{area.name}</h3>
+            <div key={area.id} className="flex flex-col gap-2 border-t pt-4">
+              <dt className="font-heading font-semibold">{area.name}</dt>
               {area.participants.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Nenhum participante nesta área.</p>
+                <dd className="text-sm text-muted-foreground">Nenhum participante nesta área.</dd>
               ) : (
-                <ul className="flex flex-col gap-2">
-                  {area.participants.map((participant) => (
-                    <li key={participant.id} className="flex flex-wrap items-center gap-2 text-sm">
-                      <span>{participant.name}</span>
-                      {participant.isOwner && <Badge>Dono do projeto</Badge>}
-                      {participant.isAreaLeader && <Badge variant="secondary">Líder da área</Badge>}
-                    </li>
-                  ))}
-                </ul>
+                area.participants.map((participant) => (
+                  <dd key={participant.id} className="flex flex-wrap items-center gap-2 text-sm">
+                    <span>{participant.name}</span>
+                    {participant.isOwner && <Badge>Dono do projeto</Badge>}
+                    {participant.isAreaLeader && <Badge variant="secondary">Líder da área</Badge>}
+                  </dd>
+                ))
               )}
-            </article>
+            </div>
           ))}
-        </div>
+        </dl>
       </section>
     </main>
   );

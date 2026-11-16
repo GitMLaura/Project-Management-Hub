@@ -16,6 +16,7 @@ export type AttentionItem = {
   title: string;
   reason: "late" | "blocked";
   deadline: string;
+  daysOverdue: number; // 0 when the deadline has not passed
   areaId: string;
   assigneeId: string;
 };
@@ -89,14 +90,17 @@ export function buildStatusView(input: {
 
   const attention: AttentionItem[] = all
     .filter((item) => isLateTask(item, today) || item.status === "bloqueado")
-    .map((item) => ({
+    .map((item): AttentionItem => ({
       id: item.id,
       title: item.title,
       reason: item.status === "bloqueado" ? "blocked" : "late",
       deadline: item.deadline,
+      daysOverdue: Math.max(0, toDay(today) - toDay(item.deadline)),
       areaId: item.areaId,
       assigneeId: item.assigneeId,
-    }));
+    }))
+    // Blocked items first would hide the late ones: most overdue first, then blocked by deadline.
+    .sort((a, b) => b.daysOverdue - a.daysOverdue || a.deadline.localeCompare(b.deadline));
 
   return {
     totals: countItems(all, today),

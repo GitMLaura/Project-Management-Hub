@@ -598,3 +598,13 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 - Fontes novas: Bricolage Grotesque nos títulos, Instrument Sans no texto e JetBrains Mono nos números.
 - Ficou para depois: tabela do Escopo como no protótipo, aba Board de tarefas, ações "Manter só uma" e "Revisar", aba Histórico e resumos por área abertos na lista de Encontros.
 - Decidido pela autora: referência visual, cor e nomes. Gerado pela IA: código e ajustes de layout.
+
+## 2026-11-16 — Refino da página Status (UI-3)
+
+- Pedido da autora: refinar o Status seguindo o `layout_structure.html`, usando as skills impeccable e anti-ui-slop.
+- Mudanças: o rótulo pequeno acima do título (estilo "kicker") virou um título de verdade com o selo de saúde ao lado; os quatro números deixaram de ser cartões e viraram números com uma linha de separação; o prazo final ficou numa coluna do cartão de saúde, sem caixa dentro de caixa; "Áreas e participantes" virou colunas simples em vez de cartões.
+- Informação a mais: "Venceu há N dias" nos itens que precisam de atenção, com os mais atrasados primeiro; "Todos os épicos" e "Todas" no lugar de listas repetidas; números tabulares.
+- Movimento: as barras de progresso crescem uma vez ao abrir a página (respeita "reduzir movimento"). A seleção de texto usa a cor principal.
+- Menu do projeto rola na horizontal no celular.
+- Os testes de integração com o Supabase estouraram o tempo nesta sessão por lentidão da rede (1 a 17 s por chamada); os demais passam.
+- Decidido pela autora: layout de referência. Gerado pela IA: refinos e código.
