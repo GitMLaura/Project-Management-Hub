@@ -89,3 +89,26 @@ export function parseThreshold(raw: string | undefined): number {
   }
   return value >= 0 && value <= MAX_SIMILARITY_THRESHOLD ? value : DEFAULT_SIMILARITY_THRESHOLD;
 }
+
+export type ScreenMatch = {
+  screen: ScreenRecord;
+  kind: "exact" | "similar";
+  distance: number; // perceptual hash bits that differ
+};
+
+// Screens identical (same SHA-256) or similar (distance <= threshold) to one screen.
+// Direct matches only, closest first.
+export function findMatchesForScreen(
+  target: ScreenRecord,
+  all: ScreenRecord[],
+  threshold: number = DEFAULT_SIMILARITY_THRESHOLD,
+): ScreenMatch[] {
+  const matches: ScreenMatch[] = [];
+  for (const screen of all) {
+    if (screen.id === target.id) continue;
+    const distance = hammingDistance(target.phash, screen.phash);
+    if (screen.sha256 === target.sha256) matches.push({ screen, kind: "exact", distance });
+    else if (distance <= threshold) matches.push({ screen, kind: "similar", distance });
+  }
+  return matches.sort((a, b) => a.distance - b.distance);
+}

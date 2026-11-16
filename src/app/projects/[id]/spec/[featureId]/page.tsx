@@ -224,7 +224,12 @@ export default async function FeatureSpecPage(props: PageProps<"/projects/[id]/s
                     unoptimized
                     className="max-h-56 w-full rounded-md border object-contain"
                   />
-                  <p className="font-medium">{screen.name}</p>
+                  <Link
+                    href={`/projects/${id}/spec/screens/${screen.id}`}
+                    className="font-medium underline underline-offset-2"
+                  >
+                    {screen.name}
+                  </Link>
                   <p className="text-sm text-muted-foreground">
                     {screen.width} × {screen.height} px · {Math.round(screen.sizeBytes / 1024)} KB
                   </p>

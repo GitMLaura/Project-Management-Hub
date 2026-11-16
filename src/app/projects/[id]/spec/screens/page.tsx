@@ -110,7 +110,12 @@ export default async function DuplicateScreensPage(props: PageProps<"/projects/[
                         className="max-h-48 w-full rounded-md border object-contain"
                       />
                       <p className="font-medium">
-                        {screen.name}
+                        <Link
+                          href={`/projects/${id}/spec/screens/${screen.id}`}
+                          className="underline underline-offset-2"
+                        >
+                          {screen.name}
+                        </Link>
                         {screen.isReference && (
                           <span className="ml-2 rounded-md bg-muted px-2 py-0.5 text-xs font-normal">Referência</span>
                         )}

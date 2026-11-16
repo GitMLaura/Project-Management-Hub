@@ -466,3 +466,17 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 
 ### Gerado pela IA vs. decidido pela autora
 - **IA:** código e testes. **Autora:** conferir no navegador.
+
+## 2026-11-16 — H3.3.3 Onde a tela aparece
+
+### O que foi feito
+- Página `/projects/[id]/spec/screens/[screenId]`: imagem, "em quais fluxos aparece" (fluxo e rótulo do passo, com link) e "telas idênticas ou semelhantes" (cópia exata ou distância em bits).
+- `findMatchesForScreen` em `src/lib/screens.ts` (com teste) e `listScreenLinks` em `src/lib/supabase/flows.ts`. Nome da tela vira link na aba Telas e na página de repetidas.
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Semelhantes = só vizinhas diretas da tela, com limiar padrão 10 (diferente dos grupos, que juntam cadeias) | IA |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** código e testes. **Autora:** conferir no navegador.

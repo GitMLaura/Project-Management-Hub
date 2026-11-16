@@ -119,8 +119,8 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
   - [x] Hash perceptual identifica semelhantes, com limiar ajustável
   - [x] Grupos de telas repetidas aparecem juntos, com opção de manter só uma
 - **H3.3.3** Como participante, quero saber em quais fluxos uma tela aparece, para entender seu uso.
-  - [ ] Consulta "em quais fluxos esta tela aparece"
-  - [ ] Consulta "quais telas são idênticas ou semelhantes a esta"
+  - [x] Consulta "em quais fluxos esta tela aparece"
+  - [x] Consulta "quais telas são idênticas ou semelhantes a esta"
 
 ---
 

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   DEFAULT_SIMILARITY_THRESHOLD,
+  findMatchesForScreen,
   groupScreens,
   hammingDistance,
   parseThreshold,
@@ -83,5 +84,21 @@ describe("parseThreshold", () => {
   it("accepts values in range", () => {
     expect(parseThreshold("0")).toBe(0);
     expect(parseThreshold("5")).toBe(5);
+  });
+});
+
+describe("findMatchesForScreen", () => {
+  it("finds exact and similar screens, closest first, without itself", () => {
+    const target = screen("a", "a", ZERO);
+    const matches = findMatchesForScreen(target, [
+      target,
+      screen("b", "b", NEAR),
+      screen("c", "a", FAR),
+      screen("d", "d", FAR),
+    ]);
+    expect(matches.map((m) => [m.screen.id, m.kind])).toEqual([
+      ["b", "similar"],
+      ["c", "exact"],
+    ]);
   });
 });
