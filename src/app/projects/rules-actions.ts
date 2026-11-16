@@ -1,0 +1,56 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { getActiveProfile } from "@/lib/active-profile";
+import { canCreateItemInArea } from "@/lib/item-rules";
+import { isRuleInput, validateRuleInput } from "@/lib/rules";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+export type SaveRuleResult = { ok: true } | { ok: false; error: string };
+
+export async function saveRule(raw: unknown): Promise<SaveRuleResult> {
+  if (!isRuleInput(raw)) {
+    return { ok: false, error: "Dados inválidos. Recarregue a página e tente de novo." };
+  }
+  const problem = validateRuleInput(raw);
+  if (problem) return { ok: false, error: problem };
+
+  // Roles apply only in the interface (PRD decision 4), but we still check here.
+  const profile = await getActiveProfile();
+  const supabase = createSupabaseServerClient();
+
+  const { data: feature } = await supabase
+    .from("items")
+    .select("type, areas(name)")
+    .eq("id", raw.featureId)
+    .eq("project_id", raw.projectId)
+    .maybeSingle();
+  const area = Array.isArray(feature?.areas) ? feature.areas[0] : feature?.areas;
+  if (!feature || feature.type !== "feature" || !area) {
+    return { ok: false, error: "Funcionalidade não encontrada neste projeto." };
+  }
+  if (!canCreateItemInArea(profile, area.name)) {
+    return {
+      ok: false,
+      error: `Como ${profile.roleLabel}, você só edita a especificação da sua área (${profile.area}).`,
+    };
+  }
+
+  const fields = { title: raw.title.trim(), body: raw.body };
+  const { error } = raw.ruleId
+    ? await supabase
+        .from("business_rules")
+        .update(fields)
+        .eq("id", raw.ruleId)
+        .eq("project_id", raw.projectId)
+    : await supabase
+        .from("business_rules")
+        .insert({ ...fields, project_id: raw.projectId, feature_id: raw.featureId, code: 0 });
+
+  if (error) {
+    return { ok: false, error: "Não foi possível salvar a regra. Nada foi gravado; tente novamente." };
+  }
+
+  revalidatePath(`/projects/${raw.projectId}/spec`, "layout");
+  return { ok: true };
+}

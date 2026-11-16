@@ -335,3 +335,19 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 
 ### Gerado pela IA vs. decidido pela autora
 - **IA:** código, testes, visual. **Autora:** testar no navegador (mude o status de tarefas e veja a cor mudar).
+
+## 2026-11-16 — H3.1.1 Regras de negócio em Markdown
+
+### O que foi feito
+- Migração `20261116120000_business_rules.sql` (aplicada com a CLI): tabela `business_rules` com RLS aberto e sem exclusão. O banco gera o código `RN-###` (próximo número do projeto, com trava para duas pessoas não receberem o mesmo) e não deixa o código mudar.
+- Páginas: `/projects/[id]/spec` (funcionalidades por épico), `/projects/[id]/spec/[featureId]` (abas Regras, Fluxos, Telas) e telas de nova regra e edição, com editor e pré-visualização lado a lado.
+- Lógica pura em `src/lib/rules.ts` (código, validação) com testes. Dependência nova: `react-markdown`.
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Cada regra é um registro (título + texto em Markdown), não um documento único; o `RN-###` vem do banco | IA |
+| Só o líder da área da funcionalidade (ou o Dono) escreve regras, como na criação de itens | IA, a partir do PRD seção 2 |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** SQL, código, testes. **Autora:** testar no navegador (criar uma regra, ver o RN-001 e editar).

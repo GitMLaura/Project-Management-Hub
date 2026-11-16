@@ -87,8 +87,8 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
 
 ### F3.1 Regras de negócio
 - **H3.1.1** Como Líder de área, quero escrever regras de negócio em Markdown com pré-visualização, para ter uma fonte da verdade limpa.
-  - [ ] Editor com pré-visualização ao lado
-  - [ ] Cada regra recebe ID estável `RN-###`, único no projeto
+  - [x] Editor com pré-visualização ao lado
+  - [x] Cada regra recebe ID estável `RN-###`, único no projeto
 - **H3.1.2** Como participante, quero baixar as regras em `.md`, para colar em uma IA.
   - [ ] Download por funcionalidade, por épico e do projeto inteiro
   - [ ] Cabeçalho com projeto, épico e funcionalidade; uma seção por funcionalidade

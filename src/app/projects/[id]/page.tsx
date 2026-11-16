@@ -78,6 +78,11 @@ export default async function ProjectPage(props: PageProps<"/projects/[id]">) {
         <p className="text-sm text-muted-foreground">
           {formatDate(project.startDate)} a {formatDate(project.deadline)}
         </p>
+        <div>
+          <Link href={`/projects/${id}/spec`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+            Ver especificação
+          </Link>
+        </div>
       </div>
 
       <HealthPanel panel={healthPanel} />
