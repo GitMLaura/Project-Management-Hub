@@ -103,10 +103,10 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
   - [x] Erro de sintaxe é mostrado de forma compreensível
   - [x] Passos podem ser vinculados a telas
 - **H3.2.2** Como Líder de área, quero ver trechos idênticos entre fluxos, para reaproveitar em vez de duplicar.
-  - [ ] Rótulos normalizados (minúsculas, sem acentos, sem pontuação, espaços colapsados)
-  - [ ] Detecta sequências de 2 ou mais passos consecutivos iguais em fluxos diferentes
-  - [ ] Mostra o trecho, onde aparece e atalho para cada fluxo
-  - [ ] Testes automatizados da normalização e da detecção
+  - [x] Rótulos normalizados (minúsculas, sem acentos, sem pontuação, espaços colapsados)
+  - [x] Detecta sequências de 2 ou mais passos consecutivos iguais em fluxos diferentes
+  - [x] Mostra o trecho, onde aparece e atalho para cada fluxo
+  - [x] Testes automatizados da normalização e da detecção
 - **H3.2.3** Como participante, quero buscar um passo ou trecho, para saber em quais fluxos ele ocorre.
   - [ ] Busca por texto lista os fluxos onde o passo aparece
 

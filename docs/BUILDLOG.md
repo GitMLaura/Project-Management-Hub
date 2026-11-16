@@ -403,3 +403,19 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 
 ### Pendência
 - Eu não consegui abrir o navegador nesta sessão: o desenho do Mermaid foi verificado só por compilação e testes da lógica. Vale conferir na tela.
+
+## 2026-11-16 — H3.2.2 Trechos repetidos entre fluxos
+
+### O que foi feito
+- `findRepeatedSegments` (em `src/lib/flows.ts`, testes em `flows.test.ts`): normaliza os rótulos (minúsculas, sem acentos, sem pontuação, espaços colapsados), segue as setas e acha sequências de 2+ passos iguais em fluxos diferentes. Se um trecho curto está dentro de um maior que cobre os mesmos fluxos, só o maior aparece.
+- Página `/projects/[id]/spec/flows`: cada trecho com os passos, a contagem e um link para cada fluxo onde aparece.
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Comparação por rótulo idêntico após normalização, como no PRD (sem similaridade semântica) | Autora (PRD seção 5.2) |
+| Trecho = caminho que segue as setas, até 8 passos; repetição dentro do mesmo fluxo não conta | IA |
+| Fluxos com erro de sintaxe ficam fora da comparação | IA |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** código e testes. **Autora:** conferir no navegador com 2 fluxos que compartilham passos.

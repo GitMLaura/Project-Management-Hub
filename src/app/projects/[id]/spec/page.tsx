@@ -47,6 +47,12 @@ export default async function SpecPage(props: PageProps<"/projects/[id]/spec">) 
         </p>
       </div>
 
+      <div>
+        <Link href={`/projects/${id}/spec/flows`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+          Fluxos do projeto: trechos repetidos
+        </Link>
+      </div>
+
       {rules.length > 0 && (
         <div className="flex flex-wrap gap-2">
           <a
