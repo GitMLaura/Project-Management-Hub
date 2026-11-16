@@ -10,7 +10,7 @@ import {
   canCreateItemInArea,
   childTypeOf,
 } from "@/lib/item-rules";
-import { countDescendants, type ItemNode } from "@/lib/item-tree";
+import { countDescendants, isScopeIncomplete, type ItemNode } from "@/lib/item-tree";
 
 type ScopeTreeProps = {
   projectId: string;
@@ -50,6 +50,9 @@ export function ScopeTree({
                 <span className="font-medium">{node.title}</span>
                 <Badge variant="secondary">{ITEM_STATUS_LABELS[node.status]}</Badge>
                 {node.isCritical && <Badge variant="destructive">Crítico</Badge>}
+                {mode === "active" && isScopeIncomplete(node) && (
+                  <Badge variant="outline">Escopo incompleto: falta detalhar</Badge>
+                )}
               </div>
               <p className="text-sm text-muted-foreground">
                 {areaNames[node.areaId] ?? "Área desconhecida"} ·{" "}

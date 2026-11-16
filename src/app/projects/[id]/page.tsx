@@ -7,7 +7,7 @@ import { ScopeTree } from "@/components/scope-tree";
 import { getActiveProfile } from "@/lib/active-profile";
 import { formatDate } from "@/lib/format";
 import { canManageScope } from "@/lib/item-rules";
-import { buildItemTree } from "@/lib/item-tree";
+import { buildItemTree, countIncompleteScope } from "@/lib/item-tree";
 import { listItems } from "@/lib/supabase/items";
 import { getProject } from "@/lib/supabase/projects";
 
@@ -95,6 +95,11 @@ export default async function ProjectPage(props: PageProps<"/projects/[id]">) {
             </Link>
           )}
         </div>
+        {countIncompleteScope(tree) > 0 && (
+          <p className="text-sm text-muted-foreground">
+            {countIncompleteScope(tree)} item(ns) com escopo incompleto: ainda sem nada dentro.
+          </p>
+        )}
         {tree.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col gap-1 pt-4">

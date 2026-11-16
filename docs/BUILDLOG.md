@@ -251,3 +251,18 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 ### Pendências
 - Autora: testar no navegador (arquivar um épico com filhos, ver em Arquivados, restaurar; trocar de perfil e ver os botões mudarem).
 
+
+## 2026-11-16 — H1.2.4 Alerta de escopo incompleto
+
+### O que foi feito
+- Funções puras `isScopeIncomplete` e `countIncompleteScope` (regra E5) em `src/lib/item-tree.ts`, com testes.
+- Selo "Escopo incompleto: falta detalhar" nos itens que não são tarefa e não têm filhos ativos, e contagem acima da árvore.
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Itens arquivados não contam como filhos para o alerta | IA |
+| O alerta aparece para todos os perfis, não só para o Dono | IA |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** código e testes. **Autora:** testar no navegador.

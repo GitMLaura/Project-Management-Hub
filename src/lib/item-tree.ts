@@ -42,3 +42,15 @@ export function buildItemTree(items: readonly ItemRecord[]): ItemNode[] {
 export function countDescendants(node: ItemNode): number {
   return node.children.reduce((total, child) => total + 1 + countDescendants(child), 0);
 }
+
+// Rule E5: anything that is not a task and has no (active) children needs more detail.
+export function isScopeIncomplete(node: ItemNode): boolean {
+  return node.type !== "task" && node.children.length === 0;
+}
+
+export function countIncompleteScope(nodes: readonly ItemNode[]): number {
+  return nodes.reduce(
+    (total, node) => total + (isScopeIncomplete(node) ? 1 : 0) + countIncompleteScope(node.children),
+    0,
+  );
+}

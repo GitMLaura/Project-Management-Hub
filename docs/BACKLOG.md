@@ -53,7 +53,7 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
   - [x] Excluir item com filhos não é permitido (E4). Na demo, o banco recusa **qualquer** exclusão: itens só se arquivam
   - [x] Item arquivado sai das visões ativas, mas pode ser restaurado
 - **H1.2.4** Como Dono do projeto, quero ver alertas de escopo incompleto, para saber onde falta detalhar.
-  - [ ] Item sem filhos (que não seja tarefa) mostra "escopo incompleto" (E5)
+  - [x] Item sem filhos (que não seja tarefa) mostra "escopo incompleto" (E5)
 
 ### F1.3 Visualização e progresso
 - **H1.3.1** Como participante, quero ver a árvore do escopo com o progresso de cada item, para entender o andamento.

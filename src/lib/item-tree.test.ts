@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildItemTree, countDescendants, type ItemRecord } from "@/lib/item-tree";
+import { buildItemTree, countDescendants, countIncompleteScope, isScopeIncomplete, type ItemRecord } from "@/lib/item-tree";
 
 function item(id: string, parentId: string | null, type: ItemRecord["type"]): ItemRecord {
   return {
@@ -58,5 +58,27 @@ describe("countDescendants", () => {
     ]);
     expect(countDescendants(epic)).toBe(4);
     expect(countDescendants(epic.children[0].children[0].children[0])).toBe(0);
+  });
+});
+
+describe("scope incomplete (rule E5)", () => {
+  const tree = buildItemTree([
+    item("e1", null, "epic"),
+    item("f1", "e1", "feature"),
+    item("s1", "f1", "story"),
+    item("t1", "s1", "task"),
+    item("f2", "e1", "feature"),
+    item("e2", null, "epic"),
+  ]);
+
+  it("flags a non-task without children, never a task", () => {
+    expect(isScopeIncomplete(tree[0])).toBe(false); // epic with features
+    expect(isScopeIncomplete(tree[0].children[1])).toBe(true); // feature without stories
+    expect(isScopeIncomplete(tree[0].children[0].children[0].children[0])).toBe(false); // task
+    expect(isScopeIncomplete(tree[1])).toBe(true); // empty epic
+  });
+
+  it("counts every incomplete item", () => {
+    expect(countIncompleteScope(tree)).toBe(2);
   });
 });
