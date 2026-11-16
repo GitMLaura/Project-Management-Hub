@@ -47,8 +47,8 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
   - [ ] Status disponíveis: a fazer, em andamento, bloqueado, concluído
   - [ ] Item pode ser marcado como crítico
 - **H1.2.2** Como Líder de área, quero ser impedido de ultrapassar prazos do pai, para manter o cronograma consistente.
-  - [ ] Prazo de filho acima do prazo do pai é bloqueado ou avisado na hora (E2)
-  - [ ] Prazo de épico acima do prazo do projeto é bloqueado ou avisado (E3)
+  - [x] Prazo de filho acima do prazo do pai é bloqueado ou avisado na hora (E2)
+  - [x] Prazo de épico acima do prazo do projeto é bloqueado ou avisado (E3)
 - **H1.2.3** Como Líder de área, quero arquivar em vez de excluir itens com filhos, para não perder trabalho por engano.
   - [ ] Excluir item com filhos não é permitido (E4). Na demo, o banco recusa **qualquer** exclusão: itens só se arquivam
   - [ ] Item arquivado sai das visões ativas, mas pode ser restaurado

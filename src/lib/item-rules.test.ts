@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { DEMO_PROFILES, type DemoProfile } from "@/lib/demo-profiles";
 import {
   canCreateItemInArea,
+  deadlineLimitError,
   canManageScope,
   childTypeOf,
   findLeaderAreaId,
@@ -146,5 +147,52 @@ describe("permissions (interface only)", () => {
     expect(findLeaderAreaId(profile("design-lead"), areas)).toBe("a1");
     expect(findLeaderAreaId(profile("dev-lead"), areas)).toBeNull();
     expect(findLeaderAreaId(profile("owner"), areas)).toBeNull();
+  });
+});
+
+describe("deadline limits (E2 and E3)", () => {
+  it("blocks a child deadline after the parent deadline", () => {
+    const input = { ...validTask(), deadline: "2026-03-11" };
+    const result = validateItem(input, { parentDeadline: "2026-03-10" });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors).toEqual([
+        {
+          field: "deadline",
+          message: "O prazo não pode ultrapassar o prazo do item pai (10/03/2026).",
+        },
+      ]);
+    }
+  });
+
+  it("accepts a child deadline equal to or before the parent deadline", () => {
+    expect(validateItem(validTask(), { parentDeadline: "2026-03-10" }).ok).toBe(true);
+    expect(validateItem(validTask(), { parentDeadline: "2026-04-01" }).ok).toBe(true);
+  });
+
+  it("blocks an epic deadline after the project deadline", () => {
+    const epic: ItemInput = {
+      ...validTask(),
+      type: "epic",
+      parentId: null,
+      startDate: "2026-03-01",
+      deadline: "2026-07-01",
+    };
+    expect(errorFields(epic)).toEqual([]);
+    const result = validateItem(epic, { projectDeadline: "2026-06-30" });
+    expect(result.ok).toBe(false);
+    expect(deadlineLimitError("epic", "2026-07-01", { projectDeadline: "2026-06-30" })).toContain(
+      "prazo do projeto (30/06/2026)",
+    );
+  });
+
+  it("does not apply the project limit to non-epics, nor the parent limit to epics", () => {
+    expect(deadlineLimitError("task", "2027-01-01", { projectDeadline: "2026-06-30" })).toBeNull();
+    expect(deadlineLimitError("epic", "2027-01-01", { parentDeadline: "2026-06-30" })).toBeNull();
+  });
+
+  it("ignores the limit when no limit or no valid deadline is given", () => {
+    expect(deadlineLimitError("task", "2027-01-01", {})).toBeNull();
+    expect(deadlineLimitError("task", "", { parentDeadline: "2026-06-30" })).toBeNull();
   });
 });

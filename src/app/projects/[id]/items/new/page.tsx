@@ -111,6 +111,7 @@ export default async function NewItemPage(props: PageProps<"/projects/[id]/items
         participants={participants}
         fixedAreaId={fixedAreaId}
         today={today}
+        maxDeadline={parent ? parent.deadline : project.deadline}
       />
     </main>
   );

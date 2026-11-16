@@ -207,3 +207,25 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 ### Pendências
 - Autora: no projeto "Teste", criar épico, funcionalidade, história (com critérios) e tarefa; testar status, crítico e a troca de perfil (Líder de Design só cria em Design).
 - Observação: os perfis têm áreas fixas ("Design", "Desenvolvimento"). Um Líder só cria se o projeto tiver uma área com o mesmo nome.
+
+## 2026-11-16 — H1.2.2 Limites de prazo e automação das migrações
+
+### O que foi feito
+- Migração `20261115200000_items_deadline_bounds.sql`: o banco recusa épico com prazo acima do prazo do projeto (E3) e item com prazo acima do prazo do pai (E2).
+- `validateItem` recebe os limites de prazo; a Server Action busca os prazos no banco. O formulário limita a data (`max`) e avisa na hora.
+- Teste de integração: o banco recusa épico com prazo acima do projeto.
+- **Supabase CLI** configurada (`supabase init`, `link`, histórico das 4 migrações antigas marcado como aplicado). Agora as migrações são aplicadas com `supabase db push`, sem colar SQL. `supabase/config.toml` entra no repositório (sem segredos).
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Usar a Supabase CLI no lugar do SQL Editor; senha do banco só no `.env.local`, fora do chat | Autora |
+| Autorizar a marcação das 4 migrações antigas e o `db push` no banco hospedado | Autora |
+| Regra de prazo no banco (gatilho) e também na interface | IA |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** SQL, código, testes, comandos da CLI. **Autora:** login na CLI, senha do banco, autorização das mudanças no banco.
+
+### Pendências
+- Autora: testar no navegador (prazo de épico acima do projeto; prazo de filho acima do pai) e os 2 critérios restantes da H1.2.1.
+

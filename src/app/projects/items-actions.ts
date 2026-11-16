@@ -8,8 +8,10 @@ import {
   isItemInput,
   normalizeItemInput,
   validateItem,
+  type DeadlineLimits,
   type ItemFieldError,
 } from "@/lib/item-rules";
+import { getItem } from "@/lib/supabase/items";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type CreateItemResult =
@@ -28,12 +30,27 @@ export async function createItem(raw: unknown): Promise<CreateItemResult> {
   }
 
   const input = normalizeItemInput(raw);
-  const validation = validateItem(input);
+
+  const supabase = createSupabaseServerClient();
+
+  // Deadline limits come from the database, never from the browser (rules E2 and E3).
+  const limits: DeadlineLimits = {};
+  if (input.type === "epic") {
+    const { data: project } = await supabase
+      .from("projects")
+      .select("deadline")
+      .eq("id", input.projectId)
+      .maybeSingle();
+    limits.projectDeadline = project?.deadline ?? null;
+  } else if (input.parentId) {
+    const parent = await getItem(input.projectId, input.parentId).catch(() => null);
+    limits.parentDeadline = parent?.deadline ?? null;
+  }
+
+  const validation = validateItem(input, limits);
   if (!validation.ok) {
     return { ok: false, error: "Corrija os campos indicados.", fieldErrors: validation.errors };
   }
-
-  const supabase = createSupabaseServerClient();
 
   const { data: area } = await supabase
     .from("areas")

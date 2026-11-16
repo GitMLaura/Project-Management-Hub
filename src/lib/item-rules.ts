@@ -1,5 +1,6 @@
 // Pure rules for scope items (story H1.2.1). No database here.
 import type { DemoProfile } from "@/lib/demo-profiles";
+import { formatDate } from "@/lib/format";
 import { normalizeName } from "@/lib/project-validation";
 
 export type ItemType = "epic" | "feature" | "story" | "task";
@@ -136,7 +137,39 @@ export function isItemInput(value: unknown): value is ItemInput {
   );
 }
 
-export function validateItem(rawInput: ItemInput): ItemValidationResult {
+// Upper limits for the deadline (rules E2 and E3):
+// - a child cannot end after its parent;
+// - an epic cannot end after the project.
+export type DeadlineLimits = {
+  parentDeadline?: string | null;
+  projectDeadline?: string | null;
+};
+
+// Returns the message to show, or null when the deadline respects the limit.
+export function deadlineLimitError(
+  type: ItemType,
+  deadline: string,
+  limits: DeadlineLimits,
+): string | null {
+  if (!isValidIsoDate(deadline)) return null;
+  if (type === "epic") {
+    const limit = limits.projectDeadline;
+    if (limit && deadline > limit) {
+      return `O prazo do épico não pode ultrapassar o prazo do projeto (${formatDate(limit)}).`;
+    }
+    return null;
+  }
+  const limit = limits.parentDeadline;
+  if (limit && deadline > limit) {
+    return `O prazo não pode ultrapassar o prazo do item pai (${formatDate(limit)}).`;
+  }
+  return null;
+}
+
+export function validateItem(
+  rawInput: ItemInput,
+  limits: DeadlineLimits = {},
+): ItemValidationResult {
   const input = normalizeItemInput(rawInput);
   const errors: ItemFieldError[] = [];
   const add = (field: ItemField, message: string) => errors.push({ field, message });
@@ -164,6 +197,9 @@ export function validateItem(rawInput: ItemInput): ItemValidationResult {
   if (input.startDate && startOk && deadlineOk && input.deadline < input.startDate) {
     add("deadline", "O prazo não pode ser anterior ao início.");
   }
+
+  const limitError = deadlineLimitError(input.type, input.deadline, limits);
+  if (limitError) add("deadline", limitError);
 
   if (input.type === "story") {
     if (!input.storyPersona || !input.storyAction || !input.storyBenefit) {

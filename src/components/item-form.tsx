@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   ITEM_STATUSES,
   ITEM_STATUS_LABELS,
+  deadlineLimitError,
   validateItem,
   type ItemField,
   type ItemFieldError,
@@ -31,6 +32,8 @@ type ItemFormProps = {
   participants: { id: string; name: string }[];
   fixedAreaId: string | null; // area leaders can only create items in their own area
   today: string;
+  // Latest allowed deadline: the parent's (or the project's, for epics).
+  maxDeadline: string | null;
 };
 
 function FieldMessages({ errors }: { errors: ItemFieldError[] }) {
@@ -54,6 +57,7 @@ export function ItemForm({
   participants,
   fixedAreaId,
   today,
+  maxDeadline,
 }: ItemFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -80,6 +84,15 @@ export function ItemForm({
     return fieldErrors.filter((error) => error.field === field);
   }
 
+  function limitsFor() {
+    return type === "epic"
+      ? { projectDeadline: maxDeadline }
+      : { parentDeadline: maxDeadline };
+  }
+
+  // Warns right away, before the user submits.
+  const liveDeadlineWarning = deadlineLimitError(type, deadline, limitsFor());
+
   function buildInput(): ItemInput {
     return {
       projectId,
@@ -105,7 +118,7 @@ export function ItemForm({
     setFormError(null);
 
     const input = buildInput();
-    const validation = validateItem(input);
+    const validation = validateItem(input, limitsFor());
     if (!validation.ok) {
       setFieldErrors(validation.errors);
       setFormError("Corrija os campos indicados.");
@@ -304,10 +317,18 @@ export function ItemForm({
                 id="deadline"
                 type="date"
                 value={deadline}
+                max={maxDeadline ?? undefined}
                 onChange={(event) => setDeadline(event.target.value)}
-                aria-invalid={errorsFor("deadline").length > 0}
+                aria-invalid={errorsFor("deadline").length > 0 || liveDeadlineWarning !== null}
               />
-              <FieldMessages errors={errorsFor("deadline")} />
+              {liveDeadlineWarning && (
+                <p className="text-sm text-destructive">{liveDeadlineWarning}</p>
+              )}
+              <FieldMessages
+                errors={errorsFor("deadline").filter(
+                  (error) => error.message !== liveDeadlineWarning,
+                )}
+              />
             </div>
           </div>
 

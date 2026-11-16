@@ -41,6 +41,40 @@ describe.skipIf(!url || !anonKey)("Supabase items schema", () => {
     expect(error).not.toBeNull();
   });
 
+  it("refuses an epic whose deadline is after the project deadline", async () => {
+    const { data: project } = await supabase
+      .from("projects")
+      .select("id, start_date, deadline")
+      .limit(1)
+      .maybeSingle();
+    if (!project) return; // no project in the database yet: nothing to check against
+
+    const { data: area } = await supabase
+      .from("areas")
+      .select("id")
+      .eq("project_id", project.id)
+      .limit(1)
+      .maybeSingle();
+    const { data: person } = await supabase
+      .from("participants")
+      .select("id")
+      .eq("project_id", project.id)
+      .limit(1)
+      .maybeSingle();
+    if (!area || !person) return;
+
+    const { error } = await supabase.from("items").insert({
+      project_id: project.id,
+      type: "epic",
+      title: "Nao deve ser gravado",
+      area_id: area.id,
+      assignee_id: person.id,
+      start_date: project.start_date,
+      deadline: "2999-12-31",
+    });
+    expect(error?.message).toContain("after the project deadline");
+  });
+
   it("refuses delete", async () => {
     const { error } = await supabase.from("items").delete().eq("id", NOBODY);
     expect(error).not.toBeNull();
