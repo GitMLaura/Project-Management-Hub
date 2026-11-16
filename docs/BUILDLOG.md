@@ -318,3 +318,20 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 
 ### Gerado pela IA vs. decidido pela autora
 - **IA:** código e testes. **Autora:** limiares vêm do PRD (decisão dela).
+
+## 2026-11-16 — H2.2.1 Painel de saúde
+
+### O que foi feito
+- `src/lib/health-panel.ts` (3 testes): monta a saúde do projeto, de cada épico e de cada área a partir da função pura.
+- Seção "Saúde do projeto" no topo da página do projeto: cartões com rótulo de texto ao lado da cor (a cor nunca aparece sozinha), motivo escrito e links que levam ao item responsável na árvore.
+- A saúde recalcula a cada mudança (a página é recarregada ao salvar), o que fecha o critério da H1.3.2.
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Épico usa o período do próprio épico; área e projeto usam o período do projeto (PRD seção 4) | IA, seguindo o PRD |
+| "Hoje" é a data do servidor (UTC) | IA |
+| Itens arquivados ficam fora da saúde | IA |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** código, testes, visual. **Autora:** testar no navegador (mude o status de tarefas e veja a cor mudar).

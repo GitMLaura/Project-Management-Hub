@@ -61,7 +61,7 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
   - [ ] Filtros por área, responsável e status
 - **H1.3.2** Como participante, quero atualizar o status das tarefas pelas quais respondo, para refletir a realidade.
   - [x] Só consigo alterar tarefas das quais sou responsável (regra aplicada na interface)
-  - [ ] Progresso e saúde atualizam após a mudança
+  - [x] Progresso e saúde atualizam após a mudança
 
 ---
 
@@ -76,10 +76,10 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
 
 ### F2.2 Painel de saúde
 - **H2.2.1** Como participante, quero ver a saúde do projeto, de cada épico e de cada área, para saber onde agir.
-  - [ ] Semáforo por projeto, épico e área
-  - [ ] Sempre com o **motivo em texto** (ex.: "Vermelho: 3 tarefas atrasadas em Dev")
-  - [ ] A cor nunca aparece sozinha (acessibilidade)
-  - [ ] Clicar no motivo leva aos itens responsáveis
+  - [x] Semáforo por projeto, épico e área
+  - [x] Sempre com o **motivo em texto** (ex.: "Vermelho: 3 tarefas atrasadas em Dev")
+  - [x] A cor nunca aparece sozinha (acessibilidade)
+  - [x] Clicar no motivo leva aos itens responsáveis
 
 ---
 

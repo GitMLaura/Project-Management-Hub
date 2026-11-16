@@ -79,7 +79,7 @@ export function ScopeTree({
         const canChange =
           canManage && canCreateItemInArea(profile, areaNames[node.areaId] ?? "");
         return (
-          <li key={node.id} className="flex flex-col gap-2">
+          <li key={node.id} id={`item-${node.id}`} className="flex scroll-mt-4 flex-col gap-2">
             <div className="flex flex-col gap-1 rounded-2xl border p-3">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="outline">{ITEM_TYPE_LABELS[node.type]}</Badge>

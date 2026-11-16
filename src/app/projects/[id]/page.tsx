@@ -3,10 +3,12 @@ import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { HealthPanel } from "@/components/health-panel";
 import { ScopeFilters } from "@/components/scope-filters";
 import { ScopeTree } from "@/components/scope-tree";
 import { getActiveProfile } from "@/lib/active-profile";
 import { formatDate } from "@/lib/format";
+import { buildHealthPanel } from "@/lib/health-panel";
 import { canManageScope } from "@/lib/item-rules";
 import { buildItemTree, countIncompleteScope } from "@/lib/item-tree";
 import { buildProgressMap, filterTree, parseScopeFilters } from "@/lib/scope-view";
@@ -50,6 +52,14 @@ export default async function ProjectPage(props: PageProps<"/projects/[id]">) {
   const canManage = canManageScope(profile);
   const tree = buildItemTree(items.filter((item) => !item.archivedAt));
   const progress = buildProgressMap(tree);
+  const healthPanel = buildHealthPanel({
+    projectName: project.name,
+    projectStart: project.startDate,
+    projectDeadline: project.deadline,
+    areas: project.areas.map((area) => ({ id: area.id, name: area.name })),
+    tree,
+    today: new Date().toISOString().slice(0, 10),
+  });
   const people = project.areas.flatMap((area) =>
     area.participants.map((participant) => ({ id: participant.id, name: participant.name })),
   );
@@ -69,6 +79,8 @@ export default async function ProjectPage(props: PageProps<"/projects/[id]">) {
           {formatDate(project.startDate)} a {formatDate(project.deadline)}
         </p>
       </div>
+
+      <HealthPanel panel={healthPanel} />
 
       <section className="flex flex-col gap-3" aria-label="Áreas e participantes">
         <h2 className="text-lg font-semibold">Áreas e participantes</h2>
