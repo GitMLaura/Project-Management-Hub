@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getActiveProfile } from "@/lib/active-profile";
-import { canManageScope } from "@/lib/item-rules";
+import { canCreateItemInArea, canManageScope } from "@/lib/item-rules";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parseTranscript, validateRitualImport, type RitualKind } from "@/lib/transcripts";
 
@@ -77,4 +77,40 @@ export async function importRitual(formData: FormData): Promise<ImportRitualResu
 
   revalidatePath(`/projects/${projectId}/rituals`, "layout");
   return { ok: true, ritualId: created.data.id };
+}
+
+export type ApproveSummaryResult = { ok: true } | { ok: false; error: string };
+
+// A summary is born as a draft. Only the area leader (or the Owner) makes it official.
+export async function approveSummary(projectId: string, summaryId: string): Promise<ApproveSummaryResult> {
+  const supabase = createSupabaseServerClient();
+  const { data: summary } = await supabase
+    .from("ritual_summaries")
+    .select("id, status, rituals!inner(project_id), areas(name)")
+    .eq("id", summaryId)
+    .maybeSingle();
+  const ritual = Array.isArray(summary?.rituals) ? summary.rituals[0] : summary?.rituals;
+  const area = Array.isArray(summary?.areas) ? summary.areas[0] : summary?.areas;
+  if (!summary || !ritual || ritual.project_id !== projectId || !area) {
+    return { ok: false, error: "Resumo não encontrado neste projeto." };
+  }
+  if (summary.status === "approved") return { ok: false, error: "Este resumo já foi aprovado." };
+
+  const profile = await getActiveProfile();
+  if (!canCreateItemInArea(profile, area.name)) {
+    return {
+      ok: false,
+      error: `Como ${profile.roleLabel}, você não aprova o resumo de ${area.name}. Só o líder da área ou o Dono aprova.`,
+    };
+  }
+
+  const { error } = await supabase
+    .from("ritual_summaries")
+    .update({ status: "approved", approved_by: profile.name, approved_at: new Date().toISOString() })
+    .eq("id", summaryId)
+    .eq("status", "draft");
+  if (error) return { ok: false, error: "Não foi possível aprovar o resumo. Tente novamente." };
+
+  revalidatePath(`/projects/${projectId}/rituals`, "layout");
+  return { ok: true };
 }

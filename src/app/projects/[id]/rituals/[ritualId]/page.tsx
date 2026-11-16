@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageMessage } from "@/components/page-message";
+import { RitualSummaries } from "@/components/ritual-summaries";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { getActiveProfile } from "@/lib/active-profile";
 import { formatDate } from "@/lib/format";
 import { getProject } from "@/lib/supabase/projects";
-import { getRitual, type RitualDetail } from "@/lib/supabase/rituals";
+import { getRitual, listRitualSummaries, type RitualAreaSummary, type RitualDetail } from "@/lib/supabase/rituals";
 import { ritualKindLabel, searchTranscript } from "@/lib/transcripts";
 
 export default async function RitualPage(props: PageProps<"/projects/[id]/rituals/[ritualId]">) {
@@ -15,9 +17,12 @@ export default async function RitualPage(props: PageProps<"/projects/[id]/ritual
 
   let project;
   let ritual: RitualDetail | null = null;
+  let summaries: RitualAreaSummary[] = [];
+  const profile = await getActiveProfile();
   try {
     project = await getProject(id);
     if (project) ritual = await getRitual(id, ritualId);
+    if (ritual) summaries = await listRitualSummaries(ritualId);
   } catch {
     return (
       <PageMessage
@@ -45,6 +50,13 @@ export default async function RitualPage(props: PageProps<"/projects/[id]/ritual
         </p>
         <p className="text-sm">Participantes: {participants.length > 0 ? participants.join(", ") : "nenhum registrado"}</p>
       </div>
+
+      <RitualSummaries
+        projectId={id}
+        areas={project.areas.map((area) => ({ id: area.id, name: area.name }))}
+        summaries={summaries}
+        profile={profile}
+      />
 
       <section className="flex flex-col gap-3" aria-label="Transcrição">
         <h2 className="text-lg font-semibold">Transcrição</h2>

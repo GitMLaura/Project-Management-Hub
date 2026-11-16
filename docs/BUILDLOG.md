@@ -498,3 +498,19 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 
 ### Gerado pela IA vs. decidido pela autora
 - **IA:** SQL, código, testes. **Autora:** importar um `.vtt` real no navegador.
+
+## 2026-11-16 — H4.2.1 e H4.2.2 Resumo por área e aprovação
+
+### O que foi feito
+- Página do rito mostra, por área: pontos principais, decisões, pendências (com responsável sugerido) e riscos. Resumo pré-gerado traz o aviso "Resumo pré-gerado para demonstração". Área sem resumo explica que em produção um LLM seria chamado e que a demo não chama nenhuma IA.
+- Todo resumo nasce como rascunho (padrão `draft` no banco) e mostra o selo "Rascunho: ainda não aprovado". O botão "Aprovar resumo" só aparece para o líder da área ou o Dono; a Server Action `approveSummary` confere de novo e grava quem aprovou. Não existe "desaprovar" na v1.
+- Os resumos em si entram pelo seed (H5.1.1): ainda não há como vê-los no navegador até lá.
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Aprovação é definitiva na v1 (sem desfazer) | IA |
+| Participante e Líder de outra área veem o resumo mas não aprovam | IA (segue o PRD, seção 2) |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** código. **Autora:** conferir no navegador depois do seed.

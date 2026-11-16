@@ -71,3 +71,63 @@ export async function getRitual(projectId: string, ritualId: string): Promise<Ri
     participantIds: (links.data ?? []).map((link) => link.participant_id as string),
   };
 }
+
+export type RitualPending = {
+  id: string;
+  description: string;
+  suggestedAssignee: string | null;
+  taskId: string | null;
+};
+
+export type RitualAreaSummary = {
+  id: string;
+  areaId: string;
+  keyPoints: string[];
+  decisions: string[];
+  risks: string[];
+  status: "draft" | "approved";
+  isPregenerated: boolean;
+  approvedBy: string | null;
+  pendings: RitualPending[];
+};
+
+// Summaries of one ritual, one per area, with their pendings.
+export async function listRitualSummaries(ritualId: string): Promise<RitualAreaSummary[]> {
+  const supabase = createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("ritual_summaries")
+    .select(
+      "id, area_id, key_points, decisions, risks, status, is_pregenerated, approved_by, ritual_pendings(id, description, suggested_assignee, task_id, created_at)",
+    )
+    .eq("ritual_id", ritualId)
+    .order("created_at", { ascending: true });
+  if (error) throw new Error(error.message);
+
+  return (data ?? []).map((row) => {
+    const pendings = (row.ritual_pendings ?? []) as {
+      id: string;
+      description: string;
+      suggested_assignee: string | null;
+      task_id: string | null;
+      created_at: string;
+    }[];
+    return {
+      id: row.id as string,
+      areaId: row.area_id as string,
+      keyPoints: (row.key_points ?? []) as string[],
+      decisions: (row.decisions ?? []) as string[],
+      risks: (row.risks ?? []) as string[],
+      status: row.status === "approved" ? "approved" : "draft",
+      isPregenerated: Boolean(row.is_pregenerated),
+      approvedBy: (row.approved_by as string | null) ?? null,
+      pendings: [...pendings]
+        .sort((a, b) => a.created_at.localeCompare(b.created_at))
+        .map((pending) => ({
+          id: pending.id,
+          description: pending.description,
+          suggestedAssignee: pending.suggested_assignee,
+          taskId: pending.task_id,
+        })),
+    };
+  });
+}

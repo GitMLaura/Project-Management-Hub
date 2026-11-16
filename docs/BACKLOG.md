@@ -134,13 +134,13 @@ Ordem sugerida: E0 → E1 → E2 → E5 (seed) → E3 → E4 → E5 (publicaçã
 
 ### F4.2 Resumo por área
 - **H4.2.1** Como participante, quero ver o resumo da reunião por área, para ler só o que me interessa.
-  - [ ] Para cada área: pontos principais, decisões, pendências (com responsável sugerido) e riscos
-  - [ ] Resumo pré-gerado exibe o aviso "Resumo pré-gerado para demonstração"
-  - [ ] Sem resumo pré-gerado, a interface explica que em produção um LLM seria chamado
-  - [ ] A demo pública não chama nenhuma IA
+  - [x] Para cada área: pontos principais, decisões, pendências (com responsável sugerido) e riscos
+  - [x] Resumo pré-gerado exibe o aviso "Resumo pré-gerado para demonstração"
+  - [x] Sem resumo pré-gerado, a interface explica que em produção um LLM seria chamado
+  - [x] A demo pública não chama nenhuma IA
 - **H4.2.2** Como Líder de área, quero aprovar o resumo, para que só conteúdo revisado vire oficial.
-  - [ ] Todo resumo nasce como rascunho
-  - [ ] Só líder (ou Dono) aprova (regra aplicada na interface)
+  - [x] Todo resumo nasce como rascunho
+  - [x] Só líder (ou Dono) aprova (regra aplicada na interface)
 
 ### F4.3 Pendência vira tarefa
 - **H4.3.1** Como Líder de área, quero transformar uma pendência em tarefa com um clique, para não perder encaminhamentos.
