@@ -3,16 +3,19 @@ import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScopeFilters } from "@/components/scope-filters";
 import { ScopeTree } from "@/components/scope-tree";
 import { getActiveProfile } from "@/lib/active-profile";
 import { formatDate } from "@/lib/format";
 import { canManageScope } from "@/lib/item-rules";
 import { buildItemTree, countIncompleteScope } from "@/lib/item-tree";
+import { buildProgressMap, filterTree, hasActiveFilters, parseScopeFilters } from "@/lib/scope-view";
 import { listItems } from "@/lib/supabase/items";
 import { getProject } from "@/lib/supabase/projects";
 
 export default async function ProjectPage(props: PageProps<"/projects/[id]">) {
   const { id } = await props.params;
+  const searchParams = await props.searchParams;
 
   const profile = await getActiveProfile();
 
@@ -46,6 +49,15 @@ export default async function ProjectPage(props: PageProps<"/projects/[id]">) {
   );
   const canManage = canManageScope(profile);
   const tree = buildItemTree(items.filter((item) => !item.archivedAt));
+  const progress = buildProgressMap(tree);
+  const people = project.areas.flatMap((area) =>
+    area.participants.map((participant) => ({ id: participant.id, name: participant.name })),
+  );
+  const filters = parseScopeFilters(searchParams, {
+    areaIds: project.areas.map((area) => area.id),
+    assigneeIds: people.map((person) => person.id),
+  });
+  const visibleTree = filterTree(tree, filters);
   const archivedTree = buildItemTree(items.filter((item) => item.archivedAt));
 
   return (
@@ -100,6 +112,14 @@ export default async function ProjectPage(props: PageProps<"/projects/[id]">) {
             {countIncompleteScope(tree)} item(ns) com escopo incompleto: ainda sem nada dentro.
           </p>
         )}
+        {tree.length > 0 && (
+          <ScopeFilters
+            projectId={id}
+            areas={project.areas.map((area) => ({ id: area.id, name: area.name }))}
+            people={people}
+            current={filters}
+          />
+        )}
         {tree.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col gap-1 pt-4">
@@ -111,14 +131,24 @@ export default async function ProjectPage(props: PageProps<"/projects/[id]">) {
               </p>
             </CardContent>
           </Card>
+        ) : visibleTree.length === 0 ? (
+          <Card>
+            <CardContent className="flex flex-col gap-1 pt-4">
+              <p className="font-medium">Nenhum item corresponde aos filtros.</p>
+              <p className="text-sm text-muted-foreground">
+                Tente outra combinação ou use &quot;Limpar filtros&quot;.
+              </p>
+            </CardContent>
+          </Card>
         ) : (
           <ScopeTree
             projectId={id}
-            nodes={tree}
+            nodes={visibleTree}
             areaNames={areaNames}
             assigneeNames={assigneeNames}
             canManage={canManage}
             profile={profile}
+            progress={progress}
           />
         )}
       </section>

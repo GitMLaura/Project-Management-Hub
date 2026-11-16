@@ -11,6 +11,7 @@ import {
   childTypeOf,
 } from "@/lib/item-rules";
 import { countDescendants, isScopeIncomplete, type ItemNode } from "@/lib/item-tree";
+import type { Progress } from "@/lib/scope-view";
 
 type ScopeTreeProps = {
   projectId: string;
@@ -19,11 +20,36 @@ type ScopeTreeProps = {
   assigneeNames: Record<string, string>;
   canManage: boolean;
   profile: DemoProfile;
+  // Progress of every item, calculated on the full tree (not the filtered one).
+  progress?: Record<string, Progress>;
   // "archived" shows the restore button instead of add/archive.
   mode?: "active" | "archived";
   // Only the top of an archived branch can be restored (its children come back with it).
   topLevel?: boolean;
 };
+
+function ProgressBar({ progress }: { progress: Progress }) {
+  if (progress.total === 0) {
+    return <p className="text-sm text-muted-foreground">Progresso: sem tarefas ainda</p>;
+  }
+  return (
+    <div className="flex items-center gap-2 text-sm">
+      <div
+        role="progressbar"
+        aria-valuenow={progress.percent}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label="Progresso"
+        className="h-2 w-32 overflow-hidden rounded-full bg-muted"
+      >
+        <div className="h-full bg-primary" style={{ width: `${progress.percent}%` }} />
+      </div>
+      <span>
+        {progress.done} de {progress.total} tarefas concluídas ({progress.percent}%)
+      </span>
+    </div>
+  );
+}
 
 export function ScopeTree({
   projectId,
@@ -32,6 +58,7 @@ export function ScopeTree({
   assigneeNames,
   canManage,
   profile,
+  progress,
   mode = "active",
   topLevel = true,
 }: ScopeTreeProps) {
@@ -60,6 +87,9 @@ export function ScopeTree({
                 {node.startDate ? `${formatDate(node.startDate)} a ` : "Prazo "}
                 {formatDate(node.deadline)}
               </p>
+              {mode === "active" && progress?.[node.id] && (
+                <ProgressBar progress={progress[node.id]} />
+              )}
               {node.type === "story" && (
                 <p className="text-sm">
                   Como {node.storyPersona}, quero {node.storyAction} para {node.storyBenefit}.
@@ -110,6 +140,7 @@ export function ScopeTree({
               assigneeNames={assigneeNames}
               canManage={canManage}
               profile={profile}
+              progress={progress}
               mode={mode}
               topLevel={false}
             />

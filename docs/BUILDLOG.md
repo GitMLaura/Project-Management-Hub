@@ -266,3 +266,20 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 
 ### Gerado pela IA vs. decidido pela autora
 - **IA:** código e testes. **Autora:** testar no navegador.
+
+## 2026-11-16 — H1.3.1 Árvore com progresso e filtros
+
+### O que foi feito
+- `src/lib/scope-view.ts` (funções puras, 11 testes): progresso por item (tarefas concluídas ÷ tarefas dentro dele, E6), leitura e aplicação dos filtros.
+- Barra e texto de progresso em cada item ("3 de 10 tarefas concluídas (30%)"); item sem tarefas mostra "sem tarefas ainda".
+- Filtros por área, responsável e status em formulário simples (GET): os filtros ficam na URL, então dá para compartilhar o link filtrado.
+
+### Decisões
+| Decisão | Quem decidiu |
+|---|---|
+| Filtro mostra os itens que batem e os pais deles (para manter o caminho); filtros combinam com "e" | IA |
+| O progresso é sempre calculado na árvore completa, nunca na filtrada | IA |
+| Itens arquivados ficam fora do progresso | IA |
+
+### Gerado pela IA vs. decidido pela autora
+- **IA:** código e testes. **Autora:** testar no navegador.
