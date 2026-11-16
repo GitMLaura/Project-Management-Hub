@@ -12,12 +12,13 @@ function node(id: string, type: ItemNode["type"], deadline: string, children: It
 }
 
 describe("parsePeriod", () => {
-  it("accepts the three periods and falls back to all", () => {
+  it("accepts the periods and falls back to the month", () => {
     expect(parsePeriod("day")).toBe("day");
     expect(parsePeriod("week")).toBe("week");
     expect(parsePeriod("month")).toBe("month");
-    expect(parsePeriod("year")).toBe("all");
-    expect(parsePeriod(undefined)).toBe("all");
+    expect(parsePeriod("all")).toBe("all");
+    expect(parsePeriod("year")).toBe("month");
+    expect(parsePeriod(undefined)).toBe("month");
   });
 });
 

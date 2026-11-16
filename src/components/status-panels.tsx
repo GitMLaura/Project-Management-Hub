@@ -27,13 +27,13 @@ export type EpicRow = {
 // Table of epics: situation, progress, deadline and a clear way into the epic's items.
 export function EpicsTable({ projectId, epics }: { projectId: string; epics: EpicRow[] }) {
   return (
-    <div className="overflow-hidden rounded-2xl border bg-card">
+    <div className="overflow-hidden rounded-2xl bg-card shadow-xs">
       <div className="hidden grid-cols-[minmax(0,1.6fr)_6.5rem_minmax(0,1.2fr)_3.5rem_6rem] gap-4 border-b px-5 py-3 text-xs text-muted-foreground md:grid">
         <span>Épico</span>
         <span>Situação</span>
         <span>Progresso</span>
         <span>Prazo</span>
-        <span className="text-right">Itens</span>
+        <span className="text-right">Ações</span>
       </div>
       <ul className="divide-y">
         {epics.map((epic) => {
@@ -64,7 +64,7 @@ export function EpicsTable({ projectId, epics }: { projectId: string; epics: Epi
                   className="h-2 flex-1 overflow-hidden rounded-full bg-muted"
                 >
                   <div
-                    className="bar-fill h-full rounded-full bg-foreground"
+                    className="bar-fill h-full rounded-full bg-primary"
                     style={{ width: `${epic.counts.percent}%` }}
                   />
                 </div>
@@ -80,8 +80,7 @@ export function EpicsTable({ projectId, epics }: { projectId: string; epics: Epi
                 aria-label={`Ver itens do épico ${epic.title}`}
                 className="inline-flex items-center justify-end gap-1 rounded-md text-sm font-medium text-primary outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
               >
-                Ver itens
-                <ArrowRight className="size-4" aria-hidden="true" />
+                <ArrowRight className="size-5" aria-hidden="true" />
               </Link>
             </li>
           );

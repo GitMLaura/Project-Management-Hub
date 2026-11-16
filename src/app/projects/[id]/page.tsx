@@ -8,7 +8,7 @@ import { AttentionList, StatusCard } from "@/components/status-cards";
 import { buttonVariants } from "@/components/ui/button";
 import { getActiveProfile } from "@/lib/active-profile";
 import { canManageScope } from "@/lib/item-rules";
-import { filterTasksByRange, parsePeriod, periodDescription, periodRange } from "@/lib/period";
+import { filterTasksByRange, parsePeriod, periodRange } from "@/lib/period";
 import { buildItemTree } from "@/lib/item-tree";
 import { buildStatusView } from "@/lib/status-view";
 import { listItems } from "@/lib/supabase/items";
@@ -71,7 +71,7 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
           <div className="flex flex-wrap items-center gap-3">
             <PeriodFilter projectId={id} current={period} />
             <a
-              href={`/projects/${id}/status/export${period === "all" ? "" : `?periodo=${period}`}`}
+              href={`/projects/${id}/status/export?periodo=${period}`}
               className={buttonVariants({ size: "lg" })}
             >
               <Download aria-hidden="true" />
@@ -80,9 +80,6 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
           </div>
         </div>
         <StatusMetrics totals={view.totals} />
-        {period !== "all" && (
-          <p className="text-sm text-muted-foreground">Mostrando {periodDescription(period)}.</p>
-        )}
       </header>
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
@@ -92,7 +89,7 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
               Épicos em andamento
             </h2>
             {activeEpics.length === 0 ? (
-              <p className="rounded-2xl border bg-card p-5 text-sm text-muted-foreground">
+              <p className="rounded-2xl bg-card p-5 text-sm text-muted-foreground shadow-xs">
                 Este projeto ainda não tem épicos.{" "}
                 {canManageScope(profile)
                   ? "Comece adicionando um item."
@@ -140,7 +137,7 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
               Precisa de atenção
             </h2>
             {view.attention.length === 0 ? (
-              <p className="rounded-2xl border bg-card p-5 text-sm text-muted-foreground">
+              <p className="rounded-2xl bg-card p-5 text-sm text-muted-foreground shadow-xs">
                 Nada atrasado ou bloqueado agora.
               </p>
             ) : (

@@ -2,7 +2,7 @@ const PILL = {
   red: "bg-red-100 text-red-800",
   yellow: "bg-yellow-100 text-yellow-900",
   green: "bg-green-100 text-green-800",
-  neutral: "bg-muted text-muted-foreground",
+  neutral: "bg-card text-muted-foreground",
 } as const;
 
 function Metric({

@@ -3,14 +3,16 @@ import type { ItemNode } from "@/lib/item-tree";
 
 export type Period = "all" | "day" | "week" | "month";
 
-export const PERIOD_LABELS: Record<Exclude<Period, "all">, string> = {
+export const PERIOD_LABELS: Record<Period, string> = {
   day: "Dia",
   week: "Semana",
   month: "Mês",
+  all: "Tudo",
 };
 
+// The Status page opens on the current month; "all" must be asked for.
 export function parsePeriod(raw: string | undefined): Period {
-  return raw === "day" || raw === "week" || raw === "month" ? raw : "all";
+  return raw === "day" || raw === "week" || raw === "all" ? raw : "month";
 }
 
 export type DateRange = { start: string; end: string }; // YYYY-MM-DD, both included
@@ -35,13 +37,6 @@ export function periodRange(period: Period, today: string): DateRange | null {
   const last = new Date(Date.UTC(year, month, 0)).getUTCDate();
   const prefix = today.slice(0, 7);
   return { start: `${prefix}-01`, end: `${prefix}-${String(last).padStart(2, "0")}` };
-}
-
-export function periodDescription(period: Period): string {
-  if (period === "day") return "tarefas com prazo hoje";
-  if (period === "week") return "tarefas com prazo nesta semana";
-  if (period === "month") return "tarefas com prazo neste mês";
-  return "todas as tarefas";
 }
 
 // Removes the tasks whose deadline is outside the range. Epics, features and stories stay.
