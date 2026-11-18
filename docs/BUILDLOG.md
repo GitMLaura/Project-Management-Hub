@@ -652,3 +652,10 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 - O Escopo virou uma lista: um bloco branco por épico, e dentro dele as linhas de funcionalidades, histórias e tarefas com colunas alinhadas (item, área, responsável, prazo, progresso, status e ações). Cada linha com itens dentro pode ser recolhida. Para histórias, o texto e os critérios de aceite ficam num "Ver história e critérios". Status de tarefa continua editável por quem tem permissão; arquivar e restaurar viraram botões de ícone; o "+" adiciona o item filho. No celular as colunas empilham.
 - Nenhuma regra de permissão mudou.
 - Decidido pela autora: o pedido e a referência. Gerado pela IA: estrutura e código.
+
+## 2026-11-18 — Home como "Resumo" dos meus projetos (LOGIC-1)
+
+- Pedido da autora: a primeira página passa a listar todos os projetos de que a pessoa participa, com botão para criar projeto e um resumo do progresso, como na referência enviada.
+- A home mostra quatro números (projetos, no prazo, alerta amarelo, alerta vermelho) e cartões de projeto com status, pendências, percentual entregue e pessoas. Filtros de Status e Pessoa (pílulas, guardados na URL) e busca por nome.
+- Regra "projetos de que eu participo": o nome do perfil ativo precisa estar entre os participantes do projeto (`src/lib/home-filter.ts`, com testes). A demo tem um só projeto; ao trocar de perfil a lista continua mostrando o Projeto Hits porque todos os perfis participam dele.
+- Decidido pela autora: o conceito e a referência. Gerado pela IA: código.

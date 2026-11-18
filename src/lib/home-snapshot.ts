@@ -12,6 +12,8 @@ export type HomeSnapshot = {
   projects: number;
   healthy: number; // projects in green
   attention: number; // projects in yellow or red
+  yellow: number;
+  red: number;
   doneTasks: number;
   totalTasks: number;
   progressPercent: number;
@@ -26,6 +28,8 @@ export function buildHomeSnapshot(stats: readonly ProjectStats[]): HomeSnapshot 
     projects: stats.length,
     healthy,
     attention: stats.length - healthy,
+    yellow: stats.filter((item) => item.health === "yellow").length,
+    red: stats.filter((item) => item.health === "red").length,
     doneTasks,
     totalTasks,
     progressPercent: totalTasks === 0 ? 0 : Math.round((doneTasks / totalTasks) * 100),

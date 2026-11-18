@@ -7,6 +7,8 @@ describe("buildHomeSnapshot", () => {
       projects: 0,
       healthy: 0,
       attention: 0,
+      yellow: 0,
+      red: 0,
       doneTasks: 0,
       totalTasks: 0,
       progressPercent: 0,
@@ -23,6 +25,8 @@ describe("buildHomeSnapshot", () => {
     expect(snapshot.projects).toBe(3);
     expect(snapshot.healthy).toBe(1);
     expect(snapshot.attention).toBe(2);
+    expect(snapshot.yellow).toBe(1);
+    expect(snapshot.red).toBe(1);
     expect(snapshot.doneTasks).toBe(4);
     expect(snapshot.totalTasks).toBe(8);
     expect(snapshot.progressPercent).toBe(50);
