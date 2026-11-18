@@ -53,7 +53,7 @@ export function BoardColumn({
       }}
       onDrop={drop}
       className={cn(
-        "flex min-h-64 flex-col gap-3 rounded-3xl bg-muted/70 p-3 transition-colors",
+        "flex min-h-64 flex-col gap-3 rounded-3xl bg-muted p-3 transition-colors",
         over && "bg-primary/10 ring-2 ring-primary/40",
         pending && "opacity-60",
       )}
