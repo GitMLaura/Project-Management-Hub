@@ -75,7 +75,7 @@ function TaskCard({
             Crítico
           </span>
         )}
-        {late && (
+        {!node.isCritical && late && (
           <span className="shrink-0 rounded-full bg-yellow-100 px-1.5 py-0.5 text-xs font-medium text-yellow-900">
             Atrasada
           </span>
