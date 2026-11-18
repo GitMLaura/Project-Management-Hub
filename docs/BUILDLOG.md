@@ -689,3 +689,11 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 - Agrupar não duplica: a tarefa marcada é movida para dentro do grupo (muda o pai da tarefa existente). Nada mudou aí.
 - Encontros: menu de texto à esquerda (Daily, Weekly, Retro, Planning; Review só aparece se existir), no meio o título, a data e os participantes do encontro mais recente do tipo (com datas para trocar quando há mais de um), e à direita cartões: um resumo por área (com o primeiro ponto principal) e a Transcrição. Os cartões abrem a página do encontro já na seção certa.
 - Decidido pela autora: o desenho. Gerado pela IA: código.
+
+## 2026-11-18 — Revisão de qualidade com o Impeccable (UI-12)
+
+- A autora pediu o `/impeccable` no projeto todo. O detector mecânico não achou nada em `src/app` e `src/components`. Conferi também prints de 500 px de largura de Resumo, Status, Escopo, Fluxos, Encontros e Nova tarefa: sem estouro horizontal.
+- Problema real achado: depois de tirar o seletor de status, o quadro só mudava de status arrastando com o mouse, o que excluía teclado e toque. Correção: o card focável muda de coluna com as setas esquerda e direita, e em telas de toque aparece um botãozinho "Mover" com a lista de colunas. No mouse nada mudou: o card continua limpo e se arrasta.
+- Texto do Escopo atualizado: dizia para marcar tarefas no quadro, mas a caixa de marcar só existe na lista.
+- Regra nova pedida pela autora: cada card tem uma tag só; "Crítico" ganha de "Atrasada".
+- Não feito: não rodei o `npm run build`; o PRODUCT.md e o DESIGN.md do Impeccable não existem (o `/impeccable init` pode criá-los).

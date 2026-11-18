@@ -2,7 +2,14 @@
 
 import { useState, useTransition } from "react";
 import { updateTaskStatus } from "@/app/projects/status-actions";
-import { ITEM_STATUS_LABELS, type ItemStatus } from "@/lib/item-rules";
+import { ArrowRightLeft } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ITEM_STATUSES, ITEM_STATUS_LABELS, type ItemStatus } from "@/lib/item-rules";
 import { cn } from "@/lib/utils";
 
 const DRAG_TYPE = "application/x-hub-task";
@@ -78,33 +85,89 @@ export function BoardColumn({
 }
 
 // A task card that can be dragged to another column (only when the person may change it).
+// Without a mouse: focus the card and press the left or right arrow, or (on touch screens)
+// use the small "Mover" button.
 export function DragCard({
+  projectId,
   id,
+  title,
   status,
   canMove,
   className,
   children,
 }: {
+  projectId: string;
   id: string;
+  title: string;
   status: ItemStatus;
   canMove: boolean;
   className?: string;
   children: React.ReactNode;
 }) {
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  function moveTo(next: ItemStatus) {
+    if (next === status) return;
+    setError(null);
+    startTransition(async () => {
+      const result = await updateTaskStatus(projectId, id, next);
+      if (!result.ok) setError(result.error);
+    });
+  }
+
+  function onKeyDown(event: React.KeyboardEvent) {
+    if (event.target !== event.currentTarget) return;
+    const step = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+    const next = ITEM_STATUSES[ITEM_STATUSES.indexOf(status) + step];
+    if (step !== 0 && next) {
+      event.preventDefault();
+      moveTo(next);
+    }
+  }
+
   return (
     <div
       id={`item-${id}`}
       draggable={canMove}
+      tabIndex={canMove ? 0 : undefined}
+      aria-label={canMove ? `${title}. Use as setas esquerda e direita para mudar o status.` : undefined}
+      aria-busy={pending}
+      onKeyDown={canMove ? onKeyDown : undefined}
       onDragStart={(event) => {
-        event.dataTransfer.setData(
-          DRAG_TYPE,
-          JSON.stringify({ id, from: status }),
-        );
+        event.dataTransfer.setData(DRAG_TYPE, JSON.stringify({ id, from: status }));
         event.dataTransfer.effectAllowed = "move";
       }}
-      className={cn(canMove && "cursor-grab active:cursor-grabbing", className)}
+      className={cn(
+        "relative outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        canMove && "cursor-grab active:cursor-grabbing",
+        pending && "opacity-60",
+        className,
+      )}
     >
       {children}
+      {canMove && (
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            aria-label={`Mover “${title}” para outra coluna`}
+            className="absolute right-2 bottom-2 hidden size-8 items-center justify-center rounded-full bg-muted text-muted-foreground outline-none pointer-coarse:flex"
+          >
+            <ArrowRightLeft className="size-4" aria-hidden="true" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {ITEM_STATUSES.filter((option) => option !== status).map((option) => (
+              <DropdownMenuItem key={option} onClick={() => moveTo(option)}>
+                {ITEM_STATUS_LABELS[option]}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+      {error && (
+        <p role="alert" className="mt-2 text-xs text-destructive">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

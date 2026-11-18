@@ -40,6 +40,7 @@ function initials(name: string): string {
 
 function TaskCard({
   node,
+  projectId,
   areaNames,
   assigneeNames,
   profile,
@@ -58,7 +59,9 @@ function TaskCard({
   const late = isLateTask(node, today);
   return (
     <DragCard
+      projectId={projectId}
       id={node.id}
+      title={node.title}
       status={node.status}
       canMove={canMove}
       className={`flex scroll-mt-20 flex-col gap-3 rounded-2xl p-3 ${inGroup ? "bg-background" : "bg-card"}`}

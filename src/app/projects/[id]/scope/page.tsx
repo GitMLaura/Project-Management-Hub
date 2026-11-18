@@ -93,8 +93,9 @@ export default async function ScopePage(
         <div className="flex max-w-2xl flex-col gap-2">
           <h1 className="text-4xl font-semibold">Escopo</h1>
           <p className="text-muted-foreground">
-            As tarefas de {project.name}. Marque várias e use “Agrupar” para
-            reuni-las num épico ou numa funcionalidade.
+            As tarefas de {project.name}. No quadro, arraste um card para mudar o
+            status. Na lista, marque várias tarefas e use “Agrupar” para reuni-las
+            num épico ou numa funcionalidade.
           </p>
         </div>
         {canManage && (
