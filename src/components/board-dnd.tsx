@@ -49,17 +49,21 @@ export function BoardColumn({
         }
       }}
       onDragLeave={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setOver(false);
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null))
+          setOver(false);
       }}
       onDrop={drop}
       className={cn(
-        "flex min-h-64 flex-col gap-3 rounded-3xl bg-muted p-3 transition-colors",
+        "flex min-h-64 flex-col gap-3 rounded-3xl p-1 transition-colors",
         over && "bg-primary/10 ring-2 ring-primary/40",
         pending && "opacity-60",
       )}
     >
-      <h2 className="flex items-center gap-2 px-1 pt-1 text-sm font-medium">
-        <span aria-hidden="true" className={`size-2 rounded-full ${dotClass}`} />
+      <h2 className="flex w-fit items-center gap-2 rounded-full bg-card px-3 py-1.5 text-sm font-medium">
+        <span
+          aria-hidden="true"
+          className={`size-2 rounded-full ${dotClass}`}
+        />
         {ITEM_STATUS_LABELS[status]}
         <span className="text-muted-foreground">{count}</span>
       </h2>
@@ -92,7 +96,10 @@ export function DragCard({
       id={`item-${id}`}
       draggable={canMove}
       onDragStart={(event) => {
-        event.dataTransfer.setData(DRAG_TYPE, JSON.stringify({ id, from: status }));
+        event.dataTransfer.setData(
+          DRAG_TYPE,
+          JSON.stringify({ id, from: status }),
+        );
         event.dataTransfer.effectAllowed = "move";
       }}
       className={cn(canMove && "cursor-grab active:cursor-grabbing", className)}

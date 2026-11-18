@@ -3,6 +3,7 @@ import Link from "next/link";
 import { BoardColumn, DragCard } from "@/components/board-dnd";
 import type { DemoProfile } from "@/lib/demo-profiles";
 import { formatDate } from "@/lib/format";
+import { isLateTask } from "@/lib/health";
 import {
   GROUP_LABELS,
   ITEM_STATUSES,
@@ -43,15 +44,18 @@ function TaskCard({
   assigneeNames,
   profile,
   inGroup,
+  today,
 }: Omit<BoardProps, "nodes" | "progress" | "canManage"> & {
   node: ItemNode;
   inGroup: boolean;
+  today: string;
 }) {
   const assignee = assigneeNames[node.assigneeId] ?? "";
   const canMove = canUpdateTaskStatus(profile, {
     areaName: areaNames[node.areaId] ?? "",
     assigneeName: assignee,
   });
+  const late = isLateTask(node, today);
   return (
     <DragCard
       id={node.id}
@@ -59,33 +63,48 @@ function TaskCard({
       canMove={canMove}
       className={`flex scroll-mt-20 flex-col gap-3 rounded-2xl p-3 ${inGroup ? "bg-background" : "bg-card"}`}
     >
-      <p className="line-clamp-2 text-sm font-medium" title={node.title}>
-        {node.title}
-      </p>
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span>Responsável</span>
-          {assignee ? (
-            <span
-              title={assignee}
-              aria-label={assignee}
-              className="flex size-6 items-center justify-center rounded-full bg-primary/10 text-[10px] font-semibold text-primary"
-            >
-              {initials(assignee)}
-            </span>
-          ) : (
-            <span>—</span>
-          )}
-        </div>
-        <div className="flex items-center gap-2 text-xs tabular-nums text-muted-foreground">
-          {node.isCritical && (
-            <span className="rounded-full bg-red-100 px-1.5 py-0.5 font-medium text-red-800">
-              Crítico
-            </span>
-          )}
-          {formatDate(node.deadline).slice(0, 5)}
-        </div>
+        <p
+          className="min-w-0 flex-1 truncate text-sm font-medium"
+          title={node.title}
+        >
+          {node.title}
+        </p>
+        {node.isCritical && (
+          <span className="shrink-0 rounded-full bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-800">
+            Crítico
+          </span>
+        )}
+        {late && (
+          <span className="shrink-0 rounded-full bg-yellow-100 px-1.5 py-0.5 text-xs font-medium text-yellow-900">
+            Atrasada
+          </span>
+        )}
       </div>
+      <dl className="flex flex-col gap-1.5 text-xs text-muted-foreground">
+        <div className="flex items-center justify-between gap-2">
+          <dt>Prazo</dt>
+          <dd className="tabular-nums text-foreground">
+            {formatDate(node.deadline)}
+          </dd>
+        </div>
+        <div className="flex items-center justify-between gap-2">
+          <dt>Responsável</dt>
+          <dd>
+            {assignee ? (
+              <span
+                title={assignee}
+                aria-label={assignee}
+                className="flex size-6 items-center justify-center rounded-full border bg-white text-[10px] font-semibold text-primary"
+              >
+                {initials(assignee)}
+              </span>
+            ) : (
+              "—"
+            )}
+          </dd>
+        </div>
+      </dl>
     </DragCard>
   );
 }
@@ -98,6 +117,7 @@ export function ScopeBoard({ nodes, canManage, ...rest }: BoardProps) {
   const loose = nodes.filter((node) => node.type === "task");
   const { progress: _progress, ...cardProps } = rest;
   void _progress;
+  const today = new Date().toISOString().slice(0, 10);
 
   return (
     <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -131,9 +151,9 @@ export function ScopeBoard({ nodes, canManage, ...rest }: BoardProps) {
                 className="flex flex-col gap-3 rounded-3xl bg-card p-3"
               >
                 <div className="flex items-start justify-between gap-2 px-1 pt-1">
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p
-                      className="line-clamp-2 font-heading text-base font-semibold"
+                      className="truncate font-heading text-base font-semibold"
                       title={group.title}
                     >
                       {group.title}
@@ -158,7 +178,13 @@ export function ScopeBoard({ nodes, canManage, ...rest }: BoardProps) {
                   )}
                 </div>
                 {tasks.map((task) => (
-                  <TaskCard key={task.id} node={task} inGroup {...cardProps} />
+                  <TaskCard
+                    key={task.id}
+                    node={task}
+                    inGroup
+                    today={today}
+                    {...cardProps}
+                  />
                 ))}
               </div>
             ))}
@@ -167,6 +193,7 @@ export function ScopeBoard({ nodes, canManage, ...rest }: BoardProps) {
                 key={task.id}
                 node={task}
                 inGroup={false}
+                today={today}
                 {...cardProps}
               />
             ))}
