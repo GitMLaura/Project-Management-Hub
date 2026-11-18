@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Plus } from "lucide-react";
+import { LayoutGrid, List, Plus } from "lucide-react";
 import { SelectionProvider } from "@/components/group-selection";
 import { ScopeFilters } from "@/components/scope-filters";
+import { ScopeBoard } from "@/components/scope-board";
 import { ScopeTree } from "@/components/scope-tree";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,11 +11,18 @@ import { PageMessage } from "@/components/page-message";
 import { getActiveProfile } from "@/lib/active-profile";
 import { canManageScope } from "@/lib/item-rules";
 import { buildItemTree } from "@/lib/item-tree";
-import { buildProgressMap, filterTree, parseScopeFilters } from "@/lib/scope-view";
+import {
+  buildProgressMap,
+  filterTree,
+  parseScopeFilters,
+} from "@/lib/scope-view";
 import { listItems } from "@/lib/supabase/items";
 import { getProject } from "@/lib/supabase/projects";
+import { cn } from "@/lib/utils";
 
-export default async function ScopePage(props: PageProps<"/projects/[id]/scope">) {
+export default async function ScopePage(
+  props: PageProps<"/projects/[id]/scope">,
+) {
   const { id } = await props.params;
   const searchParams = await props.searchParams;
   const profile = await getActiveProfile();
@@ -36,23 +44,47 @@ export default async function ScopePage(props: PageProps<"/projects/[id]/scope">
   }
   if (!project) notFound();
 
-  const areaNames = Object.fromEntries(project.areas.map((area) => [area.id, area.name]));
+  const areaNames = Object.fromEntries(
+    project.areas.map((area) => [area.id, area.name]),
+  );
   const assigneeNames = Object.fromEntries(
     project.areas.flatMap((area) =>
-      area.participants.map((participant) => [participant.id, participant.name]),
+      area.participants.map((participant) => [
+        participant.id,
+        participant.name,
+      ]),
     ),
   );
   const canManage = canManageScope(profile);
   const tree = buildItemTree(items.filter((item) => !item.archivedAt));
   const progress = buildProgressMap(tree);
   const people = project.areas.flatMap((area) =>
-    area.participants.map((participant) => ({ id: participant.id, name: participant.name })),
+    area.participants.map((participant) => ({
+      id: participant.id,
+      name: participant.name,
+    })),
   );
   const filters = parseScopeFilters(searchParams, {
     areaIds: project.areas.map((area) => area.id),
     assigneeIds: people.map((person) => person.id),
   });
   const visibleTree = filterTree(tree, filters);
+  const rawView = searchParams.visao;
+  const view =
+    (Array.isArray(rawView) ? rawView[0] : rawView) === "lista"
+      ? "lista"
+      : "quadro";
+  const viewHref = (key: string) => {
+    const query = new URLSearchParams();
+    for (const name of ["area", "assignee", "status"]) {
+      const value = searchParams[name];
+      const single = Array.isArray(value) ? value[0] : value;
+      if (single) query.set(name, single);
+    }
+    if (key === "lista") query.set("visao", "lista");
+    const text = query.toString();
+    return `/projects/${id}/scope${text ? `?${text}` : ""}`;
+  };
   const archivedTree = buildItemTree(items.filter((item) => item.archivedAt));
 
   return (
@@ -61,11 +93,15 @@ export default async function ScopePage(props: PageProps<"/projects/[id]/scope">
         <div className="flex max-w-2xl flex-col gap-2">
           <h1 className="text-4xl font-semibold">Escopo</h1>
           <p className="text-muted-foreground">
-            As tarefas de {project.name}. Marque várias e use “Agrupar” para reuni-las num épico ou numa funcionalidade.
+            As tarefas de {project.name}. Marque várias e use “Agrupar” para
+            reuni-las num épico ou numa funcionalidade.
           </p>
         </div>
         {canManage && (
-          <Link href={`/projects/${id}/items/new`} className={buttonVariants({ size: "lg" })}>
+          <Link
+            href={`/projects/${id}/items/new`}
+            className={buttonVariants({ size: "lg" })}
+          >
             <Plus aria-hidden="true" />
             Nova tarefa
           </Link>
@@ -73,55 +109,99 @@ export default async function ScopePage(props: PageProps<"/projects/[id]/scope">
       </header>
 
       <SelectionProvider projectId={id}>
-      <section className="flex flex-col gap-5" aria-label="Escopo">
-        {tree.length > 0 && (
-          <ScopeFilters
-            projectId={id}
-            areas={project.areas.map((area) => ({ id: area.id, name: area.name }))}
-            people={people}
-            current={filters}
-          />
-        )}
-        {tree.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col gap-1 pt-4">
-              <p className="font-medium">Este projeto ainda não tem escopo.</p>
-              <p className="text-sm text-muted-foreground">
-                {canManage
-                  ? "Comece adicionando uma tarefa."
-                  : "O Dono ou um Líder de área pode adicionar a primeira tarefa. Troque de perfil pelo avatar."}
-              </p>
-            </CardContent>
-          </Card>
-        ) : visibleTree.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col gap-1 pt-4">
-              <p className="font-medium">Nenhuma tarefa corresponde aos filtros.</p>
-              <p className="text-sm text-muted-foreground">
-                Tente outra combinação ou use &quot;Limpar filtros&quot;.
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          <ScopeTree
-            projectId={id}
-            nodes={visibleTree}
-            areaNames={areaNames}
-            assigneeNames={assigneeNames}
-            canManage={canManage}
-            profile={profile}
-            progress={progress}
-          />
-        )}
-      </section>
+        <section className="flex flex-col gap-5" aria-label="Escopo">
+          {tree.length > 0 && (
+            <div className="flex flex-wrap items-center gap-3">
+              <ScopeFilters
+                projectId={id}
+                areas={project.areas.map((area) => ({
+                  id: area.id,
+                  name: area.name,
+                }))}
+                people={people}
+                current={filters}
+              />
+              <nav
+                aria-label="Modo de exibição"
+                className="ml-auto inline-flex gap-1 rounded-full bg-card p-1"
+              >
+                {(
+                  [
+                    { key: "quadro", label: "Quadro", Icon: LayoutGrid },
+                    { key: "lista", label: "Lista", Icon: List },
+                  ] as const
+                ).map(({ key, label, Icon }) => (
+                  <Link
+                    key={key}
+                    href={viewHref(key)}
+                    aria-current={view === key ? "page" : undefined}
+                    className={cn(
+                      "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground",
+                      view === key && "bg-primary text-primary-foreground",
+                    )}
+                  >
+                    <Icon className="size-4" aria-hidden="true" />
+                    {label}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+          )}
+          {tree.length === 0 ? (
+            <Card>
+              <CardContent className="flex flex-col gap-1 pt-4">
+                <p className="font-medium">
+                  Este projeto ainda não tem escopo.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {canManage
+                    ? "Comece adicionando uma tarefa."
+                    : "O Dono ou um Líder de área pode adicionar a primeira tarefa. Troque de perfil pelo avatar."}
+                </p>
+              </CardContent>
+            </Card>
+          ) : visibleTree.length === 0 ? (
+            <Card>
+              <CardContent className="flex flex-col gap-1 pt-4">
+                <p className="font-medium">
+                  Nenhuma tarefa corresponde aos filtros.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Tente outra combinação ou use &quot;Limpar filtros&quot;.
+                </p>
+              </CardContent>
+            </Card>
+          ) : view === "quadro" ? (
+            <ScopeBoard
+              projectId={id}
+              nodes={visibleTree}
+              areaNames={areaNames}
+              assigneeNames={assigneeNames}
+              canManage={canManage}
+              profile={profile}
+              progress={progress}
+            />
+          ) : (
+            <ScopeTree
+              projectId={id}
+              nodes={visibleTree}
+              areaNames={areaNames}
+              assigneeNames={assigneeNames}
+              canManage={canManage}
+              profile={profile}
+              progress={progress}
+            />
+          )}
+        </section>
       </SelectionProvider>
 
       {archivedTree.length > 0 && (
         <section className="flex flex-col gap-4" aria-label="Itens arquivados">
           <h2 className="text-xl font-semibold">Arquivados</h2>
           <p className="text-sm text-muted-foreground">
-            Itens arquivados saem do escopo ativo, mas não são apagados. Restaurar um grupo traz
-            de volta as tarefas que foram arquivadas junto com ele.
+            Itens arquivados saem do escopo ativo, mas não são apagados.
+            Restaurar um grupo traz de volta as tarefas que foram arquivadas
+            junto com ele.
           </p>
           <ScopeTree
             projectId={id}
@@ -134,8 +214,6 @@ export default async function ScopePage(props: PageProps<"/projects/[id]/scope">
           />
         </section>
       )}
-
-
     </main>
   );
 }

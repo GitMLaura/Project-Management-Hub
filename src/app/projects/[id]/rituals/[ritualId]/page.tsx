@@ -35,7 +35,7 @@ export default async function RitualPage(props: PageProps<"/projects/[id]/ritual
         title="Não foi possível carregar"
         text="Houve um problema ao falar com o banco de dados. Tente novamente em instantes."
         backHref={`/projects/${id}/rituals`}
-        backLabel="Voltar para os ritos"
+        backLabel="Voltar para os encontros"
       />
     );
   }
@@ -66,7 +66,7 @@ export default async function RitualPage(props: PageProps<"/projects/[id]/ritual
         people={[...names].map(([personId, name]) => ({ id: personId, name }))}
       />
 
-      <section className="flex flex-col gap-3" aria-label="Transcrição">
+      <section id="transcricao" className="flex scroll-mt-20 flex-col gap-3" aria-label="Transcrição">
         <h2 className="text-lg font-semibold">Transcrição</h2>
         <form method="get" role="search" className="flex flex-wrap items-end gap-2">
           <label className="flex min-w-60 flex-1 flex-col gap-1 text-sm">
@@ -98,7 +98,7 @@ export default async function RitualPage(props: PageProps<"/projects/[id]/ritual
 
       <div>
         <Link href={`/projects/${id}/rituals`} className={buttonVariants({ variant: "outline" })}>
-          Voltar para os ritos
+          Voltar para os encontros
         </Link>
       </div>
     </main>

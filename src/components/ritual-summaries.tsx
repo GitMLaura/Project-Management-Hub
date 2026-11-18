@@ -45,7 +45,7 @@ export function RitualSummaries({
   const byArea = new Map(summaries.map((summary) => [summary.areaId, summary]));
 
   return (
-    <section className="flex flex-col gap-3" aria-label="Resumo por área">
+    <section id="resumo" className="flex scroll-mt-20 flex-col gap-3" aria-label="Resumo por área">
       <h2 className="text-lg font-semibold">Resumo por área</h2>
       {areas.map((area) => {
         const summary = byArea.get(area.id);

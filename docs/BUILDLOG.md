@@ -681,3 +681,11 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 - "Novo fluxo" pede primeiro o grupo (funcionalidade ou épico) ao qual o fluxo pertence.
 - Regras de negócio: agrupadas por grupo, não mais por épico; a exportação em .md/PDF aceita escopo de projeto ou de grupo (`scope=group`).
 - Decidido pela autora: o desenho das telas. Gerado pela IA: código.
+
+## 2026-11-18 — Escopo em quadro e Encontros com menu à esquerda (UI-10)
+
+- Pedido da autora: o Escopo vira um quadro de cartões por status; grupos são cartões maiores com as tarefas como cartões menores; Encontros segue o jeito da Especificação, com menu à esquerda, sem caixa, e os tipos de encontro como itens.
+- Escopo: quatro colunas (A fazer, Em andamento, Bloqueado, Concluído), os mesmos status que o Hub já tinha. Não criei a coluna "Para revisar": seria um status novo no banco; fica para decidir. Cada grupo aparece em cada coluna onde tem tarefas, com só essas tarefas dentro. Há um alternador Quadro/Lista; o quadro é o padrão. Trocar o status pelo seletor do cartão move a tarefa de coluna.
+- Agrupar não duplica: a tarefa marcada é movida para dentro do grupo (muda o pai da tarefa existente). Nada mudou aí.
+- Encontros: menu de texto à esquerda (Daily, Weekly, Retro, Planning; Review só aparece se existir), no meio o título, a data e os participantes do encontro mais recente do tipo (com datas para trocar quando há mais de um), e à direita cartões: um resumo por área (com o primeiro ponto principal) e a Transcrição. Os cartões abrem a página do encontro já na seção certa.
+- Decidido pela autora: o desenho. Gerado pela IA: código.
