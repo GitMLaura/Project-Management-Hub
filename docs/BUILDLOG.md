@@ -671,3 +671,13 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 - O seed mantém os dados de exemplo com épicos e histórias, mas grava só grupos e tarefas.
 - Não feito: desagrupar e mover tarefa entre grupos.
 - Decidido pela autora: o modelo. Gerado pela IA: código e migração.
+
+## 2026-11-18 — Especificação: Fluxos com telas, e Regras de negócio (LOGIC-3)
+
+- Pedido da autora: fundir Telas e Fluxos. A primeira tela da Especificação mostra os quadros de fluxo, com o menu de fluxos à direita; Regras de negócio fica como aba ao lado. Sem limiar de semelhança: só um aviso de telas repetidas ou muito parecidas.
+- Cada fluxo é um quadro com a sequência de passos e a tela ligada a cada passo ("Sem tela" quando não há). Clicar no quadro abre o fluxo. À direita, a lista de todos os fluxos e a busca por passo ou trecho (a busca filtra quadros e lista). Os trechos repetidos entre fluxos continuam abaixo dos quadros; telas que não estão em nenhum fluxo aparecem numa seção própria.
+- Aviso: quando uma tela do fluxo é idêntica ou quase igual a outra do projeto, o quadro mostra "Telas repetidas" ou "Telas muito parecidas", com os nomes. O limiar fica fixo no valor padrão (`DEFAULT_SIMILARITY_THRESHOLD`).
+- A lista de telas separada e o botão "Manter só uma" saíram da interface; `/spec/screens` redireciona para os fluxos. O detalhe de cada tela continua.
+- "Novo fluxo" pede primeiro o grupo (funcionalidade ou épico) ao qual o fluxo pertence.
+- Regras de negócio: agrupadas por grupo, não mais por épico; a exportação em .md/PDF aceita escopo de projeto ou de grupo (`scope=group`).
+- Decidido pela autora: o desenho das telas. Gerado pela IA: código.

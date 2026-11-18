@@ -71,3 +71,22 @@ export async function listScreenLinks(
   if (error) throw new Error(error.message);
   return (data ?? []).map((row) => ({ flowId: row.flow_id as string, stepId: row.step_id as string }));
 }
+
+// Every step-to-screen link of the project: flow id -> (step id -> screen id).
+export async function listProjectStepLinks(
+  projectId: string,
+): Promise<Record<string, Record<string, string>>> {
+  const supabase = createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("flow_step_screens")
+    .select("flow_id, step_id, screen_id, flows!inner(project_id)")
+    .eq("flows.project_id", projectId);
+  if (error) throw new Error(error.message);
+  const links: Record<string, Record<string, string>> = {};
+  for (const row of data ?? []) {
+    if (!row.screen_id) continue;
+    links[row.flow_id] ??= {};
+    links[row.flow_id][row.step_id] = row.screen_id;
+  }
+  return links;
+}

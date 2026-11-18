@@ -132,7 +132,7 @@ export default async function ScreenDetailPage(props: PageProps<"/projects/[id]/
       </section>
 
       <div className="flex flex-wrap gap-2">
-        <Link href={`/projects/${id}/spec/screens`} className={buttonVariants({ variant: "outline" })}>
+        <Link href={`/projects/${id}/spec/flows`} className={buttonVariants({ variant: "outline" })}>
           Telas repetidas
         </Link>
         <Link href={`/projects/${id}/spec`} className={buttonVariants({ variant: "outline" })}>

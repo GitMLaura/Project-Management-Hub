@@ -1,11 +1,10 @@
 import { markdownToPdf } from "@/lib/markdown-pdf";
-import { buildItemTree } from "@/lib/item-tree";
 import { buildRulesMarkdown, exportFileName, type ExportScope } from "@/lib/rules-export";
 import { listItems } from "@/lib/supabase/items";
 import { getProject } from "@/lib/supabase/projects";
 import { listRules } from "@/lib/supabase/rules";
 
-// GET /projects/[id]/rules/export?scope=project|epic|feature&item=<id>&format=md|pdf[&download=1]
+// GET /projects/[id]/rules/export?scope=project|group&item=<id>&format=md|pdf[&download=1]
 export async function GET(request: Request, ctx: RouteContext<"/projects/[id]/rules/export">) {
   const { id } = await ctx.params;
   const params = new URL(request.url).searchParams;
@@ -17,30 +16,22 @@ export async function GET(request: Request, ctx: RouteContext<"/projects/[id]/ru
     const project = await getProject(id);
     if (!project) return new Response("Projeto não encontrado.", { status: 404 });
 
-    const tree = buildItemTree((await listItems(id)).filter((item) => !item.archivedAt));
-    const epics = tree.map((epic) => ({
-      id: epic.id,
-      title: epic.title,
-      features: epic.children.map((feature) => ({ id: feature.id, title: feature.title })),
-    }));
+    const groups = (await listItems(id))
+      .filter((item) => item.type === "group" && !item.archivedAt)
+      .map((group) => ({ id: group.id, title: group.title }));
 
     let scope: ExportScope = { kind: "project" };
     let label = project.name;
-    if (scopeParam === "epic") {
-      const epic = epics.find((candidate) => candidate.id === itemId);
-      if (!epic) return new Response("Épico não encontrado.", { status: 404 });
-      scope = { kind: "epic", epicId: epic.id };
-      label = epic.title;
-    } else if (scopeParam === "feature") {
-      const feature = epics.flatMap((epic) => epic.features).find((candidate) => candidate.id === itemId);
-      if (!feature) return new Response("Funcionalidade não encontrada.", { status: 404 });
-      scope = { kind: "feature", featureId: feature.id };
-      label = feature.title;
+    if (scopeParam === "group") {
+      const group = groups.find((candidate) => candidate.id === itemId);
+      if (!group) return new Response("Grupo não encontrado.", { status: 404 });
+      scope = { kind: "group", groupId: group.id };
+      label = group.title;
     }
 
     const markdown = buildRulesMarkdown({
       projectName: project.name,
-      epics,
+      groups,
       rules: await listRules(id),
       scope,
     });

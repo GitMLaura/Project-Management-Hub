@@ -88,7 +88,7 @@ export default async function FeatureSpecPage(props: PageProps<"/projects/[id]/s
             <div className="flex flex-wrap gap-2">
               {rules.length > 0 && (
                 <a
-                  href={`/projects/${id}/rules/export?scope=feature&item=${featureId}`}
+                  href={`/projects/${id}/rules/export?scope=group&item=${featureId}`}
                   className={buttonVariants({ variant: "outline" })}
                 >
                   Baixar .md
@@ -96,7 +96,7 @@ export default async function FeatureSpecPage(props: PageProps<"/projects/[id]/s
               )}
               {rules.length > 0 && (
                 <a
-                  href={`/projects/${id}/rules/export?scope=feature&item=${featureId}&format=pdf`}
+                  href={`/projects/${id}/rules/export?scope=group&item=${featureId}&format=pdf`}
                   target="_blank"
                   rel="noreferrer"
                   className={buttonVariants({ variant: "outline" })}
@@ -106,7 +106,7 @@ export default async function FeatureSpecPage(props: PageProps<"/projects/[id]/s
               )}
               {rules.length > 0 && (
                 <a
-                  href={`/projects/${id}/rules/export?scope=feature&item=${featureId}&format=pdf&download=1`}
+                  href={`/projects/${id}/rules/export?scope=group&item=${featureId}&format=pdf&download=1`}
                   className={buttonVariants({ variant: "outline" })}
                 >
                   Baixar PDF

@@ -3,59 +3,40 @@
 import { normalizeName } from "@/lib/project-validation";
 import { formatRuleCode, type RuleRecord } from "@/lib/rules";
 
-export type ExportFeature = { id: string; title: string };
-export type ExportEpic = { id: string; title: string; features: ExportFeature[] };
+export type ExportGroup = { id: string; title: string };
 
-export type ExportScope =
-  | { kind: "project" }
-  | { kind: "epic"; epicId: string }
-  | { kind: "feature"; featureId: string };
+export type ExportScope = { kind: "project" } | { kind: "group"; groupId: string };
 
 export type ExportInput = {
   projectName: string;
-  epics: readonly ExportEpic[];
+  groups: readonly ExportGroup[];
   rules: readonly RuleRecord[];
   scope: ExportScope;
 };
 
-// Header lines say exactly what is inside: project, and epic and feature when the scope is narrower.
+// Header lines say exactly what is inside: the project, and the group when the scope is narrower.
 export function buildRulesMarkdown(input: ExportInput): string {
-  const { projectName, epics, rules, scope } = input;
+  const { projectName, groups, rules, scope } = input;
 
-  const selected = epics
-    .map((epic) => ({
-      ...epic,
-      features: epic.features.filter(
-        (feature) =>
-          scope.kind === "project" ||
-          (scope.kind === "epic" && epic.id === scope.epicId) ||
-          (scope.kind === "feature" && feature.id === scope.featureId),
-      ),
-    }))
-    .filter((epic) => epic.features.length > 0);
+  const selected = groups.filter((group) => scope.kind === "project" || group.id === scope.groupId);
 
   const lines: string[] = ["# Regras de negócio", ""];
   lines.push(`- **Projeto:** ${projectName}`);
-  if (scope.kind !== "project" && selected.length > 0) {
-    lines.push(`- **Épico:** ${selected[0].title}`);
-  }
-  if (scope.kind === "feature" && selected.length > 0) {
-    lines.push(`- **Funcionalidade:** ${selected[0].features[0].title}`);
+  if (scope.kind === "group" && selected.length > 0) {
+    lines.push(`- **Grupo:** ${selected[0].title}`);
   }
   lines.push("");
 
   let sections = 0;
-  for (const epic of selected) {
-    for (const feature of epic.features) {
-      const featureRules = rules
-        .filter((rule) => rule.featureId === feature.id)
-        .sort((a, b) => a.code - b.code);
-      if (featureRules.length === 0) continue;
-      sections += 1;
-      lines.push(`## Épico: ${epic.title} › Funcionalidade: ${feature.title}`, "");
-      for (const rule of featureRules) {
-        lines.push(`### ${formatRuleCode(rule.code)} — ${rule.title}`, "", rule.body.trim(), "");
-      }
+  for (const group of selected) {
+    const groupRules = rules
+      .filter((rule) => rule.featureId === group.id)
+      .sort((a, b) => a.code - b.code);
+    if (groupRules.length === 0) continue;
+    sections += 1;
+    lines.push(`## ${group.title}`, "");
+    for (const rule of groupRules) {
+      lines.push(`### ${formatRuleCode(rule.code)} — ${rule.title}`, "", rule.body.trim(), "");
     }
   }
 
