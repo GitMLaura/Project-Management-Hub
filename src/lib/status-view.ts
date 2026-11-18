@@ -1,4 +1,4 @@
-// Numbers for the Status page of a project: totals, per-area and per-epic cards and
+// Numbers for the Status page of a project: totals, per-area cards and
 // the list of items that need attention. Pure: the health color still comes from health.ts.
 import { expectedProgress, isLateTask } from "@/lib/health";
 import type { ItemNode } from "@/lib/item-tree";
@@ -26,11 +26,8 @@ export type StatusView = {
   expectedPercent: number;
   daysLeft: number; // negative when the deadline has passed
   areaCounts: Record<string, StatusCounts>;
-  // Epics (ids) in which each area has at least one item.
-  areaEpics: Record<string, string[]>;
-  epicCounts: Record<string, StatusCounts>;
-  // Areas that have at least one item inside each epic.
-  epicAreas: Record<string, string[]>;
+  // Groups (ids) in which each area has at least one task.
+  areaGroups: Record<string, string[]>;
   attention: AttentionItem[];
 };
 
@@ -40,12 +37,16 @@ function toDay(iso: string): number {
   return Math.floor(new Date(`${iso}T00:00:00Z`).getTime() / DAY_MS);
 }
 
-function flatten(nodes: readonly ItemNode[]): ItemNode[] {
-  return nodes.flatMap((node) => [node, ...flatten(node.children)]);
+// Groups only gather tasks, so every number below looks at tasks.
+function flattenTasks(nodes: readonly ItemNode[]): ItemNode[] {
+  return nodes.flatMap((node) => [
+    ...(node.type === "task" ? [node] : []),
+    ...flattenTasks(node.children),
+  ]);
 }
 
 function countItems(items: readonly ItemNode[], today: string): StatusCounts {
-  const tasks = items.filter((item) => item.type === "task");
+  const tasks = items;
   const doneTasks = tasks.filter((item) => item.status === "concluido").length;
   return {
     lateTasks: items.filter((item) => isLateTask(item, today)).length,
@@ -56,10 +57,6 @@ function countItems(items: readonly ItemNode[], today: string): StatusCounts {
   };
 }
 
-function unique(values: readonly string[]): string[] {
-  return [...new Set(values.filter(Boolean))];
-}
-
 export function buildStatusView(input: {
   tree: readonly ItemNode[]; // active items only
   areaIds: readonly string[];
@@ -68,24 +65,19 @@ export function buildStatusView(input: {
   today: string;
 }): StatusView {
   const { tree, today } = input;
-  const all = flatten(tree);
+  const all = flattenTasks(tree);
 
   const areaCounts: StatusView["areaCounts"] = {};
-  const areaEpics: StatusView["areaEpics"] = {};
+  const areaGroups: StatusView["areaGroups"] = {};
   for (const areaId of input.areaIds) {
-    const mine = all.filter((item) => item.areaId === areaId);
-    areaCounts[areaId] = countItems(mine, today);
-    areaEpics[areaId] = tree
-      .filter((epic) => flatten([epic]).some((item) => item.areaId === areaId))
-      .map((epic) => epic.id);
-  }
-
-  const epicCounts: StatusView["epicCounts"] = {};
-  const epicAreas: StatusView["epicAreas"] = {};
-  for (const epic of tree) {
-    const inside = flatten([epic]);
-    epicCounts[epic.id] = countItems(inside, today);
-    epicAreas[epic.id] = unique(inside.map((item) => item.areaId));
+    areaCounts[areaId] = countItems(
+      all.filter((item) => item.areaId === areaId),
+      today,
+    );
+    areaGroups[areaId] = tree
+      .filter((node) => node.type === "group")
+      .filter((group) => flattenTasks([group]).some((item) => item.areaId === areaId))
+      .map((group) => group.id);
   }
 
   const attention: AttentionItem[] = all
@@ -109,9 +101,7 @@ export function buildStatusView(input: {
     ),
     daysLeft: toDay(input.projectDeadline) - toDay(today),
     areaCounts,
-    areaEpics,
-    epicCounts,
-    epicAreas,
+    areaGroups,
     attention,
   };
 }

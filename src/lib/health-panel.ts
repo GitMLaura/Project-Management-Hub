@@ -1,4 +1,4 @@
-// Builds the data of the health panel: project, each epic and each area.
+// Builds the data of the health panel: the project and each area.
 import { calculateHealth, type HealthItem, type HealthResult } from "@/lib/health";
 import type { ItemNode, ItemRecord } from "@/lib/item-tree";
 
@@ -12,7 +12,6 @@ export type HealthEntry = {
 
 export type HealthPanel = {
   project: HealthEntry;
-  epics: HealthEntry[];
   areas: HealthEntry[];
 };
 
@@ -68,20 +67,12 @@ function entry(
 
 export function buildHealthPanel(input: PanelInput): HealthPanel {
   const { tree, today } = input;
-  const all = flatten(tree);
+  // Health looks at tasks only: groups just gather them.
+  const all = flatten(tree).filter((item) => item.type === "task");
   const projectPeriod = { start: input.projectStart, deadline: input.projectDeadline };
 
   return {
     project: entry("project", input.projectName, all, projectPeriod, today),
-    epics: tree.map((epic) =>
-      entry(
-        epic.id,
-        epic.title,
-        flatten([epic]),
-        { start: epic.startDate ?? input.projectStart, deadline: epic.deadline },
-        today,
-      ),
-    ),
     // For an area the period is the project's (PRD section 4).
     areas: input.areas.map((area) =>
       entry(

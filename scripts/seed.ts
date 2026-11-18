@@ -6,7 +6,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { AREAS, EPICS, FLOWS, PEOPLE, PROJECT, SCREENS, type SeedStatus } from "../seed/aurora";
+import { AREAS, EPICS, FLOWS, PEOPLE, PROJECT, SCREENS } from "../seed/aurora";
 import { RITUALS } from "../seed/rituals";
 import { renderScreen } from "../seed/screens";
 import { countSeed, validateSeed } from "../seed/validate";
@@ -20,13 +20,6 @@ function day(offset: number): string {
   const date = new Date();
   date.setUTCDate(date.getUTCDate() + offset);
   return date.toISOString().slice(0, 10);
-}
-
-// A container is done when all its tasks are done, "a fazer" when none started.
-function containerStatus(statuses: SeedStatus[]): SeedStatus {
-  if (statuses.every((status) => status === "concluido")) return "concluido";
-  if (statuses.every((status) => status === "a_fazer")) return "a_fazer";
-  return "em_andamento";
 }
 
 function must<T>(result: { data: T | null; error: { message: string } | null }, what: string): T {
@@ -102,68 +95,32 @@ async function main() {
     const area = (name: string) => areaId.get(name) as string;
     const person = (name: string) => personId.get(name) as string;
 
-    // ---- Scope: epic > feature > story > task ----
+    // ---- Scope: groups (the seed's features) and their tasks. Epics and stories of the
+    // seed data are not stored: the Hub has only tasks, gathered in groups. ----
     const featureId = new Map<string, string>();
     const insertItem = async (row: Record<string, unknown>, what: string) =>
       (must(await db.from("items").insert({ project_id: projectId, ...row }).select("id").single(), what) as { id: string }).id;
 
     let taskCount = 0;
     for (const epic of EPICS) {
-      const epicStatuses = epic.features.flatMap((f) => f.stories.flatMap((s) => s.tasks.map((t) => t.status)));
-      const epicId = await insertItem(
-        {
-          type: "epic",
-          parent_id: null,
-          title: epic.title,
-          description: epic.description,
-          area_id: area(epic.area),
-          assignee_id: person(epic.assignee),
-          start_date: day(epic.start),
-          deadline: day(epic.due),
-          status: containerStatus(epicStatuses),
-        },
-        `epic ${epic.title}`,
-      );
       for (const feature of epic.features) {
-        const featureStatuses = feature.stories.flatMap((s) => s.tasks.map((t) => t.status));
         const id = await insertItem(
           {
-            type: "feature",
-            parent_id: epicId,
+            type: "group",
+            group_label: "feature",
+            parent_id: null,
             title: feature.title,
             description: feature.description,
-            area_id: area(feature.area),
-            assignee_id: person(feature.assignee),
-            start_date: day(feature.start),
-            deadline: day(feature.due),
-            status: containerStatus(featureStatuses),
           },
-          `feature ${feature.title}`,
+          `group ${feature.title}`,
         );
         featureId.set(feature.key, id);
         for (const story of feature.stories) {
-          const storyId = await insertItem(
-            {
-              type: "story",
-              parent_id: id,
-              title: story.title,
-              area_id: area(story.area),
-              assignee_id: person(story.assignee),
-              start_date: day(story.start),
-              deadline: day(story.due),
-              status: containerStatus(story.tasks.map((t) => t.status)),
-              story_persona: story.persona,
-              story_action: story.action,
-              story_benefit: story.benefit,
-              acceptance_criteria: story.criteria,
-            },
-            `story ${story.title}`,
-          );
           for (const t of story.tasks) {
             await insertItem(
               {
                 type: "task",
-                parent_id: storyId,
+                parent_id: id,
                 title: t.title,
                 area_id: area(t.area),
                 assignee_id: person(t.assignee),

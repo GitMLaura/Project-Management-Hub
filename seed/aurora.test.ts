@@ -58,50 +58,29 @@ describe("Aurora seed", () => {
       id: `i${(counter += 1)}`,
       parentId,
       type,
+      groupLabel: null,
       title,
       description: "",
-      storyPersona: null,
-      storyAction: null,
-      storyBenefit: null,
-      acceptanceCriteria: [],
       archivedAt: null,
     });
+    // The Hub keeps tasks and groups only: each seed feature becomes a group.
     for (const epic of EPICS) {
-      const epicRecord: ItemRecord = {
-        ...base("epic", null, epic.title),
-        areaId: areaId.get(epic.area)!,
-        assigneeId: personId.get(epic.assignee)!,
-        startDate: day(epic.start),
-        deadline: day(epic.due),
-        status: "em_andamento",
-        isCritical: false,
-      };
-      records.push(epicRecord);
       for (const feature of epic.features) {
-        const featureRecord: ItemRecord = {
-          ...base("feature", epicRecord.id, feature.title),
-          areaId: areaId.get(feature.area)!,
-          assigneeId: personId.get(feature.assignee)!,
-          startDate: day(feature.start),
-          deadline: day(feature.due),
+        const group: ItemRecord = {
+          ...base("group", null, feature.title),
+          groupLabel: "feature",
+          areaId: "",
+          assigneeId: "",
+          startDate: null,
+          deadline: "",
           status: "em_andamento",
           isCritical: false,
         };
-        records.push(featureRecord);
+        records.push(group);
         for (const story of feature.stories) {
-          const storyRecord: ItemRecord = {
-            ...base("story", featureRecord.id, story.title),
-            areaId: areaId.get(story.area)!,
-            assigneeId: personId.get(story.assignee)!,
-            startDate: day(story.start),
-            deadline: day(story.due),
-            status: "em_andamento",
-            isCritical: false,
-          };
-          records.push(storyRecord);
           for (const t of story.tasks) {
             records.push({
-              ...base("task", storyRecord.id, t.title),
+              ...base("task", group.id, t.title),
               areaId: areaId.get(t.area)!,
               assigneeId: personId.get(t.assignee)!,
               startDate: null,
@@ -124,18 +103,13 @@ describe("Aurora seed", () => {
     });
 
     const colors = (entries: { health: { color: string } }[]) => entries.map((entry) => entry.health.color);
-    expect(panel.epics.map((entry) => [entry.name, entry.health.color])).toEqual([
-      ["Conta e acesso", "green"],
-      ["Pedido e entrega", "red"],
-      ["Restaurantes parceiros", "yellow"],
-    ]);
     expect(panel.areas.map((entry) => [entry.name, entry.health.color])).toEqual([
       ["Produto/Negócio", "green"],
       ["Design", "yellow"],
       ["Desenvolvimento", "red"],
       ["QA", "green"],
     ]);
-    expect(new Set([...colors(panel.epics), ...colors(panel.areas)])).toEqual(new Set(["green", "yellow", "red"]));
+    expect(new Set(colors(panel.areas))).toEqual(new Set(["green", "yellow", "red"]));
   });
 
   it("has repeated flow segments on purpose", () => {

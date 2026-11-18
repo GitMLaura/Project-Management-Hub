@@ -60,6 +60,7 @@ export function parseScopeFilters(
 }
 
 function matches(node: ItemNode, filters: ScopeFilters): boolean {
+  if (node.type === "group") return false; // a group stays only through its tasks
   if (filters.areaId && node.areaId !== filters.areaId) return false;
   if (filters.assigneeId && node.assigneeId !== filters.assigneeId) return false;
   if (filters.status && node.status !== filters.status) return false;

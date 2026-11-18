@@ -20,13 +20,20 @@ function badge(counts: StatusCounts): { text: string; className: string } {
       className: "border-yellow-300 bg-yellow-50 text-yellow-800",
     };
   }
-  return { text: "Ok", className: "border-green-300 bg-green-50 text-green-800" };
+  return {
+    text: "Ok",
+    className: "border-green-300 bg-green-50 text-green-800",
+  };
 }
 
 function summaryText(counts: StatusCounts): string {
   const parts: string[] = [];
-  if (counts.lateTasks > 0) parts.push(plural(counts.lateTasks, "tarefa atrasada", "tarefas atrasadas"));
-  if (counts.blockedItems > 0) parts.push(plural(counts.blockedItems, "bloqueada", "bloqueadas"));
+  if (counts.lateTasks > 0)
+    parts.push(
+      plural(counts.lateTasks, "tarefa atrasada", "tarefas atrasadas"),
+    );
+  if (counts.blockedItems > 0)
+    parts.push(plural(counts.blockedItems, "bloqueada", "bloqueadas"));
   return parts.length > 0 ? parts.join(" · ") : "Sem atrasos ou bloqueios";
 }
 
@@ -54,7 +61,9 @@ export function StatusCard({
     <article className="flex flex-col gap-3 overflow-hidden rounded-2xl bg-card p-5">
       <div className="flex items-start justify-between gap-2">
         <h3 className="font-heading text-base font-semibold">{name}</h3>
-        <span className={`shrink-0 rounded-full border px-2 py-0.5 text-xs font-medium ${tag.className}`}>
+        <span
+          className={`shrink-0 rounded-full border px-2 py-0.5 text-xs font-medium ${tag.className}`}
+        >
           {tag.text}
         </span>
       </div>
@@ -68,22 +77,27 @@ export function StatusCard({
           aria-label={`Progresso de ${name}`}
           className="h-2 overflow-hidden rounded-full bg-muted"
         >
-          <div className="bar-fill h-full rounded-full bg-primary" style={{ width: `${counts.percent}%` }} />
+          <div
+            className="bar-fill h-full rounded-full bg-primary"
+            style={{ width: `${counts.percent}%` }}
+          />
         </div>
         <p className="mt-2 font-mono text-xs text-muted-foreground tabular-nums">
           {counts.doneTasks} de {counts.totalTasks} tarefas · {counts.percent}%
         </p>
       </div>
-      <div className="-mx-5 flex flex-wrap gap-x-3 gap-y-1 border-t px-5 pt-3 text-xs">
-        <span className="text-muted-foreground">{contextLabel}</span>
-        {contextValues.length === 0 ? (
-          <span>Nenhum ainda</span>
-        ) : everything ? (
-          <span>{contextAllLabel}</span>
-        ) : (
-          contextValues.map((value) => <span key={value}>{value}</span>)
-        )}
-      </div>
+      {contextTotal > 0 && (
+        <div className="-mx-5 flex flex-wrap gap-x-3 gap-y-1 border-t px-5 pt-3 text-xs">
+          <span className="text-muted-foreground">{contextLabel}</span>
+          {contextValues.length === 0 ? (
+            <span>Nenhum ainda</span>
+          ) : everything ? (
+            <span>{contextAllLabel}</span>
+          ) : (
+            contextValues.map((value) => <span key={value}>{value}</span>)
+          )}
+        </div>
+      )}
       {action && (
         <Link
           href={action.href}
@@ -111,7 +125,9 @@ export function AttentionList({
   assigneeNames: Record<string, string>;
 }) {
   return (
-    <ul className={`divide-y overflow-hidden rounded-2xl bg-card ${fill ? "flex flex-1 flex-col" : ""}`}>
+    <ul
+      className={`divide-y overflow-hidden rounded-2xl bg-card ${fill ? "flex flex-1 flex-col" : ""}`}
+    >
       {items.map((item) => (
         <li key={item.id} className={fill ? "flex flex-1" : undefined}>
           <Link
@@ -121,7 +137,8 @@ export function AttentionList({
             <span className="flex min-w-0 flex-col gap-0.5">
               <span className="font-medium">{item.title}</span>
               <span className="text-xs text-muted-foreground">
-                {areaNames[item.areaId] ?? "Sem área"} · {assigneeNames[item.assigneeId] ?? "Sem responsável"}
+                {areaNames[item.areaId] ?? "Sem área"} ·{" "}
+                {assigneeNames[item.assigneeId] ?? "Sem responsável"}
               </span>
               <span className="text-xs text-muted-foreground tabular-nums">
                 {item.daysOverdue > 0

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Plus } from "lucide-react";
+import { SelectionProvider } from "@/components/group-selection";
 import { ScopeFilters } from "@/components/scope-filters";
 import { ScopeTree } from "@/components/scope-tree";
 import { buttonVariants } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { PageMessage } from "@/components/page-message";
 import { getActiveProfile } from "@/lib/active-profile";
 import { canManageScope } from "@/lib/item-rules";
-import { buildItemTree, countIncompleteScope } from "@/lib/item-tree";
+import { buildItemTree } from "@/lib/item-tree";
 import { buildProgressMap, filterTree, parseScopeFilters } from "@/lib/scope-view";
 import { listItems } from "@/lib/supabase/items";
 import { getProject } from "@/lib/supabase/projects";
@@ -60,23 +61,19 @@ export default async function ScopePage(props: PageProps<"/projects/[id]/scope">
         <div className="flex max-w-2xl flex-col gap-2">
           <h1 className="text-4xl font-semibold">Escopo</h1>
           <p className="text-muted-foreground">
-            Épicos, funcionalidades, histórias e tarefas de {project.name}.
+            As tarefas de {project.name}. Marque várias e use “Agrupar” para reuni-las num épico ou numa funcionalidade.
           </p>
         </div>
         {canManage && (
           <Link href={`/projects/${id}/items/new`} className={buttonVariants({ size: "lg" })}>
             <Plus aria-hidden="true" />
-            Novo item
+            Nova tarefa
           </Link>
         )}
       </header>
 
+      <SelectionProvider projectId={id}>
       <section className="flex flex-col gap-5" aria-label="Escopo">
-        {countIncompleteScope(tree) > 0 && (
-          <p className="text-sm text-muted-foreground">
-            {countIncompleteScope(tree)} item(ns) com escopo incompleto: ainda sem nada dentro.
-          </p>
-        )}
         {tree.length > 0 && (
           <ScopeFilters
             projectId={id}
@@ -91,15 +88,15 @@ export default async function ScopePage(props: PageProps<"/projects/[id]/scope">
               <p className="font-medium">Este projeto ainda não tem escopo.</p>
               <p className="text-sm text-muted-foreground">
                 {canManage
-                  ? "Comece adicionando um épico."
-                  : "O Dono ou um Líder de área pode adicionar o primeiro épico. Troque de perfil pelo avatar."}
+                  ? "Comece adicionando uma tarefa."
+                  : "O Dono ou um Líder de área pode adicionar a primeira tarefa. Troque de perfil pelo avatar."}
               </p>
             </CardContent>
           </Card>
         ) : visibleTree.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col gap-1 pt-4">
-              <p className="font-medium">Nenhum item corresponde aos filtros.</p>
+              <p className="font-medium">Nenhuma tarefa corresponde aos filtros.</p>
               <p className="text-sm text-muted-foreground">
                 Tente outra combinação ou use &quot;Limpar filtros&quot;.
               </p>
@@ -117,13 +114,14 @@ export default async function ScopePage(props: PageProps<"/projects/[id]/scope">
           />
         )}
       </section>
+      </SelectionProvider>
 
       {archivedTree.length > 0 && (
         <section className="flex flex-col gap-4" aria-label="Itens arquivados">
           <h2 className="text-xl font-semibold">Arquivados</h2>
           <p className="text-sm text-muted-foreground">
-            Itens arquivados saem do escopo ativo, mas não são apagados. Restaurar um item traz
-            de volta o que foi arquivado junto com ele.
+            Itens arquivados saem do escopo ativo, mas não são apagados. Restaurar um grupo traz
+            de volta as tarefas que foram arquivadas junto com ele.
           </p>
           <ScopeTree
             projectId={id}

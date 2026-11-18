@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getActiveProfile } from "@/lib/active-profile";
-import { canCreateItemInArea } from "@/lib/item-rules";
+import { canManageScope } from "@/lib/item-rules";
 import { isRuleInput, validateRuleInput } from "@/lib/rules";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -21,19 +21,16 @@ export async function saveRule(raw: unknown): Promise<SaveRuleResult> {
 
   const { data: feature } = await supabase
     .from("items")
-    .select("type, areas(name)")
+    .select("type")
     .eq("id", raw.featureId)
     .eq("project_id", raw.projectId)
     .maybeSingle();
-  const area = Array.isArray(feature?.areas) ? feature.areas[0] : feature?.areas;
-  if (!feature || feature.type !== "feature" || !area) {
-    return { ok: false, error: "Funcionalidade não encontrada neste projeto." };
+  if (!feature || feature.type !== "group") {
+    return { ok: false, error: "Grupo não encontrado neste projeto." };
   }
-  if (!canCreateItemInArea(profile, area.name)) {
-    return {
-      ok: false,
-      error: `Como ${profile.roleLabel}, você só edita a especificação da sua área (${profile.area}).`,
-    };
+  // A group has no area of its own, so the owner and the area leaders may edit its spec.
+  if (!canManageScope(profile)) {
+    return { ok: false, error: `Como ${profile.roleLabel}, você só consulta a especificação.` };
   }
 
   const fields = { title: raw.title.trim(), body: raw.body };

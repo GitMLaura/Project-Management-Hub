@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getActiveProfile } from "@/lib/active-profile";
-import { canCreateItemInArea } from "@/lib/item-rules";
+import { canCreateItemInArea, canManageScope } from "@/lib/item-rules";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type ArchiveResult = { ok: true } | { ok: false; error: string };
@@ -23,15 +23,17 @@ async function changeArchive(
 
   const { data: item } = await supabase
     .from("items")
-    .select("area_id, areas(name)")
+    .select("type, areas(name)")
     .eq("id", itemId)
     .eq("project_id", projectId)
     .maybeSingle();
   const area = Array.isArray(item?.areas) ? item.areas[0] : item?.areas;
-  if (!item || !area) {
+  if (!item || (item.type === "task" && !area)) {
     return { ok: false, error: "Item não encontrado neste projeto." };
   }
-  if (!canCreateItemInArea(profile, area.name)) {
+  // A group has no area: the owner and the area leaders may archive it.
+  const allowed = item.type === "group" ? canManageScope(profile) : canCreateItemInArea(profile, area?.name ?? "");
+  if (!allowed) {
     return {
       ok: false,
       error: `Como ${profile.roleLabel}, você só altera itens da sua área (${profile.area}).`,

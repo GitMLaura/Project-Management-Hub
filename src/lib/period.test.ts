@@ -6,7 +6,7 @@ function node(id: string, type: ItemNode["type"], deadline: string, children: It
   return {
     id, parentId: null, type, title: id, description: "", areaId: "a", assigneeId: "p",
     startDate: null, deadline, status: "a_fazer", isCritical: false,
-    storyPersona: null, storyAction: null, storyBenefit: null, acceptanceCriteria: [],
+    groupLabel: null,
     archivedAt: null, children,
   };
 }
@@ -45,7 +45,7 @@ describe("periodRange", () => {
 
 describe("filterTasksByRange", () => {
   const tree = [
-    node("e", "epic", "2026-12-31", [
+    node("g", "group", "", [
       node("t1", "task", "2026-11-16"),
       node("t2", "task", "2026-11-30"),
     ]),

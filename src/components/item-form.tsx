@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createItem } from "@/app/projects/items-actions";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,6 @@ import {
   type ItemFieldError,
   type ItemInput,
   type ItemStatus,
-  type ItemType,
 } from "@/lib/item-rules";
 
 const SELECT_CLASS =
@@ -25,14 +24,12 @@ const SELECT_CLASS =
 
 type ItemFormProps = {
   projectId: string;
-  type: ItemType;
-  typeLabel: string;
-  parent: { id: string; title: string; typeLabel: string; deadline: string } | null;
+  groups: { id: string; title: string }[];
+  initialGroupId: string; // "" = a loose task
   areas: { id: string; name: string }[];
   participants: { id: string; name: string }[];
-  fixedAreaId: string | null; // area leaders can only create items in their own area
-  today: string;
-  // Latest allowed deadline: the parent's (or the project's, for epics).
+  fixedAreaId: string | null; // area leaders can only create tasks in their own area
+  // Latest allowed deadline: the project's.
   maxDeadline: string | null;
 };
 
@@ -50,33 +47,25 @@ function FieldMessages({ errors }: { errors: ItemFieldError[] }) {
 
 export function ItemForm({
   projectId,
-  type,
-  typeLabel,
-  parent,
+  groups,
+  initialGroupId,
   areas,
   participants,
   fixedAreaId,
-  today,
   maxDeadline,
 }: ItemFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const nextKey = useRef(1);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [groupId, setGroupId] = useState(initialGroupId);
   const [areaId, setAreaId] = useState(fixedAreaId ?? "");
   const [assigneeId, setAssigneeId] = useState("");
-  const [startDate, setStartDate] = useState(type === "task" ? "" : today);
+  const [startDate, setStartDate] = useState("");
   const [deadline, setDeadline] = useState("");
   const [status, setStatus] = useState<ItemStatus>("a_fazer");
   const [isCritical, setIsCritical] = useState(false);
-  const [persona, setPersona] = useState("");
-  const [action, setAction] = useState("");
-  const [benefit, setBenefit] = useState("");
-  const [criteria, setCriteria] = useState<{ key: string; text: string }[]>([
-    { key: "criterion-0", text: "" },
-  ]);
   const [fieldErrors, setFieldErrors] = useState<ItemFieldError[]>([]);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -84,20 +73,13 @@ export function ItemForm({
     return fieldErrors.filter((error) => error.field === field);
   }
 
-  function limitsFor() {
-    return type === "epic"
-      ? { projectDeadline: maxDeadline }
-      : { parentDeadline: maxDeadline };
-  }
-
   // Warns right away, before the user submits.
-  const liveDeadlineWarning = deadlineLimitError(type, deadline, limitsFor());
+  const liveDeadlineWarning = deadlineLimitError(deadline, maxDeadline);
 
   function buildInput(): ItemInput {
     return {
       projectId,
-      type,
-      parentId: parent?.id ?? null,
+      groupId: groupId || null,
       title,
       description,
       areaId,
@@ -106,10 +88,6 @@ export function ItemForm({
       deadline,
       status,
       isCritical,
-      storyPersona: persona,
-      storyAction: action,
-      storyBenefit: benefit,
-      acceptanceCriteria: criteria.map((criterion) => criterion.text),
     };
   }
 
@@ -118,7 +96,7 @@ export function ItemForm({
     setFormError(null);
 
     const input = buildInput();
-    const validation = validateItem(input, limitsFor());
+    const validation = validateItem(input, maxDeadline);
     if (!validation.ok) {
       setFieldErrors(validation.errors);
       setFormError("Corrija os campos indicados.");
@@ -136,7 +114,7 @@ export function ItemForm({
         setFormError(result.error);
         setFieldErrors(result.fieldErrors ?? []);
       } catch {
-        setFormError("Não foi possível salvar o item. Tente novamente.");
+        setFormError("Não foi possível salvar a tarefa. Tente novamente.");
       }
     });
   }
@@ -145,13 +123,6 @@ export function ItemForm({
     <form onSubmit={handleSubmit} noValidate>
       <Card>
         <CardContent className="flex flex-col gap-4 pt-4">
-          {parent && (
-            <p className="text-sm text-muted-foreground">
-              Dentro de <strong>{parent.typeLabel}: {parent.title}</strong> (prazo{" "}
-              {parent.deadline.split("-").reverse().join("/")}).
-            </p>
-          )}
-
           <div className="flex flex-col gap-2">
             <Label htmlFor="title">Título</Label>
             <Input
@@ -163,85 +134,22 @@ export function ItemForm({
             <FieldMessages errors={errorsFor("title")} />
           </div>
 
-          {type === "story" && (
-            <fieldset className="flex flex-col gap-3 rounded-2xl border p-3">
-              <legend className="px-1 text-sm font-medium">História</legend>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="persona">Como…</Label>
-                <Input
-                  id="persona"
-                  value={persona}
-                  onChange={(event) => setPersona(event.target.value)}
-                  placeholder="Ex.: cliente do app de delivery"
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="action">quero…</Label>
-                <Input
-                  id="action"
-                  value={action}
-                  onChange={(event) => setAction(event.target.value)}
-                  placeholder="Ex.: recuperar minha senha"
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="benefit">para…</Label>
-                <Input
-                  id="benefit"
-                  value={benefit}
-                  onChange={(event) => setBenefit(event.target.value)}
-                  placeholder="Ex.: voltar a pedir comida"
-                />
-              </div>
-              <FieldMessages errors={errorsFor("story")} />
-
-              <div className="flex flex-col gap-2">
-                <Label>Critérios de aceite</Label>
-                {criteria.map((criterion, index) => (
-                  <div key={criterion.key} className="flex items-center gap-2">
-                    <Input
-                      aria-label={`Critério de aceite ${index + 1}`}
-                      value={criterion.text}
-                      onChange={(event) =>
-                        setCriteria((rows) =>
-                          rows.map((row) =>
-                            row.key === criterion.key
-                              ? { ...row, text: event.target.value }
-                              : row,
-                          ),
-                        )
-                      }
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() =>
-                        setCriteria((rows) => rows.filter((row) => row.key !== criterion.key))
-                      }
-                      aria-label={`Remover critério ${index + 1}`}
-                    >
-                      Remover
-                    </Button>
-                  </div>
-                ))}
-                <div>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => {
-                      nextKey.current += 1;
-                      setCriteria((rows) => [
-                        ...rows,
-                        { key: `criterion-${nextKey.current}`, text: "" },
-                      ]);
-                    }}
-                  >
-                    Adicionar critério
-                  </Button>
-                </div>
-              </div>
-            </fieldset>
-          )}
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="group">Grupo (opcional)</Label>
+            <select
+              id="group"
+              className={SELECT_CLASS}
+              value={groupId}
+              onChange={(event) => setGroupId(event.target.value)}
+            >
+              <option value="">Sem grupo</option>
+              {groups.map((group) => (
+                <option key={group.id} value={group.id}>
+                  {group.title}
+                </option>
+              ))}
+            </select>
+          </div>
 
           <div className="flex flex-col gap-2">
             <Label htmlFor="description">Descrição (opcional)</Label>
@@ -272,7 +180,7 @@ export function ItemForm({
               </select>
               {fixedAreaId !== null && (
                 <p className="text-xs text-muted-foreground">
-                  Seu perfil só cria itens da sua área.
+                  Seu perfil só cria tarefas da sua área.
                 </p>
               )}
               <FieldMessages errors={errorsFor("areaId")} />
@@ -299,9 +207,7 @@ export function ItemForm({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="startDate">
-                Início{type === "task" ? " (opcional)" : ""}
-              </Label>
+              <Label htmlFor="startDate">Início (opcional)</Label>
               <Input
                 id="startDate"
                 type="date"
@@ -365,7 +271,7 @@ export function ItemForm({
           )}
           <div>
             <Button type="submit" disabled={isPending}>
-              {isPending ? "Salvando…" : `Criar ${typeLabel.toLowerCase()}`}
+              {isPending ? "Salvando…" : "Criar tarefa"}
             </Button>
           </div>
         </CardContent>

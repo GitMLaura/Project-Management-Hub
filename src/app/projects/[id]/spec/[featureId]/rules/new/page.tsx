@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { PageMessage } from "@/components/page-message";
 import { RuleForm } from "@/components/rule-form";
 import { getActiveProfile } from "@/lib/active-profile";
-import { canCreateItemInArea } from "@/lib/item-rules";
+import { canManageScope } from "@/lib/item-rules";
 import { loadFeatureContext, type FeatureContext } from "@/lib/supabase/spec-context";
 
 export default async function NewRulePage(
@@ -27,11 +27,11 @@ export default async function NewRulePage(
   }
   if (!context) notFound();
 
-  if (!canCreateItemInArea(profile, context.areaName)) {
+  if (!canManageScope(profile)) {
     return (
       <PageMessage
         title="Nova regra"
-        text={`Como ${profile.roleLabel}, você não escreve regras da área ${context.areaName}. Troque de perfil pelo avatar.`}
+        text={`Como ${profile.roleLabel}, você não escreve regras. Troque de perfil pelo avatar.`}
         backHref={back}
         backLabel="Voltar"
       />

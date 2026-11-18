@@ -3,7 +3,7 @@ import { FlowEditor } from "@/components/flow-editor";
 import { PageMessage } from "@/components/page-message";
 import { getActiveProfile } from "@/lib/active-profile";
 import type { FlowRecord } from "@/lib/flows";
-import { canCreateItemInArea } from "@/lib/item-rules";
+import { canManageScope } from "@/lib/item-rules";
 import type { ScreenRecord } from "@/lib/screens";
 import { getFlow, listStepLinks } from "@/lib/supabase/flows";
 import { listScreens } from "@/lib/supabase/screens";
@@ -41,7 +41,7 @@ export default async function FlowPage(
   }
   if (!context || !flow || flow.featureId !== featureId) notFound();
 
-  const canEdit = canCreateItemInArea(profile, context.areaName);
+  const canEdit = canManageScope(profile);
 
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-6">
@@ -50,7 +50,7 @@ export default async function FlowPage(
         <h1 className="text-2xl font-semibold">{flow.title}</h1>
         {!canEdit && (
           <p className="text-sm text-muted-foreground">
-            Só consulta: o líder da área {context.areaName} (ou o Dono) edita este fluxo.
+            Só consulta: o Dono ou um Líder de área edita este fluxo.
           </p>
         )}
       </div>

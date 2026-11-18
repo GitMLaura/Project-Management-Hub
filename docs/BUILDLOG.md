@@ -659,3 +659,15 @@ Quem chamar a API do Supabase direto, com a chave pública, pode alterar dados m
 - A home mostra quatro números (projetos, no prazo, alerta amarelo, alerta vermelho) e cartões de projeto com status, pendências, percentual entregue e pessoas. Filtros de Status e Pessoa (pílulas, guardados na URL) e busca por nome.
 - Regra "projetos de que eu participo": o nome do perfil ativo precisa estar entre os participantes do projeto (`src/lib/home-filter.ts`, com testes). A demo tem um só projeto; ao trocar de perfil a lista continua mostrando o Projeto Hits porque todos os perfis participam dele.
 - Decidido pela autora: o conceito e a referência. Gerado pela IA: código.
+
+## 2026-11-18 — Escopo só com tarefas e grupos (LOGIC-2)
+
+- Pedido da autora: sem a camada de épicos; só tarefas. Na aba de escopo, um botão agrupa tarefas marcadas num conjunto que a pessoa chama de Funcionalidade ou Épico.
+- Decisões da autora: as histórias (com critérios de aceite) deixam de existir; o rótulo do grupo é escolhido ao criar.
+- **Isto muda o PRD** (hierarquia projeto → épico → funcionalidade → história → tarefa). O CLAUDE.md foi atualizado; o texto do PRD ainda descreve o modelo antigo.
+- Banco: migração `20261118120000_items_groups.sql`, já aplicada no Supabase hospedado. As funcionalidades viraram grupos (rótulo "Funcionalidade"), as tarefas das histórias subiram para o grupo, e as linhas de épico e de história foram **apagadas** (as colunas de história também). Grupo não tem área, responsável nem prazo. A tarefa tem prazo até o fim do projeto.
+- Telas: o Escopo é uma lista com um bloco por grupo e um bloco "Sem grupo". Marcar tarefas abre a barra "Agrupar" (nome + rótulo). Sai a seção de épicos do Status; "Saúde por área" mostra os grupos em que a área atua. A saúde olha só as tarefas. O CSV do Status ganhou a coluna Grupo.
+- Permissões (só na interface, como antes): Dono e líderes agrupam; líder só agrupa tarefas da própria área. Fluxos, regras e telas da especificação continuam ligados ao grupo; quem edita é o Dono ou um líder de área (o grupo não tem área).
+- O seed mantém os dados de exemplo com épicos e histórias, mas grava só grupos e tarefas.
+- Não feito: desagrupar e mover tarefa entre grupos.
+- Decidido pela autora: o modelo. Gerado pela IA: código e migração.

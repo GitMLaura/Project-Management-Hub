@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { PageMessage } from "@/components/page-message";
 import { RuleForm } from "@/components/rule-form";
 import { getActiveProfile } from "@/lib/active-profile";
-import { canCreateItemInArea } from "@/lib/item-rules";
+import { canManageScope } from "@/lib/item-rules";
 import { formatRuleCode, type RuleRecord } from "@/lib/rules";
 import { getRule } from "@/lib/supabase/rules";
 import { loadFeatureContext, type FeatureContext } from "@/lib/supabase/spec-context";
@@ -31,11 +31,11 @@ export default async function EditRulePage(
   }
   if (!context || !rule || rule.featureId !== featureId) notFound();
 
-  if (!canCreateItemInArea(profile, context.areaName)) {
+  if (!canManageScope(profile)) {
     return (
       <PageMessage
         title="Editar regra"
-        text={`Como ${profile.roleLabel}, você não edita regras da área ${context.areaName}. Troque de perfil pelo avatar.`}
+        text={`Como ${profile.roleLabel}, você não edita regras. Troque de perfil pelo avatar.`}
         backHref={back}
         backLabel="Voltar"
       />

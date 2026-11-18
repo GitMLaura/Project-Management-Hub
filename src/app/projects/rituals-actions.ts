@@ -120,11 +120,11 @@ export async function approveSummary(projectId: string, summaryId: string): Prom
 
 export type CreateTaskFromPendingResult = { ok: true } | { ok: false; error: string };
 
-// One pending becomes one task. Scope rules E1-E3 are checked again by createItem.
+// One pending becomes one task. The scope rules are checked again by createItem.
 export async function createTaskFromPending(
   projectId: string,
   pendingId: string,
-  storyId: string,
+  groupId: string,
   assigneeId: string,
   deadline: string,
 ): Promise<CreateTaskFromPendingResult> {
@@ -141,16 +141,18 @@ export async function createTaskFromPending(
   }
   if (pending.task_id) return { ok: false, error: "Esta pendência já virou tarefa." };
 
-  const story = await getItem(projectId, storyId).catch(() => null);
-  if (!story || story.type !== "story" || story.archivedAt) {
-    return { ok: false, error: "Escolha uma história ativa deste projeto como pai da tarefa." };
+  if (groupId) {
+    const group = await getItem(projectId, groupId).catch(() => null);
+    if (!group || group.type !== "group" || group.archivedAt) {
+      return { ok: false, error: "Escolha um grupo ativo deste projeto, ou deixe a tarefa sem grupo." };
+    }
   }
 
   const created = await createItem(
     buildTaskInput({
       projectId,
       areaId: summary.area_id as string,
-      storyId,
+      groupId,
       assigneeId,
       deadline,
       description: pending.description as string,

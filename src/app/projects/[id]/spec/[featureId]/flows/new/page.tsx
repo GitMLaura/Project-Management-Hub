@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { FlowEditor } from "@/components/flow-editor";
 import { PageMessage } from "@/components/page-message";
 import { getActiveProfile } from "@/lib/active-profile";
-import { canCreateItemInArea } from "@/lib/item-rules";
+import { canManageScope } from "@/lib/item-rules";
 import { loadFeatureContext, type FeatureContext } from "@/lib/supabase/spec-context";
 
 const TEMPLATE = "flowchart TD\n  A[Abrir o app] --> B[Informar e-mail]\n  B --> C[Validar senha]\n  C --> D[Entrar]\n";
@@ -29,11 +29,11 @@ export default async function NewFlowPage(
   }
   if (!context) notFound();
 
-  if (!canCreateItemInArea(profile, context.areaName)) {
+  if (!canManageScope(profile)) {
     return (
       <PageMessage
         title="Novo fluxo"
-        text={`Como ${profile.roleLabel}, você não cria fluxos da área ${context.areaName}. Troque de perfil pelo avatar.`}
+        text={`Como ${profile.roleLabel}, você não cria fluxos. Troque de perfil pelo avatar.`}
         backHref={back}
         backLabel="Voltar"
       />

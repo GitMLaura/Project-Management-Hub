@@ -3,11 +3,8 @@ import { Download } from "lucide-react";
 import { PageMessage } from "@/components/page-message";
 import { PeriodFilter } from "@/components/period-filter";
 import { StatusMetrics } from "@/components/status-hero";
-import { EpicsTable } from "@/components/status-panels";
 import { AttentionList, StatusCard } from "@/components/status-cards";
 import { buttonVariants } from "@/components/ui/button";
-import { getActiveProfile } from "@/lib/active-profile";
-import { canManageScope } from "@/lib/item-rules";
 import { filterTasksByRange, parsePeriod, periodRange } from "@/lib/period";
 import { buildItemTree } from "@/lib/item-tree";
 import { buildStatusView } from "@/lib/status-view";
@@ -18,7 +15,6 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
   const { id } = await props.params;
   const rawPeriod = (await props.searchParams).periodo;
   const period = parsePeriod(Array.isArray(rawPeriod) ? rawPeriod[0] : rawPeriod);
-  const profile = await getActiveProfile();
 
   let project;
   let items;
@@ -55,8 +51,8 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
     projectDeadline: project.deadline,
     today,
   });
-  const epicTitles = Object.fromEntries(tree.map((epic) => [epic.id, epic.title]));
-  const activeEpics = tree.filter((epic) => epic.status !== "concluido");
+  const groups = tree.filter((node) => node.type === "group");
+  const groupTitles = Object.fromEntries(groups.map((group) => [group.id, group.title]));
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 p-6 md:p-10">
@@ -104,31 +100,6 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
           </section>
         </div>
         <div className="flex flex-col gap-10">
-          <section className="flex flex-col gap-4" aria-labelledby="epics-title">
-            <h2 id="epics-title" className="text-xl font-semibold">
-              Épicos em andamento
-            </h2>
-            {activeEpics.length === 0 ? (
-              <p className="rounded-2xl bg-card p-5 text-sm text-muted-foreground">
-                Este projeto ainda não tem épicos.{" "}
-                {canManageScope(profile)
-                  ? "Comece adicionando um item."
-                  : "O Dono ou um Líder de área pode adicionar o primeiro."}
-              </p>
-            ) : (
-              <EpicsTable
-                projectId={id}
-                epics={activeEpics.map((epic) => ({
-                  id: epic.id,
-                  title: epic.title,
-                  deadline: epic.deadline,
-                  featureCount: epic.children.length,
-                  counts: view.epicCounts[epic.id],
-                }))}
-              />
-            )}
-          </section>
-
           {project.areas.length > 0 && (
             <section className="flex flex-col gap-4" aria-labelledby="areas-title">
               <h2 id="areas-title" className="text-xl font-semibold">
@@ -141,9 +112,9 @@ export default async function ProjectStatusPage(props: PageProps<"/projects/[id]
                     name={area.name}
                     counts={view.areaCounts[area.id]}
                     contextLabel="Atuando em"
-                    contextValues={view.areaEpics[area.id].map((epicId) => epicTitles[epicId])}
-                    contextTotal={tree.length}
-                    contextAllLabel="Todos os épicos"
+                    contextValues={view.areaGroups[area.id].map((groupId) => groupTitles[groupId])}
+                    contextTotal={groups.length}
+                    contextAllLabel="Todos os grupos"
                   />
                 ))}
               </div>

@@ -1,16 +1,21 @@
-// CSV of the Status page: one line per item, in the filter that is on screen.
-import { ITEM_STATUS_LABELS, ITEM_TYPE_LABELS } from "@/lib/item-rules";
+// CSV of the Status page: one line per task, in the filter that is on screen.
+import { ITEM_STATUS_LABELS } from "@/lib/item-rules";
 import { isLateTask } from "@/lib/health";
 import type { ItemNode } from "@/lib/item-tree";
 
-const HEADER = ["Tipo", "Título", "Área", "Responsável", "Status", "Prazo", "Atrasada"];
+const HEADER = ["Grupo", "Tarefa", "Área", "Responsável", "Status", "Prazo", "Atrasada"];
 
 function cell(value: string): string {
   return /[;"\n\r]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
 }
 
-function flatten(nodes: readonly ItemNode[]): ItemNode[] {
-  return nodes.flatMap((node) => [node, ...flatten(node.children)]);
+// Every task with the name of its group (empty for a loose task).
+function listTasks(nodes: readonly ItemNode[], group = ""): { task: ItemNode; group: string }[] {
+  return nodes.flatMap((node) =>
+    node.type === "task"
+      ? [{ task: node, group }]
+      : listTasks(node.children, node.title),
+  );
 }
 
 // Separator ";" and a BOM so Excel in Brazilian Portuguese opens it with the right accents.
@@ -20,9 +25,9 @@ export function buildStatusCsv(input: {
   assigneeNames: Record<string, string>;
   today: string;
 }): string {
-  const lines = flatten(input.tree).map((item) =>
+  const lines = listTasks(input.tree).map(({ task: item, group }) =>
     [
-      ITEM_TYPE_LABELS[item.type],
+      group,
       item.title,
       input.areaNames[item.areaId] ?? "",
       input.assigneeNames[item.assigneeId] ?? "",

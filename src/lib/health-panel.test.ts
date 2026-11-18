@@ -12,6 +12,7 @@ function item(
     id,
     parentId,
     type,
+    groupLabel: type === "group" ? "feature" : null,
     title: `Item ${id}`,
     description: "",
     areaId: "dev",
@@ -20,10 +21,6 @@ function item(
     deadline: "2026-08-04",
     status: "a_fazer",
     isCritical: false,
-    storyPersona: null,
-    storyAction: null,
-    storyBenefit: null,
-    acceptanceCriteria: [],
     archivedAt: null,
     ...extra,
   };
@@ -33,18 +30,13 @@ const lateTask = (id: string, areaId: string, parentId: string) =>
   item(id, parentId, "task", { areaId, deadline: "2026-06-01", startDate: null });
 
 const tree = buildItemTree([
-  item("e1", null, "epic"),
-  item("f1", "e1", "feature"),
-  item("s1", "f1", "story"),
-  lateTask("t1", "dev", "s1"),
-  lateTask("t2", "dev", "s1"),
-  lateTask("t3", "dev", "s1"),
-  item("t4", "s1", "task", { areaId: "design", status: "concluido", deadline: "2026-06-01", startDate: null }),
-  item("e2", null, "epic", { areaId: "design" }),
-  item("f2", "e2", "feature", { areaId: "design" }),
-  item("s2", "f2", "story", { areaId: "design" }),
-  item("t5", "s2", "task", { areaId: "design", status: "concluido", deadline: "2026-06-01", startDate: null }),
-  item("t6", "s2", "task", { areaId: "design", status: "concluido", deadline: "2026-08-01", startDate: null }),
+  item("g1", null, "group"),
+  lateTask("t1", "dev", "g1"),
+  lateTask("t2", "dev", "g1"),
+  lateTask("t3", "dev", "g1"),
+  item("t4", "g1", "task", { areaId: "design", status: "concluido", deadline: "2026-06-01", startDate: null }),
+  item("t5", null, "task", { areaId: "design", status: "concluido", deadline: "2026-06-01", startDate: null }),
+  item("t6", null, "task", { areaId: "design", status: "concluido", deadline: "2026-08-01", startDate: null }),
 ]);
 
 const panel = buildHealthPanel({
@@ -60,8 +52,7 @@ const panel = buildHealthPanel({
 });
 
 describe("buildHealthPanel", () => {
-  it("judges the project, each epic and each area", () => {
-    expect(panel.epics).toHaveLength(2);
+  it("judges the project and each area", () => {
     expect(panel.areas.map((a) => a.name)).toEqual(["Dev", "Design"]);
     expect(panel.project.health.color).toBe("red");
   });
@@ -76,6 +67,5 @@ describe("buildHealthPanel", () => {
 
   it("keeps a healthy area green even if the project is red", () => {
     expect(panel.areas[1].health.color).toBe("green");
-    expect(panel.epics[1].health.color).toBe("green");
   });
 });

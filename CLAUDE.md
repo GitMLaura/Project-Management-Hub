@@ -3,7 +3,7 @@
 Leia este arquivo e `docs/PRD.md` no início de toda sessão. O PRD é a fonte da verdade do escopo. Se algo pedido conflitar com o PRD, avise antes de implementar.
 
 ## O que é
-Portal de gestão de projetos multidisciplinares: hierarquia **projeto → épico → funcionalidade → história → tarefa**, saúde do projeto, especificação (regras de negócio em Markdown, fluxos em Mermaid, telas) e ritos (transcrições e resumos por área).
+Portal de gestão de projetos multidisciplinares: **projeto → tarefas**, que podem ser reunidas em **grupos** nomeados (a pessoa escolhe o rótulo Funcionalidade ou Épico ao agrupar), saúde do projeto, especificação (regras de negócio em Markdown, fluxos em Mermaid, telas) e ritos (transcrições e resumos por área).
 
 É um **projeto de portfólio público**, com **dados 100% fictícios** (Projeto Aurora). A autora é Product Designer e não é desenvolvedora: explique decisões técnicas em linguagem simples e priorize código legível e simples.
 
@@ -23,9 +23,9 @@ Portal de gestão de projetos multidisciplinares: hierarquia **projeto → épic
 6. Não deixar arquivos grandes ou binários desnecessários no repositório.
 
 ## Domínio (resumo; detalhes no PRD)
-- Todo item tem **pai obrigatório**, **área**, **responsável**, **início/prazo** e **status** (`a_fazer`, `em_andamento`, `bloqueado`, `concluido`).
-- Prazo de filho ≤ prazo do pai; épico ≤ prazo do projeto. Itens com filhos não podem ser excluídos, só arquivados.
-- Progresso = tarefas concluídas ÷ total de tarefas do item.
+- Toda tarefa tem **área**, **responsável**, **prazo** e **status** (`a_fazer`, `em_andamento`, `bloqueado`, `concluido`); o grupo é opcional. Grupo não tem área, responsável nem prazo.
+- Prazo da tarefa ≤ prazo do projeto. Nada é excluído, só arquivado (arquivar um grupo arquiva suas tarefas).
+- Progresso = tarefas concluídas ÷ total de tarefas (do projeto, da área ou do grupo).
 - **Saúde** (🟢🟡🔴) é calculada por uma **função pura** em `src/lib/health.ts`, com limiares em constantes no topo do arquivo e **sempre com o motivo em texto**. Regras exatas: PRD seção 4.
 - Papéis: Dono do projeto, Líder de área (1 por área), Participante.
 - **Regras de negócio** são Markdown com IDs `RN-###`. Tela, download `.md` e PDF saem do mesmo Markdown.

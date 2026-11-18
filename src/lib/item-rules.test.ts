@@ -5,10 +5,10 @@ import {
   deadlineLimitError,
   canManageScope,
   canUpdateTaskStatus,
-  childTypeOf,
   findLeaderAreaId,
+  isGroupInput,
   isItemInput,
-  parentTypeOf,
+  validateGroup,
   validateItem,
   type ItemInput,
 } from "@/lib/item-rules";
@@ -22,8 +22,7 @@ function profile(id: string): DemoProfile {
 function validTask(): ItemInput {
   return {
     projectId: "p1",
-    type: "task",
-    parentId: "story-1",
+    groupId: "group-1",
     title: "Criar tela de login",
     description: "",
     areaId: "a1",
@@ -32,23 +31,6 @@ function validTask(): ItemInput {
     deadline: "2026-03-10",
     status: "a_fazer",
     isCritical: false,
-    storyPersona: "",
-    storyAction: "",
-    storyBenefit: "",
-    acceptanceCriteria: [],
-  };
-}
-
-function validStory(): ItemInput {
-  return {
-    ...validTask(),
-    type: "story",
-    parentId: "feature-1",
-    startDate: "2026-03-01",
-    storyPersona: "cliente",
-    storyAction: "recuperar minha senha",
-    storyBenefit: "voltar a pedir comida",
-    acceptanceCriteria: ["Recebo um e-mail com o link"],
   };
 }
 
@@ -57,24 +39,10 @@ function errorFields(input: ItemInput): string[] {
   return result.ok ? [] : result.errors.map((error) => error.field);
 }
 
-describe("hierarchy helpers", () => {
-  it("maps each type to its child and parent type", () => {
-    expect(childTypeOf("epic")).toBe("feature");
-    expect(childTypeOf("feature")).toBe("story");
-    expect(childTypeOf("story")).toBe("task");
-    expect(childTypeOf("task")).toBeNull();
-    expect(parentTypeOf("epic")).toBeNull();
-    expect(parentTypeOf("task")).toBe("story");
-  });
-});
-
 describe("validateItem", () => {
-  it("accepts a valid task without start date", () => {
+  it("accepts a valid task without start date, inside a group or loose", () => {
     expect(validateItem(validTask())).toEqual({ ok: true });
-  });
-
-  it("accepts a valid story", () => {
-    expect(validateItem(validStory())).toEqual({ ok: true });
+    expect(validateItem({ ...validTask(), groupId: null })).toEqual({ ok: true });
   });
 
   it("requires title, area and assignee", () => {
@@ -82,18 +50,7 @@ describe("validateItem", () => {
     expect(errorFields(input)).toEqual(["title", "areaId", "assigneeId"]);
   });
 
-  it("requires a parent for everything except epics (E1)", () => {
-    expect(errorFields({ ...validTask(), parentId: null })).toContain("parentId");
-    const epic: ItemInput = { ...validTask(), type: "epic", parentId: null, startDate: "2026-03-01" };
-    expect(validateItem(epic).ok).toBe(true);
-    expect(errorFields({ ...epic, parentId: "x" })).toContain("parentId");
-  });
-
-  it("requires a start date for non-task items", () => {
-    expect(errorFields({ ...validStory(), startDate: "" })).toContain("startDate");
-  });
-
-  it("validates optional task start date and the deadline order", () => {
+  it("validates optional start date and the deadline order", () => {
     expect(errorFields({ ...validTask(), startDate: "2026-13-01" })).toContain("startDate");
     expect(errorFields({ ...validTask(), startDate: "2026-03-11" })).toContain("deadline");
     expect(validateItem({ ...validTask(), startDate: "2026-03-10" }).ok).toBe(true);
@@ -102,21 +59,31 @@ describe("validateItem", () => {
   it("requires a valid deadline", () => {
     expect(errorFields({ ...validTask(), deadline: "" })).toContain("deadline");
   });
-
-  it("requires the three story fields", () => {
-    expect(errorFields({ ...validStory(), storyBenefit: "  " })).toContain("story");
-    expect(errorFields({ ...validStory(), storyPersona: "" })).toContain("story");
-  });
 });
 
 describe("isItemInput", () => {
   it("accepts a well-formed object and rejects bad shapes", () => {
     expect(isItemInput(validTask())).toBe(true);
+    expect(isItemInput({ ...validTask(), groupId: null })).toBe(true);
     expect(isItemInput(null)).toBe(false);
-    expect(isItemInput({ ...validTask(), type: "bug" })).toBe(false);
     expect(isItemInput({ ...validTask(), status: "feito" })).toBe(false);
-    expect(isItemInput({ ...validTask(), parentId: 3 })).toBe(false);
-    expect(isItemInput({ ...validTask(), acceptanceCriteria: [1] })).toBe(false);
+    expect(isItemInput({ ...validTask(), groupId: 3 })).toBe(false);
+  });
+});
+
+describe("groups", () => {
+  const group = { projectId: "p1", title: "Login", label: "feature" as const, taskIds: ["t1"] };
+
+  it("accepts a named group with tasks and rejects bad shapes", () => {
+    expect(isGroupInput(group)).toBe(true);
+    expect(isGroupInput({ ...group, label: "story" })).toBe(false);
+    expect(isGroupInput({ ...group, taskIds: [1] })).toBe(false);
+    expect(validateGroup(group)).toBeNull();
+  });
+
+  it("needs a name and at least one task", () => {
+    expect(validateGroup({ ...group, title: "  " })).toContain("nome do grupo");
+    expect(validateGroup({ ...group, taskIds: [] })).toContain("pelo menos uma tarefa");
   });
 });
 
@@ -151,50 +118,25 @@ describe("permissions (interface only)", () => {
   });
 });
 
-describe("deadline limits (E2 and E3)", () => {
-  it("blocks a child deadline after the parent deadline", () => {
-    const input = { ...validTask(), deadline: "2026-03-11" };
-    const result = validateItem(input, { parentDeadline: "2026-03-10" });
+describe("deadline limit", () => {
+  it("blocks a task deadline after the project deadline", () => {
+    const result = validateItem({ ...validTask(), deadline: "2026-03-11" }, "2026-03-10");
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.errors).toEqual([
-        {
-          field: "deadline",
-          message: "O prazo não pode ultrapassar o prazo do item pai (10/03/2026).",
-        },
+        { field: "deadline", message: "O prazo não pode ultrapassar o prazo do projeto (10/03/2026)." },
       ]);
     }
   });
 
-  it("accepts a child deadline equal to or before the parent deadline", () => {
-    expect(validateItem(validTask(), { parentDeadline: "2026-03-10" }).ok).toBe(true);
-    expect(validateItem(validTask(), { parentDeadline: "2026-04-01" }).ok).toBe(true);
+  it("accepts a deadline equal to or before the project deadline", () => {
+    expect(validateItem(validTask(), "2026-03-10").ok).toBe(true);
+    expect(validateItem(validTask(), "2026-04-01").ok).toBe(true);
   });
 
-  it("blocks an epic deadline after the project deadline", () => {
-    const epic: ItemInput = {
-      ...validTask(),
-      type: "epic",
-      parentId: null,
-      startDate: "2026-03-01",
-      deadline: "2026-07-01",
-    };
-    expect(errorFields(epic)).toEqual([]);
-    const result = validateItem(epic, { projectDeadline: "2026-06-30" });
-    expect(result.ok).toBe(false);
-    expect(deadlineLimitError("epic", "2026-07-01", { projectDeadline: "2026-06-30" })).toContain(
-      "prazo do projeto (30/06/2026)",
-    );
-  });
-
-  it("does not apply the project limit to non-epics, nor the parent limit to epics", () => {
-    expect(deadlineLimitError("task", "2027-01-01", { projectDeadline: "2026-06-30" })).toBeNull();
-    expect(deadlineLimitError("epic", "2027-01-01", { parentDeadline: "2026-06-30" })).toBeNull();
-  });
-
-  it("ignores the limit when no limit or no valid deadline is given", () => {
-    expect(deadlineLimitError("task", "2027-01-01", {})).toBeNull();
-    expect(deadlineLimitError("task", "", { parentDeadline: "2026-06-30" })).toBeNull();
+  it("ignores the limit when there is none or the deadline is not valid", () => {
+    expect(deadlineLimitError("2027-01-01", null)).toBeNull();
+    expect(deadlineLimitError("", "2026-06-30")).toBeNull();
   });
 });
 

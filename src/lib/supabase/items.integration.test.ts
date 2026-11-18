@@ -19,7 +19,7 @@ describe.skipIf(!url || !anonKey)("Supabase items schema", () => {
   it("refuses an item that points to a project, area and assignee that do not exist", async () => {
     const { error } = await supabase.from("items").insert({
       project_id: NOBODY,
-      type: "epic",
+      type: "task",
       title: "Nao deve ser gravado",
       area_id: NOBODY,
       assignee_id: NOBODY,
@@ -41,7 +41,7 @@ describe.skipIf(!url || !anonKey)("Supabase items schema", () => {
     expect(error).not.toBeNull();
   });
 
-  it("refuses an epic whose deadline is after the project deadline", async () => {
+  it("refuses a task whose deadline is after the project deadline", async () => {
     const { data: project } = await supabase
       .from("projects")
       .select("id, start_date, deadline")
@@ -65,7 +65,7 @@ describe.skipIf(!url || !anonKey)("Supabase items schema", () => {
 
     const { error } = await supabase.from("items").insert({
       project_id: project.id,
-      type: "epic",
+      type: "task",
       title: "Nao deve ser gravado",
       area_id: area.id,
       assignee_id: person.id,

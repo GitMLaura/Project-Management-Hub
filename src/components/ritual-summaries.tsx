@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DemoProfile } from "@/lib/demo-profiles";
 import { canCreateItemInArea } from "@/lib/item-rules";
-import { matchAssignee, type PersonOption, type StoryOption } from "@/lib/pending-task";
+import { matchAssignee, type PersonOption, type GroupOption } from "@/lib/pending-task";
 import type { RitualAreaSummary } from "@/lib/supabase/rituals";
 
 type Area = { id: string; name: string };
@@ -32,14 +32,14 @@ export function RitualSummaries({
   areas,
   summaries,
   profile,
-  stories,
+  groups,
   people,
 }: {
   projectId: string;
   areas: Area[];
   summaries: RitualAreaSummary[];
   profile: DemoProfile;
-  stories: StoryOption[];
+  groups: GroupOption[];
   people: PersonOption[];
 }) {
   const byArea = new Map(summaries.map((summary) => [summary.areaId, summary]));
@@ -107,7 +107,7 @@ export function RitualSummaries({
                           <PendingTaskForm
                             projectId={projectId}
                             pendingId={pending.id}
-                            stories={stories}
+                            groups={groups}
                             people={people}
                             defaultAssigneeId={matchAssignee(pending.suggestedAssignee, people)}
                           />

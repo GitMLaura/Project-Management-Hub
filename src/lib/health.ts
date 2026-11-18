@@ -12,7 +12,7 @@ export type HealthColor = "green" | "yellow" | "red";
 export type HealthItem = {
   id: string;
   title: string;
-  type: "epic" | "feature" | "story" | "task";
+  type: "group" | "task";
   status: "a_fazer" | "em_andamento" | "bloqueado" | "concluido";
   deadline: string; // YYYY-MM-DD
   isCritical: boolean;

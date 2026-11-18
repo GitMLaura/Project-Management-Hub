@@ -3,14 +3,20 @@ import type { DemoProfile } from "@/lib/demo-profiles";
 import { formatDate } from "@/lib/format";
 import { normalizeName } from "@/lib/project-validation";
 
-export type ItemType = "epic" | "feature" | "story" | "task";
+// The scope is made of tasks. A group is a named set of tasks, labelled "Funcionalidade"
+// or "Épico" by whoever creates it (a task may also stay loose, outside any group).
+export type ItemType = "group" | "task";
+export type GroupLabel = "epic" | "feature";
 export type ItemStatus = "a_fazer" | "em_andamento" | "bloqueado" | "concluido";
 
 export const ITEM_TYPE_LABELS: Record<ItemType, string> = {
+  group: "Grupo",
+  task: "Tarefa",
+};
+
+export const GROUP_LABELS: Record<GroupLabel, string> = {
   epic: "Épico",
   feature: "Funcionalidade",
-  story: "História",
-  task: "Tarefa",
 };
 
 export const ITEM_STATUSES: readonly ItemStatus[] = [
@@ -27,52 +33,30 @@ export const ITEM_STATUS_LABELS: Record<ItemStatus, string> = {
   concluido: "Concluído",
 };
 
-const CHILD_TYPE: Record<ItemType, ItemType | null> = {
-  epic: "feature",
-  feature: "story",
-  story: "task",
-  task: null,
-};
-
-const PARENT_TYPE: Record<ItemType, ItemType | null> = {
-  epic: null,
-  feature: "epic",
-  story: "feature",
-  task: "story",
-};
-
-export function childTypeOf(type: ItemType): ItemType | null {
-  return CHILD_TYPE[type];
-}
-
-export function parentTypeOf(type: ItemType): ItemType | null {
-  return PARENT_TYPE[type];
-}
-
 export function isItemType(value: unknown): value is ItemType {
-  return value === "epic" || value === "feature" || value === "story" || value === "task";
+  return value === "group" || value === "task";
+}
+
+export function isGroupLabel(value: unknown): value is GroupLabel {
+  return value === "epic" || value === "feature";
 }
 
 export function isItemStatus(value: unknown): value is ItemStatus {
   return ITEM_STATUSES.some((status) => status === value);
 }
 
+// A task, as it arrives from the form.
 export type ItemInput = {
   projectId: string;
-  type: ItemType;
-  parentId: string | null; // null only for epics (their parent is the project)
+  groupId: string | null; // null = a loose task
   title: string;
   description: string;
   areaId: string;
   assigneeId: string;
-  startDate: string; // YYYY-MM-DD, may be empty for tasks
+  startDate: string; // YYYY-MM-DD, may be empty
   deadline: string; // YYYY-MM-DD
   status: ItemStatus;
   isCritical: boolean;
-  storyPersona: string;
-  storyAction: string;
-  storyBenefit: string;
-  acceptanceCriteria: string[];
 };
 
 export type ItemField =
@@ -81,8 +65,7 @@ export type ItemField =
   | "assigneeId"
   | "startDate"
   | "deadline"
-  | "parentId"
-  | "story"
+  | "groupId"
   | "status";
 
 export type ItemFieldError = { field: ItemField; message: string };
@@ -104,12 +87,6 @@ export function normalizeItemInput(input: ItemInput): ItemInput {
     description: input.description.trim(),
     startDate: input.startDate.trim(),
     deadline: input.deadline.trim(),
-    storyPersona: input.storyPersona.trim(),
-    storyAction: input.storyAction.trim(),
-    storyBenefit: input.storyBenefit.trim(),
-    acceptanceCriteria: input.acceptanceCriteria
-      .map((criterion) => criterion.trim())
-      .filter(Boolean),
   };
 }
 
@@ -119,8 +96,7 @@ export function isItemInput(value: unknown): value is ItemInput {
   const v = value as Record<string, unknown>;
   return (
     typeof v.projectId === "string" &&
-    isItemType(v.type) &&
-    (v.parentId === null || typeof v.parentId === "string") &&
+    (v.groupId === null || typeof v.groupId === "string") &&
     typeof v.title === "string" &&
     typeof v.description === "string" &&
     typeof v.areaId === "string" &&
@@ -128,47 +104,49 @@ export function isItemInput(value: unknown): value is ItemInput {
     typeof v.startDate === "string" &&
     typeof v.deadline === "string" &&
     isItemStatus(v.status) &&
-    typeof v.isCritical === "boolean" &&
-    typeof v.storyPersona === "string" &&
-    typeof v.storyAction === "string" &&
-    typeof v.storyBenefit === "string" &&
-    Array.isArray(v.acceptanceCriteria) &&
-    v.acceptanceCriteria.every((criterion) => typeof criterion === "string")
+    typeof v.isCritical === "boolean"
   );
 }
 
-// Upper limits for the deadline (rules E2 and E3):
-// - a child cannot end after its parent;
-// - an epic cannot end after the project.
-export type DeadlineLimits = {
-  parentDeadline?: string | null;
-  projectDeadline?: string | null;
+// A group, as it arrives from the "Agrupar" button.
+export type GroupInput = {
+  projectId: string;
+  title: string;
+  label: GroupLabel;
+  taskIds: string[];
 };
 
-// Returns the message to show, or null when the deadline respects the limit.
-export function deadlineLimitError(
-  type: ItemType,
-  deadline: string,
-  limits: DeadlineLimits,
-): string | null {
+export function isGroupInput(value: unknown): value is GroupInput {
+  if (typeof value !== "object" || value === null) return false;
+  const v = value as Record<string, unknown>;
+  return (
+    typeof v.projectId === "string" &&
+    typeof v.title === "string" &&
+    isGroupLabel(v.label) &&
+    Array.isArray(v.taskIds) &&
+    v.taskIds.every((id) => typeof id === "string")
+  );
+}
+
+// Returns the message to show, or null when the group can be created.
+export function validateGroup(input: GroupInput): string | null {
+  if (!input.title.trim()) return "Informe o nome do grupo.";
+  if (input.taskIds.length === 0) return "Marque pelo menos uma tarefa para agrupar.";
+  return null;
+}
+
+// Rule: a task cannot end after the project (the database checks it too).
+export function deadlineLimitError(deadline: string, projectDeadline: string | null): string | null {
   if (!isValidIsoDate(deadline)) return null;
-  if (type === "epic") {
-    const limit = limits.projectDeadline;
-    if (limit && deadline > limit) {
-      return `O prazo do épico não pode ultrapassar o prazo do projeto (${formatDate(limit)}).`;
-    }
-    return null;
-  }
-  const limit = limits.parentDeadline;
-  if (limit && deadline > limit) {
-    return `O prazo não pode ultrapassar o prazo do item pai (${formatDate(limit)}).`;
+  if (projectDeadline && deadline > projectDeadline) {
+    return `O prazo não pode ultrapassar o prazo do projeto (${formatDate(projectDeadline)}).`;
   }
   return null;
 }
 
 export function validateItem(
   rawInput: ItemInput,
-  limits: DeadlineLimits = {},
+  projectDeadline: string | null = null,
 ): ItemValidationResult {
   const input = normalizeItemInput(rawInput);
   const errors: ItemFieldError[] = [];
@@ -178,34 +156,16 @@ export function validateItem(
   if (!input.areaId) add("areaId", "Escolha a área.");
   if (!input.assigneeId) add("assigneeId", "Escolha o responsável.");
 
-  // Rule E1: every item has a parent, except epics (their parent is the project).
-  if (input.type === "epic" && input.parentId !== null) {
-    add("parentId", "Um épico não tem item pai.");
-  }
-  if (input.type !== "epic" && !input.parentId) {
-    add("parentId", "Todo item, exceto o épico, precisa de um item pai.");
-  }
-
   const startOk = isValidIsoDate(input.startDate);
   const deadlineOk = isValidIsoDate(input.deadline);
   if (!deadlineOk) add("deadline", "Informe um prazo válido.");
-  if (input.type === "task") {
-    if (input.startDate && !startOk) add("startDate", "Informe uma data de início válida.");
-  } else if (!startOk) {
-    add("startDate", "Informe uma data de início válida.");
-  }
+  if (input.startDate && !startOk) add("startDate", "Informe uma data de início válida.");
   if (input.startDate && startOk && deadlineOk && input.deadline < input.startDate) {
     add("deadline", "O prazo não pode ser anterior ao início.");
   }
 
-  const limitError = deadlineLimitError(input.type, input.deadline, limits);
+  const limitError = deadlineLimitError(input.deadline, projectDeadline);
   if (limitError) add("deadline", limitError);
-
-  if (input.type === "story") {
-    if (!input.storyPersona || !input.storyAction || !input.storyBenefit) {
-      add("story", "Preencha “Como…”, “quero…” e “para…” da história.");
-    }
-  }
 
   return errors.length === 0 ? { ok: true } : { ok: false, errors };
 }

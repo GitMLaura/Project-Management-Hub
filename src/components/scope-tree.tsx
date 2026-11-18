@@ -2,18 +2,18 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import { ArchiveButton } from "@/components/archive-button";
 import { Branch, BranchBody, BranchToggle } from "@/components/branch";
+import { TaskCheckbox } from "@/components/group-selection";
 import { TaskStatusSelect } from "@/components/task-status-select";
 import type { DemoProfile } from "@/lib/demo-profiles";
 import { formatDate } from "@/lib/format";
 import {
+  GROUP_LABELS,
   ITEM_STATUS_LABELS,
-  ITEM_TYPE_LABELS,
   canCreateItemInArea,
   canUpdateTaskStatus,
-  childTypeOf,
   type ItemStatus,
 } from "@/lib/item-rules";
-import { countDescendants, isScopeIncomplete, type ItemNode } from "@/lib/item-tree";
+import { countDescendants, type ItemNode } from "@/lib/item-tree";
 import type { Progress } from "@/lib/scope-view";
 
 // One grid for the header and every row, so the columns line up on wide screens.
@@ -48,7 +48,7 @@ export function ScopeHeader() {
       className={`hidden px-5 text-xs font-medium text-muted-foreground ${SCOPE_GRID}`}
       aria-hidden="true"
     >
-      <span>Item</span>
+      <span>Tarefa</span>
       <span>Área</span>
       <span>Responsável</span>
       <span>Prazo</span>
@@ -80,65 +80,43 @@ function MiniProgress({ progress }: { progress: Progress }) {
   );
 }
 
-function ItemRow({
+function TaskRow({
   projectId,
   node,
-  depth,
   areaNames,
   assigneeNames,
   canManage,
   profile,
-  progress,
   mode = "active",
-}: RowProps) {
-  const childType = childTypeOf(node.type);
-  const hasChildren = node.children.length > 0;
+  inGroup,
+}: RowProps & { inGroup: boolean }) {
   const areaName = areaNames[node.areaId] ?? "Área desconhecida";
   const assigneeName = assigneeNames[node.assigneeId] ?? "Sem responsável";
   const canEditStatus =
     mode === "active" &&
-    node.type === "task" &&
-    canUpdateTaskStatus(profile, { areaName: areaNames[node.areaId] ?? "", assigneeName: assigneeNames[node.assigneeId] ?? "" });
+    canUpdateTaskStatus(profile, {
+      areaName: areaNames[node.areaId] ?? "",
+      assigneeName: assigneeNames[node.assigneeId] ?? "",
+    });
   const canChange = canManage && canCreateItemInArea(profile, areaNames[node.areaId] ?? "");
-  const isEpic = node.type === "epic";
 
   return (
     <div
       id={`item-${node.id}`}
-      className={`scroll-mt-20 px-5 py-3 ${SCOPE_GRID} ${isEpic ? "" : "hover:bg-muted/40"}`}
+      className={`scroll-mt-20 px-5 py-3 hover:bg-muted/40 ${SCOPE_GRID}`}
     >
-      {/* Item: toggle, title and a line with type and flags */}
-      <div className="flex min-w-0 items-start gap-1" style={{ paddingLeft: depth * 24 }}>
-        {hasChildren ? <BranchToggle label={node.title} /> : <span className="size-6 shrink-0" aria-hidden="true" />}
+      <div className="flex min-w-0 items-start gap-2" style={{ paddingLeft: inGroup ? 24 : 0 }}>
+        {mode === "active" && canChange ? (
+          <TaskCheckbox id={node.id} title={node.title} />
+        ) : (
+          <span className="size-6 shrink-0" aria-hidden="true" />
+        )}
         <div className="min-w-0">
-          <p className={isEpic ? "font-heading text-base font-semibold" : "text-sm font-medium"}>{node.title}</p>
-          <p className="flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
-            <span>{ITEM_TYPE_LABELS[node.type]}</span>
-            {node.isCritical && (
+          <p className="text-sm font-medium">{node.title}</p>
+          {node.isCritical && (
+            <p className="mt-0.5 text-xs">
               <span className="rounded-full bg-red-100 px-1.5 py-0.5 font-medium text-red-800">Crítico</span>
-            )}
-            {mode === "active" && isScopeIncomplete(node) && (
-              <span className="rounded-full bg-yellow-100 px-1.5 py-0.5 font-medium text-yellow-900">
-                Falta detalhar
-              </span>
-            )}
-          </p>
-          {node.type === "story" && (
-            <details className="mt-1 text-xs">
-              <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
-                Ver história e critérios
-              </summary>
-              <p className="mt-1 text-sm">
-                Como {node.storyPersona}, quero {node.storyAction} para {node.storyBenefit}.
-              </p>
-              {node.acceptanceCriteria.length > 0 && (
-                <ul className="mt-1 list-disc pl-5 text-sm">
-                  {node.acceptanceCriteria.map((criterion) => (
-                    <li key={criterion}>{criterion}</li>
-                  ))}
-                </ul>
-              )}
-            </details>
+            </p>
           )}
         </div>
       </div>
@@ -155,13 +133,7 @@ function ItemRow({
         <span className="md:hidden">Prazo: </span>
         {formatDate(node.deadline).slice(0, 5)}
       </p>
-      <div className="mt-2 md:mt-0">
-        {mode === "active" && node.type !== "task" && progress?.[node.id] ? (
-          <MiniProgress progress={progress[node.id]} />
-        ) : (
-          <span className="hidden md:inline" aria-hidden="true" />
-        )}
-      </div>
+      <span className="hidden md:inline" aria-hidden="true" />
       <div className="mt-2 md:mt-0">
         {canEditStatus ? (
           <TaskStatusSelect projectId={projectId} itemId={node.id} itemTitle={node.title} status={node.status} />
@@ -172,26 +144,10 @@ function ItemRow({
         )}
       </div>
       <div className="mt-2 flex items-center justify-end gap-1 md:mt-0">
-        {mode === "active" && canManage && childType && (
-          <Link
-            href={`/projects/${projectId}/items/new?parent=${node.id}`}
-            aria-label={`Adicionar ${ITEM_TYPE_LABELS[childType].toLowerCase()} em ${node.title}`}
-            title={`Adicionar ${ITEM_TYPE_LABELS[childType].toLowerCase()}`}
-            className="flex size-8 items-center justify-center rounded-full text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <Plus className="size-4" aria-hidden="true" />
-          </Link>
-        )}
         {mode === "active" && canChange && (
-          <ArchiveButton
-            projectId={projectId}
-            itemId={node.id}
-            itemTitle={node.title}
-            mode="archive"
-            descendants={countDescendants(node)}
-          />
+          <ArchiveButton projectId={projectId} itemId={node.id} itemTitle={node.title} mode="archive" descendants={0} />
         )}
-        {mode === "archived" && depth === 0 && canChange && (
+        {mode === "archived" && !inGroup && canChange && (
           <ArchiveButton projectId={projectId} itemId={node.id} itemTitle={node.title} mode="restore" descendants={0} />
         )}
       </div>
@@ -199,26 +155,60 @@ function ItemRow({
   );
 }
 
-function Branches(props: RowProps) {
-  const { node, depth } = props;
-  const rest: Omit<RowProps, "node" | "depth"> = {
-    projectId: props.projectId,
-    areaNames: props.areaNames,
-    assigneeNames: props.assigneeNames,
-    canManage: props.canManage,
-    profile: props.profile,
-    progress: props.progress,
-    mode: props.mode,
-  };
+function GroupBlock(props: RowProps) {
+  const { projectId, node, canManage, progress, mode = "active" } = props;
+  const taskCount = node.children.length;
   return (
     <Branch>
-      <ItemRow {...props} />
-      {node.children.length > 0 && (
+      <div id={`item-${node.id}`} className={`scroll-mt-20 px-5 py-3 ${SCOPE_GRID}`}>
+        <div className="flex min-w-0 items-center gap-2">
+          <BranchToggle label={node.title} />
+          <div className="min-w-0">
+            <p className="font-heading text-base font-semibold">{node.title}</p>
+            <p className="text-xs text-muted-foreground">
+              {node.groupLabel ? GROUP_LABELS[node.groupLabel] : "Grupo"} · {taskCount}{" "}
+              {taskCount === 1 ? "tarefa" : "tarefas"}
+            </p>
+          </div>
+        </div>
+        <span className="hidden md:inline" aria-hidden="true" />
+        <span className="hidden md:inline" aria-hidden="true" />
+        <span className="hidden md:inline" aria-hidden="true" />
+        <div className="mt-2 md:mt-0">
+          {mode === "active" && progress?.[node.id] ? <MiniProgress progress={progress[node.id]} /> : null}
+        </div>
+        <span className="hidden md:inline" aria-hidden="true" />
+        <div className="mt-2 flex items-center justify-end gap-1 md:mt-0">
+          {mode === "active" && canManage && (
+            <Link
+              href={`/projects/${projectId}/items/new?group=${node.id}`}
+              aria-label={`Adicionar tarefa em ${node.title}`}
+              title="Adicionar tarefa"
+              className="flex size-8 items-center justify-center rounded-full text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Plus className="size-4" aria-hidden="true" />
+            </Link>
+          )}
+          {mode === "active" && canManage && (
+            <ArchiveButton
+              projectId={projectId}
+              itemId={node.id}
+              itemTitle={node.title}
+              mode="archive"
+              descendants={countDescendants(node)}
+            />
+          )}
+          {mode === "archived" && canManage && (
+            <ArchiveButton projectId={projectId} itemId={node.id} itemTitle={node.title} mode="restore" descendants={0} />
+          )}
+        </div>
+      </div>
+      {taskCount > 0 && (
         <BranchBody>
           <ul className="divide-y divide-border/60 border-t border-border/60">
             {node.children.map((child) => (
               <li key={child.id}>
-                <Branches {...rest} node={child} depth={depth + 1} />
+                <TaskRow {...props} node={child} inGroup />
               </li>
             ))}
           </ul>
@@ -228,19 +218,35 @@ function Branches(props: RowProps) {
   );
 }
 
-// The scope as a list in the style of task managers: one white block per epic, with the
-// items inside it as rows that can be folded.
+// The scope as a list in the style of task managers: one white block per group, with its
+// tasks as rows that can be folded, and one block for the tasks that have no group.
 export function ScopeTree({ nodes, ...rest }: ScopeTreeProps) {
   if (nodes.length === 0) return null;
+  const groups = nodes.filter((node) => node.type === "group");
+  const loose = nodes.filter((node) => node.type === "task");
   return (
     <div className="flex flex-col gap-3">
       <ScopeHeader />
       <ul className="flex flex-col gap-4">
-        {nodes.map((node) => (
+        {groups.map((node) => (
           <li key={node.id} className="overflow-hidden rounded-2xl bg-card">
-            <Branches {...rest} node={node} depth={0} />
+            <GroupBlock {...rest} node={node} depth={0} />
           </li>
         ))}
+        {loose.length > 0 && (
+          <li className="overflow-hidden rounded-2xl bg-card">
+            {groups.length > 0 && (
+              <p className="px-5 pt-3 pb-1 font-heading text-base font-semibold">Sem grupo</p>
+            )}
+            <ul className="divide-y divide-border/60">
+              {loose.map((node) => (
+                <li key={node.id}>
+                  <TaskRow {...rest} node={node} depth={0} inGroup={false} />
+                </li>
+              ))}
+            </ul>
+          </li>
+        )}
       </ul>
     </div>
   );

@@ -25,24 +25,20 @@ function item(
     deadline: "2026-12-31",
     status: "a_fazer",
     isCritical: false,
-    storyPersona: null,
-    storyAction: null,
-    storyBenefit: null,
-    acceptanceCriteria: [],
+    groupLabel: type === "group" ? "feature" : null,
     archivedAt: null,
     ...extra,
   };
 }
 
 const tree = buildItemTree([
-  item("e1", null, "epic"),
-  item("f1", "e1", "feature"),
-  item("s1", "f1", "story"),
-  item("t1", "s1", "task", { status: "concluido" }),
-  item("t2", "s1", "task", { areaId: "dev", assigneeId: "bia", status: "em_andamento" }),
-  item("t3", "s1", "task"),
-  item("t4", "s1", "task", { status: "concluido" }),
-  item("e2", null, "epic"),
+  item("g1", null, "group"),
+  item("t1", "g1", "task", { status: "concluido" }),
+  item("t2", "g1", "task", { areaId: "dev", assigneeId: "bia", status: "em_andamento" }),
+  item("t3", "g1", "task"),
+  item("t4", "g1", "task", { status: "concluido" }),
+  item("g2", null, "group"),
+  item("t5", null, "task", { status: "concluido" }),
 ]);
 
 describe("calcProgress (rule E6)", () => {
@@ -50,55 +46,51 @@ describe("calcProgress (rule E6)", () => {
     expect(calcProgress(tree[0])).toEqual({ done: 2, total: 4, percent: 50 });
   });
 
-  it("is 0 of 0 for an item without tasks", () => {
+  it("is 0 of 0 for a group without tasks", () => {
     expect(calcProgress(tree[1])).toEqual({ done: 0, total: 0, percent: 0 });
   });
 
   it("counts a task as one task", () => {
-    const task = tree[0].children[0].children[0].children[0];
-    expect(calcProgress(task)).toEqual({ done: 1, total: 1, percent: 100 });
+    expect(calcProgress(tree[2])).toEqual({ done: 1, total: 1, percent: 100 });
   });
 
   it("rounds the percentage", () => {
-    const [epic] = buildItemTree([
-      item("e", null, "epic"),
-      item("f", "e", "feature"),
-      item("s", "f", "story"),
-      item("a", "s", "task", { status: "concluido" }),
-      item("b", "s", "task"),
-      item("c", "s", "task"),
+    const [group] = buildItemTree([
+      item("g", null, "group"),
+      item("a", "g", "task", { status: "concluido" }),
+      item("b", "g", "task"),
+      item("c", "g", "task"),
     ]);
-    expect(calcProgress(epic).percent).toBe(33);
+    expect(calcProgress(group).percent).toBe(33);
   });
 
   it("builds a map for every item", () => {
     const map = buildProgressMap(tree);
-    expect(map.e1.percent).toBe(50);
-    expect(map.s1.total).toBe(4);
-    expect(Object.keys(map)).toHaveLength(8);
+    expect(map.g1.percent).toBe(50);
+    expect(map.g1.total).toBe(4);
+    expect(Object.keys(map)).toHaveLength(7);
   });
 });
 
 describe("filterTree", () => {
   it("returns everything without filters", () => {
-    expect(filterTree(tree, {})).toHaveLength(2);
+    expect(filterTree(tree, {})).toHaveLength(3);
   });
 
   it("keeps matching items and their ancestors", () => {
     const result = filterTree(tree, { areaId: "dev" });
-    expect(result.map((n) => n.id)).toEqual(["e1"]);
-    const story = result[0].children[0].children[0];
-    expect(story.children.map((n) => n.id)).toEqual(["t2"]);
+    expect(result.map((n) => n.id)).toEqual(["g1"]);
+    expect(result[0].children.map((n) => n.id)).toEqual(["t2"]);
   });
 
   it("combines area, person and status with AND", () => {
-    expect(filterTree(tree, { assigneeId: "ana", status: "concluido" })[0].children[0].children[0].children.map((n) => n.id)).toEqual(["t1", "t4"]);
+    expect(filterTree(tree, { assigneeId: "ana", status: "concluido" }).map((n) => n.id)).toEqual(["g1", "t5"]);
     expect(filterTree(tree, { assigneeId: "bia", status: "concluido" })).toEqual([]);
   });
 
   it("does not change the original tree", () => {
     filterTree(tree, { areaId: "dev" });
-    expect(tree[0].children[0].children[0].children).toHaveLength(4);
+    expect(tree[0].children).toHaveLength(4);
   });
 });
 

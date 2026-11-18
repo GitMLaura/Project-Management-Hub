@@ -141,7 +141,7 @@ describe("calculateHealth: red", () => {
   });
 
   it("is red when a critical item of any level is blocked", () => {
-    const items = [...onTrack(), { ...task("f"), type: "feature" as const, isCritical: true, status: "bloqueado" as const }];
+    const items = [...onTrack(), { ...task("f"), type: "group" as const, isCritical: true, status: "bloqueado" as const }];
     expect(calculateHealth(input(items)).color).toBe("red");
   });
 

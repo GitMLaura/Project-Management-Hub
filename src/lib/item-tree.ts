@@ -1,22 +1,20 @@
-// Pure helper: turns a flat list of items into a tree (epic > feature > story > task).
-import type { ItemStatus, ItemType } from "@/lib/item-rules";
+// Pure helper: turns a flat list of items into a tree (group > task; a task may be loose).
+import type { GroupLabel, ItemStatus, ItemType } from "@/lib/item-rules";
 
 export type ItemRecord = {
   id: string;
   parentId: string | null;
   type: ItemType;
+  groupLabel: GroupLabel | null; // only groups have one
   title: string;
   description: string;
+  // Empty for groups: only tasks have an area, an owner and a deadline.
   areaId: string;
   assigneeId: string;
   startDate: string | null;
   deadline: string;
   status: ItemStatus;
   isCritical: boolean;
-  storyPersona: string | null;
-  storyAction: string | null;
-  storyBenefit: string | null;
-  acceptanceCriteria: string[];
   archivedAt: string | null;
 };
 
@@ -41,16 +39,4 @@ export function buildItemTree(items: readonly ItemRecord[]): ItemNode[] {
 // How many items sit below this one (used to warn before archiving).
 export function countDescendants(node: ItemNode): number {
   return node.children.reduce((total, child) => total + 1 + countDescendants(child), 0);
-}
-
-// Rule E5: anything that is not a task and has no (active) children needs more detail.
-export function isScopeIncomplete(node: ItemNode): boolean {
-  return node.type !== "task" && node.children.length === 0;
-}
-
-export function countIncompleteScope(nodes: readonly ItemNode[]): number {
-  return nodes.reduce(
-    (total, node) => total + (isScopeIncomplete(node) ? 1 : 0) + countIncompleteScope(node.children),
-    0,
-  );
 }

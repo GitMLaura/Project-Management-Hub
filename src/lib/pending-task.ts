@@ -13,26 +13,20 @@ export function matchAssignee(suggested: string | null, people: readonly PersonO
   return people.find((person) => normalizeName(person.name) === wanted)?.id ?? "";
 }
 
-export type StoryOption = { id: string; label: string; deadline: string };
+export type GroupOption = { id: string; label: string };
 
-// Stories that can receive a task: not archived, inside a feature that is not archived.
-// The label shows "Feature > Story" so the parent feature is visible (a task's parent is a story).
-export function listStoryOptions(items: readonly ItemRecord[]): StoryOption[] {
-  const byId = new Map(items.map((item) => [item.id, item]));
-  const options: StoryOption[] = [];
-  for (const story of items) {
-    if (story.type !== "story" || story.archivedAt) continue;
-    const feature = story.parentId ? byId.get(story.parentId) : undefined;
-    if (!feature || feature.type !== "feature" || feature.archivedAt) continue;
-    options.push({ id: story.id, label: `${feature.title} > ${story.title}`, deadline: story.deadline });
-  }
-  return options.sort((a, b) => a.label.localeCompare(b.label, "pt-BR"));
+// Groups that can receive a task: the ones that are not archived.
+export function listGroupOptions(items: readonly ItemRecord[]): GroupOption[] {
+  return items
+    .filter((item) => item.type === "group" && !item.archivedAt)
+    .map((group) => ({ id: group.id, label: group.title }))
+    .sort((a, b) => a.label.localeCompare(b.label, "pt-BR"));
 }
 
 export type PendingTaskChoice = {
   projectId: string;
   areaId: string; // the area of the summary that listed the pending
-  storyId: string;
+  groupId: string; // "" = a loose task, outside any group
   assigneeId: string;
   deadline: string; // YYYY-MM-DD
   description: string;
@@ -42,8 +36,7 @@ export type PendingTaskChoice = {
 export function buildTaskInput(choice: PendingTaskChoice): ItemInput {
   return {
     projectId: choice.projectId,
-    type: "task",
-    parentId: choice.storyId,
+    groupId: choice.groupId || null,
     title: choice.description.trim().slice(0, 200),
     description: "Criada a partir de uma pendência de rito.",
     areaId: choice.areaId,
@@ -52,9 +45,5 @@ export function buildTaskInput(choice: PendingTaskChoice): ItemInput {
     deadline: choice.deadline,
     status: "a_fazer",
     isCritical: false,
-    storyPersona: "",
-    storyAction: "",
-    storyBenefit: "",
-    acceptanceCriteria: [],
   };
 }

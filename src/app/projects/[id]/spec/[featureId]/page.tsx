@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getActiveProfile } from "@/lib/active-profile";
-import { canCreateItemInArea } from "@/lib/item-rules";
+import { canManageScope } from "@/lib/item-rules";
 import { formatRuleCode } from "@/lib/rules";
 import type { FlowRecord } from "@/lib/flows";
 import { listFlows } from "@/lib/supabase/flows";
@@ -56,18 +56,16 @@ export default async function FeatureSpecPage(props: PageProps<"/projects/[id]/s
   }
   if (!context) notFound();
 
-  const { project, feature, epic, areaName } = context;
-  const canEdit = canCreateItemInArea(profile, areaName);
+  const { project, feature } = context;
+  const canEdit = canManageScope(profile);
 
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-6">
       <div className="flex flex-col gap-1">
         <p className="text-sm text-muted-foreground">
           {project.name}
-          {epic ? ` › ${epic.title}` : ""}
         </p>
         <h1 className="text-2xl font-semibold">{feature.title}</h1>
-        <p className="text-sm text-muted-foreground">Área responsável: {areaName}</p>
       </div>
 
       <nav aria-label="Especificação" className="flex gap-2">
@@ -128,7 +126,7 @@ export default async function FeatureSpecPage(props: PageProps<"/projects/[id]/s
                 <p className="text-sm text-muted-foreground">
                   {canEdit
                     ? "Comece escrevendo a primeira regra."
-                    : `O líder da área ${areaName} (ou o Dono) pode escrever as regras. Troque de perfil pelo avatar.`}
+                    : `O Dono ou um Líder de área pode escrever as regras. Troque de perfil pelo avatar.`}
                 </p>
               </CardContent>
             </Card>
@@ -177,7 +175,7 @@ export default async function FeatureSpecPage(props: PageProps<"/projects/[id]/s
                 <p className="text-sm text-muted-foreground">
                   {canEdit
                     ? "Crie o primeiro fluxo em Mermaid."
-                    : `O líder da área ${areaName} (ou o Dono) pode criar fluxos. Troque de perfil pelo avatar.`}
+                    : `O Dono ou um Líder de área pode criar fluxos. Troque de perfil pelo avatar.`}
                 </p>
               </CardContent>
             </Card>
@@ -208,7 +206,7 @@ export default async function FeatureSpecPage(props: PageProps<"/projects/[id]/s
                 <p className="text-sm text-muted-foreground">
                   {canEdit
                     ? "Envie a primeira tela (PNG ou JPG) acima."
-                    : `O líder da área ${areaName} (ou o Dono) pode enviar telas. Troque de perfil pelo avatar.`}
+                    : `O Dono ou um Líder de área pode enviar telas. Troque de perfil pelo avatar.`}
                 </p>
               </CardContent>
             </Card>
